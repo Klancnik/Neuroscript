@@ -674,9 +674,46 @@
         // Reset session function
         function resetSession() {
             if (confirm('Are you sure you want to start a new client? This will clear all current data and test results.')) {
+                // Clear all Neuroscript data
                 localStorage.removeItem('neuroscript_client');
                 localStorage.removeItem('neuroscript_results');
-                location.reload();
+                
+                // Clear any other localStorage keys that might contain test data
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('neuroscript') || key.includes('test') || key.includes('client'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                
+                // Force clear the forms
+                document.getElementById('clientName').value = '';
+                document.getElementById('clientAge').value = '';
+                document.getElementById('clientGender').value = 'male';
+                document.getElementById('clientEducation').value = '';
+                document.getElementById('readingLevel').value = '';
+                
+                // Clear test completion indicators
+                document.querySelectorAll('.test-button').forEach(btn => {
+                    btn.classList.remove('completed', 'active');
+                });
+                
+                // Reset progress
+                document.getElementById('progressText').textContent = 'Select tests from the menu to begin assessment';
+                document.getElementById('generateReportBtn').disabled = true;
+                
+                // Show welcome screen
+                document.querySelectorAll('.test-iframe').forEach(iframe => {
+                    iframe.classList.remove('active');
+                });
+                document.getElementById('welcomeScreen').style.display = 'block';
+                
+                // Reload to ensure complete reset
+                setTimeout(() => {
+                    location.reload();
+                }, 100);
             }
         }
 
