@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trail Making Test Clinical Report Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .section-header {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .generate-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .generate-btn:hover {
+            background: #0056b3;
+        }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
+        .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+        h3 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trail Making Test Clinical Report Generator</h1>
+        <p>Enter Trail Making Test raw scores to generate clinical narrative text in Neuroscript format</p>
+
+        <div class="input-section">
+            <h3>Demographics</h3>
+            <div class="input-group">
+                <label>Age (years):</label>
+                <input type="number" id="age" value="45" min="18" max="89">
+            </div>
+            <div class="input-group">
+                <label>Gender:</label>
+                <select id="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Education (years):</label>
+                <input type="number" id="education" value="16" min="6" max="25">
+            </div>
+            <div class="input-group">
+                <label>Reading Level (grade):</label>
+                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+            </div>
+
+            <div class="section-header">Raw Scores (seconds)</div>
+            <div class="score-grid">
+                <div>
+                    <label>Trail Making A:</label>
+                    <input type="number" id="trailsA" value="25" min="0" max="300">
+                </div>
+                <div>
+                    <label>Trail Making B:</label>
+                    <input type="number" id="trailsB" value="60" min="0" max="300">
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateTrailsReport()">Generate Trails Report</button>
+            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+        </div>
+
+        <div id="output" class="output-section" style="display:none;">
+            <!-- Generated report will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // Data management
+        let currentNarrative = '';
+        let currentScoreTable = '';
+
+        // Heaton et al. (2004) normative data for Trail Making Test
+        // Age and education corrected T-scores
+        function getTrailsNorms(age, education) {
+            // Simplified normative approximations - replace with actual Heaton tables
+            return {
+                trailsA: {
+                    excellent: 20,
+                    good: 25,
+                    average: 35,
+                    belowAverage: 50,
+                    impaired: 75
+                },
+                trailsB: {
+                    excellent: 45,
+                    good: 60,
+                    average: 90,
+                    belowAverage: 120,
+                    impaired: 180
+                }
+            };
+        }
+
+        function getTrailsRange(rawScore, test, age, education) {
+            const norms = getTrailsNorms(age, education);
+            const testNorms = norms[test];
+            
+            if (rawScore <= testNorms.excellent) return "Superior";
+            if (rawScore <= testNorms.good) return "High Average";
+            if (rawScore <= testNorms.average) return "Average";
+            if (rawScore <= testNorms.belowAverage) return "Below Average";
+            if (rawScore <= testNorms.impaired) return "Mildly Impaired";
+            return "Moderately Impaired";
+        }
+
+        function getPercentileEstimate(rawScore, test, age, education) {
+            const norms = getTrailsNorms(age, education);
+            const testNorms = norms[test];
+            
+            if (rawScore <= testNorms.excellent) return 95;
+            if (rawScore <= testNorms.good) return 75;
+            if (rawScore <= testNorms.average) return 50;
+            if (rawScore <= testNorms.belowAverage) return 25;
+            if (rawScore <= testNorms.impaired) return 10;
+            return 5;
+        }
+
+        function generateValidationWarnings(data) {
+            let warnings = [];
+
+            // Age boundary warnings
+            if (data.age < 18 || data.age > 89) {
+                warnings.push("⚠️ Age outside Heaton et al. (2004) normative range (18-89 years)");
+            }
+
+            // Education boundary warnings
+            if (data.education < 6 || data.education > 25) {
+                warnings.push("⚠️ Education level outside typical normative range (6-25 years)");
+            }
+
+            // Reading level concerns
+            if (!data.readingLevel) {
+                warnings.push("⚠️ Reading level not assessed - may affect TMT-B number/letter comprehension");
+            } else if (data.readingLevel < 5) {
+                warnings.push("⚠️ Grade <5 reading level - TMT-B validity may be compromised");
+            }
+
+            // Unusual performance patterns
+            if (data.trailsB <= data.trailsA) {
+                warnings.push("⚠️ TMT-B faster than TMT-A - highly unusual pattern requiring review");
+            }
+
+            // Extremely slow performance
+            if (data.trailsA > 120) {
+                warnings.push("⚠️ TMT-A >120 seconds - consider motor, visual, or cognitive factors");
+            }
+
+            if (data.trailsB > 300) {
+                warnings.push("⚠️ TMT-B >300 seconds - consider discontinuation criteria and validity");
+            }
+
+            // B-A difference analysis
+            const bMinusA = data.trailsB - data.trailsA;
+            if (bMinusA > 100) {
+                warnings.push("⚠️ Large B-A difference (>100 sec) - suggests significant executive dysfunction");
+            }
+
+            return warnings;
+        }
+
+        function generateTrailsReport() {
+            const data = {
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                education: parseInt(document.getElementById('education').value),
+                readingLevel: document.getElementById('readingLevel').value ? 
+                    parseFloat(document.getElementById('readingLevel').value) : null,
+                trailsA: parseInt(document.getElementById('trailsA').value),
+                trailsB: parseInt(document.getElementById('trailsB').value)
+            };
+
+            const warnings = generateValidationWarnings(data);
+            const gender = data.gender;
+            const pronoun = gender === 'Male' ? 'His' : 'Her';
+            const pronounLower = gender === 'Male' ? 'his' : 'her';
+            const heShe = gender === 'Male' ? 'He' : 'She';
+
+            // Calculate ranges and percentiles
+            const rangeA = getTrailsRange(data.trailsA, 'trailsA', data.age, data.education);
+            const rangeB = getTrailsRange(data.trailsB, 'trailsB', data.age, data.education);
+            const percA = getPercentileEstimate(data.trailsA, 'trailsA', data.age, data.education);
+            const percB = getPercentileEstimate(data.trailsB, 'trailsB', data.age, data.education);
+
+            // B-A difference calculation
+            const bMinusA = data.trailsB - data.trailsA;
+            const bMinusAInterpretation = bMinusA <= 30 ? "minimal" : 
+                                         bMinusA <= 60 ? "moderate" : "substantial";
+
+            let report = '';
+
+            // Attention/Executive Functioning Section
+            report += `<h3><b>Attention</b></h3>\n`;
+            report += `<p>On the Trail Making Test, a measure of visual scanning, psychomotor speed, and mental flexibility, ${heShe} completed Part A (number sequencing) in ${data.trailsA} seconds, placing ${pronounLower} performance in the ${rangeA} range. ${pronounLower} completion of Part B (number-letter switching) took ${data.trailsB} seconds, which was in the ${rangeB} range.</p>\n\n`;
+
+            if (bMinusA > 60) {
+                report += `<h3><b>Executive Functioning</b></h3>\n`;
+                report += `<p>The difference between Part B and Part A completion times was ${bMinusA} seconds, indicating ${bMinusAInterpretation} difficulty with cognitive set-shifting and divided attention demands.</p>\n\n`;
+            }
+
+            // Store for completion
+            currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+
+            // Generate score table
+            currentScoreTable = `
+                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 8px; text-align: left;">TMT Measure</th>
+                        <th style="padding: 8px; text-align: center;">Raw Score (sec)</th>
+                        <th style="padding: 8px; text-align: center;">Percentile</th>
+                        <th style="padding: 8px; text-align: center;">Range</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px;">Trail Making A</td>
+                        <td style="padding: 8px; text-align: center;">${data.trailsA}</td>
+                        <td style="padding: 8px; text-align: center;">${percA}%</td>
+                        <td style="padding: 8px; text-align: center;">${rangeA}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px;">Trail Making B</td>
+                        <td style="padding: 8px; text-align: center;">${data.trailsB}</td>
+                        <td style="padding: 8px; text-align: center;">${percB}%</td>
+                        <td style="padding: 8px; text-align: center;">${rangeB}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px;"><strong>B-A Difference</strong></td>
+                        <td style="padding: 8px; text-align: center;">${bMinusA}</td>
+                        <td style="padding: 8px; text-align: center;">--</td>
+                        <td style="padding: 8px; text-align: center;">${bMinusAInterpretation}</td>
+                    </tr>
+                </table>
+            `;
+
+            // Technical details section
+            report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+            report += `<h4><b>Technical Details</b></h4>`;
+            report += `<p><strong>Raw Scores:</strong></p>`;
+            report += `<p>• Trail Making A: ${data.trailsA} seconds (${percA}th percentile) - ${rangeA}</p>`;
+            report += `<p>• Trail Making B: ${data.trailsB} seconds (${percB}th percentile) - ${rangeB}</p>`;
+            report += `<p><strong>Executive Analysis:</strong></p>`;
+            report += `<p>• B-A Difference: ${bMinusA} seconds (${bMinusAInterpretation} cognitive flexibility demand)</p>`;
+            report += `<p><strong>Normative Source:</strong> Heaton et al. (2004) age and education corrected norms</p>`;
+            report += `<p><strong>Note:</strong> Lower scores indicate better performance</p>`;
+            report += `</div>`;
+
+            // Add validation warnings if any
+            if (warnings.length > 0) {
+                report += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                warnings.forEach(warning => {
+                    report += `<p style="margin: 5px 0;">${warning}</p>`;
+                });
+                report += `</div>`;
+            }
+
+            document.getElementById('output').innerHTML = report;
+            document.getElementById('output').style.display = 'block';
+        }
+
+        function completeTest() {
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
+            }
+
+            const results = {
+                narrative: currentNarrative,
+                scoreTable: currentScoreTable,
+                testName: 'Trail Making Test',
+                completedAt: new Date().toISOString()
+            };
+
+            window.parent.postMessage({
+                type: 'testComplete',
+                testName: 'trails',
+                results: results
+            }, '*');
+        }
+
+        // Listen for client info from parent
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                const clientInfo = event.data.data;
+                
+                if (clientInfo.clientAge) {
+                    document.getElementById('age').value = clientInfo.clientAge;
+                }
+                
+                if (clientInfo.clientGender) {
+                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
+                }
+                
+                if (clientInfo.clientEducation) {
+                    document.getElementById('education').value = clientInfo.clientEducation;
+                }
+                
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
+                }
+                
+                generateTrailsReport();
+            }
+        });
+
+        // Auto-generate on page load
+        window.onload = function() {
+            generateTrailsReport();
+        };
+    </script>
+</body>
+</html>
