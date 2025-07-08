@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAIS-IV Clinical Report Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .subtest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .generate-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .generate-btn:hover {
+            background: #0056b3;
+        }
+        .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+        .wais-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        .wais-table th, .wais-table td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        .wais-table th {
+            background-color: #f3f3f3;
+            font-weight: bold;
+        }
+        .score-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        h3 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WAIS-IV Clinical Report Generator</h1>
+        <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
+
+        <div class="input-section">
+            <h3>Demographics</h3>
+            <div class="input-group">
+                <label>Age (years):</label>
+                <input type="number" id="age" value="60">
+            </div>
+            <div class="input-group">
+                <label>Gender:</label>
+                <select id="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Education (years):</label>
+                <input type="number" id="education" value="16">
+            </div>
+            <div class="input-group">
+                <label>Reading Level (grade):</label>
+                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+            </div>
+
+            <h3>Composite Scores</h3>
+            <div class="subtest-grid">
+                <div>
+                    <label>VCI Score:</label>
+                    <input type="number" id="vci" value="108">
+                </div>
+                <div>
+                    <label>PRI Score:</label>
+                    <input type="number" id="pri" value="125">
+                </div>
+                <div>
+                    <label>WMI Score:</label>
+                    <input type="number" id="wmi" value="129">
+                </div>
+                <div>
+                    <label>PSI Score:</label>
+                    <input type="number" id="psi" value="106">
+                </div>
+                <div>
+                    <label>FSIQ Score:</label>
+                    <input type="number" id="fsiq" value="122">
+                </div>
+                <div>
+                    <label>GAI Score:</label>
+                    <input type="number" id="gai" value="120">
+                </div>
+            </div>
+
+            <h3>Core Subtest Scaled Scores</h3>
+            <div class="subtest-grid">
+                <div>
+                    <label>Similarities:</label>
+                    <input type="number" id="similarities" value="11">
+                </div>
+                <div>
+                    <label>Vocabulary:</label>
+                    <input type="number" id="vocabulary" value="13">
+                </div>
+                <div>
+                    <label>Information:</label>
+                    <input type="number" id="information" value="11">
+                </div>
+                <div>
+                    <label>Block Design:</label>
+                    <input type="number" id="blockdesign" value="11">
+                </div>
+                <div>
+                    <label>Matrix Reasoning:</label>
+                    <input type="number" id="matrixreasoning" value="16">
+                </div>
+                <div>
+                    <label>Visual Puzzles:</label>
+                    <input type="number" id="visualpuzzles" value="16">
+                </div>
+                <div>
+                    <label>Digit Span:</label>
+                    <input type="number" id="digitspan" value="11">
+                </div>
+                <div>
+                    <label>Arithmetic:</label>
+                    <input type="number" id="arithmetic" value="19">
+                </div>
+                <div>
+                    <label>Symbol Search:</label>
+                    <input type="number" id="symbolsearch" value="10">
+                </div>
+                <div>
+                    <label>Coding:</label>
+                    <input type="number" id="coding" value="12">
+                </div>
+            </div>
+
+            <h3>Supplemental Subtest Scaled Scores (Optional)</h3>
+            <div class="subtest-grid">
+                <div>
+                    <label>Comprehension:</label>
+                    <input type="number" id="comprehension" value="" placeholder="Optional">
+                </div>
+                <div>
+                    <label>Letter-Number Seq:</label>
+                    <input type="number" id="letternumber" value="" placeholder="Optional">
+                </div>
+                <div>
+                    <label>Picture Completion:</label>
+                    <input type="number" id="picturecompletion" value="" placeholder="Optional">
+                </div>
+                <div>
+                    <label>Cancellation:</label>
+                    <input type="number" id="cancellation" value="" placeholder="Optional">
+                </div>
+                <div>
+                    <label>Figure Weights:</label>
+                    <input type="number" id="figureweights" value="" placeholder="Optional">
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateReport()">Generate WAIS-IV Report</button>
+            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+        </div>
+
+        <div id="output" class="output-section" style="display:none;">
+            <!-- Generated report will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // Data management
+        let currentNarrative = '';
+        let currentScoreTable = '';
+
+        function getRange(score) {
+            if (score >= 130) return "Very Superior";
+            if (score >= 120) return "Superior";
+            if (score >= 110) return "High Average";
+            if (score >= 90) return "Average";
+            if (score >= 80) return "Low Average";
+            if (score >= 70) return "Below Average";
+            return "Extremely Low";
+        }
+
+        function getSubtestRange(scaledScore) {
+            if (scaledScore >= 16) return "Very Superior";
+            if (scaledScore >= 14) return "Superior";
+            if (scaledScore >= 12) return "High Average";
+            if (scaledScore >= 8) return "Average";
+            if (scaledScore >= 6) return "Low Average";
+            if (scaledScore >= 4) return "Below Average";
+            return "Extremely Low";
+        }
+
+        function getBorderRange(score) {
+            if (score === 129) return "border of the Superior and Very Superior ranges";
+            if (score === 119) return "border of the High Average and Superior ranges";
+            if (score === 109) return "border of the Average and High Average ranges";
+            if (score === 89) return "border of the Low Average and Average ranges";
+            if (score === 79) return "border of the Below Average and Low Average ranges";
+            return getRange(score) + " range";
+        }
+
+        function getPercentile(score) {
+            const percentiles = {
+                85: 16, 86: 18, 87: 19, 88: 21, 89: 23,
+                90: 25, 91: 27, 92: 30, 93: 32, 94: 34,
+                95: 37, 96: 39, 97: 42, 98: 45, 99: 47,
+                100: 50, 101: 53, 102: 55, 103: 58, 104: 61,
+                105: 63, 106: 66, 107: 68, 108: 70, 109: 73,
+                110: 75, 111: 77, 112: 79, 113: 81, 114: 82,
+                115: 84, 116: 86, 117: 87, 118: 88, 119: 90,
+                120: 91, 121: 92, 122: 93, 123: 94, 124: 95,
+                125: 95, 126: 96, 127: 96, 128: 97, 129: 97,
+                130: 98, 135: 99, 140: 99.6
+            };
+            return percentiles[score] || 50;
+        }
+
+        function getOrdinalPercentile(percentile) {
+            if (percentile === 1) return "1st";
+            if (percentile === 2) return "2nd";
+            if (percentile === 3) return "3rd";
+            return percentile + "th";
+        }
+
+        function getSubtestDescription(subtest) {
+            const descriptions = {
+                similarities: "a verbal test of abstract reasoning",
+                vocabulary: "a test requiring him to provide word definitions",
+                information: "a verbal test of remote factual memory and general academic knowledge",
+                comprehension: "a test of practical judgment and common sense reasoning",
+                blockdesign: "a test requiring him to reproduce set designs from colored blocks",
+                matrixreasoning: "a visual test of fluid intelligence and perceptual organization",
+                visualpuzzles: "a test requiring mental reconstruction of visual images",
+                picturecompletion: "a test requiring identification of missing elements in pictures",
+                figureweights: "a test of quantitative and analogical reasoning",
+                digitspan: "a test requiring him to recall strings of numbers read aloud",
+                arithmetic: "a test of mental arithmetic",
+                letternumber: "a test requiring reordering of intermixed letters and numbers",
+                symbolsearch: "a test of visual search speed requiring minimal graphomotor dexterity",
+                coding: "a test requiring him to write symbols arbitrarily paired with specific digits",
+                cancellation: "a visual attention and response inhibition task"
+            };
+            return descriptions[subtest] || "a cognitive test";
+        }
+
+        function generateValidationWarnings(data) {
+            let warnings = [];
+            const indices = [data.vci, data.pri, data.wmi, data.psi, data.fsiq, data.gai];
+            indices.forEach(score => {
+                if (score && (score < 40 || score > 160)) {
+                    warnings.push("⚠️ Extreme index score detected (<40 or >160) - expert review recommended");
+                }
+            });
+
+            const subtests = [data.similarities, data.vocabulary, data.information, data.blockdesign,
+                             data.matrixreasoning, data.visualpuzzles, data.digitspan, data.arithmetic,
+                             data.symbolsearch, data.coding];
+            const validSubtests = subtests.filter(s => s && s > 0);
+            if (validSubtests.length > 0) {
+                const maxSubtest = Math.max(...validSubtests);
+                const minSubtest = Math.min(...validSubtests);
+                if (maxSubtest - minSubtest > 10) {
+                    warnings.push("⚠️ Extreme subtest scatter (>10 points) - consider cultural/linguistic factors");
+                }
+            }
+
+            if (!data.readingLevel) {
+                warnings.push("⚠️ Reading level not assessed - required for interpreting verbal subtests");
+            } else if (data.readingLevel < 5) {
+                warnings.push("⚠️ Grade <5 reading level - verbal subtest validity may be compromised");
+            }
+
+            if (data.age < 16 || data.age > 90) {
+                warnings.push("⚠️ Age outside standard WAIS-IV norms (16-90 years)");
+            }
+
+            const validIndices = indices.filter(s => s > 0);
+            if (validIndices.length > 0) {
+                const averageIndex = validIndices.reduce((a, b) => a + b, 0) / validIndices.length;
+                if (averageIndex < 50) {
+                    warnings.push("⚠️ Pervasively low performance - consider effort, sensory, or cultural factors");
+                }
+            }
+            return warnings;
+        }
+
+        function generateReport() {
+            const data = {
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                education: parseInt(document.getElementById('education').value),
+                readingLevel: document.getElementById('readingLevel').value ? 
+                    parseFloat(document.getElementById('readingLevel').value) : null,
+                vci: parseInt(document.getElementById('vci').value),
+                pri: parseInt(document.getElementById('pri').value),
+                wmi: parseInt(document.getElementById('wmi').value),
+                psi: parseInt(document.getElementById('psi').value),
+                fsiq: parseInt(document.getElementById('fsiq').value),
+                gai: parseInt(document.getElementById('gai').value),
+                similarities: parseInt(document.getElementById('similarities').value),
+                vocabulary: parseInt(document.getElementById('vocabulary').value),
+                information: parseInt(document.getElementById('information').value),
+                comprehension: document.getElementById('comprehension').value ? 
+                    parseInt(document.getElementById('comprehension').value) : null,
+                blockdesign: parseInt(document.getElementById('blockdesign').value),
+                matrixreasoning: parseInt(document.getElementById('matrixreasoning').value),
+                visualpuzzles: parseInt(document.getElementById('visualpuzzles').value),
+                picturecompletion: document.getElementById('picturecompletion').value ? 
+                    parseInt(document.getElementById('picturecompletion').value) : null,
+                figureweights: document.getElementById('figureweights').value ? 
+                    parseInt(document.getElementById('figureweights').value) : null,
+                digitspan: parseInt(document.getElementById('digitspan').value),
+                arithmetic: parseInt(document.getElementById('arithmetic').value),
+                letternumber: document.getElementById('letternumber').value ? 
+                    parseInt(document.getElementById('letternumber').value) : null,
+                symbolsearch: parseInt(document.getElementById('symbolsearch').value),
+                coding: parseInt(document.getElementById('coding').value),
+                cancellation: document.getElementById('cancellation').value ? 
+                    parseInt(document.getElementById('cancellation').value) : null
+            };
+
+            const warnings = generateValidationWarnings(data);
+            const pronoun = data.gender === 'Male' ? 'His' : 'Her';
+            const pronounLower = data.gender === 'Male' ? 'his' : 'her';
+
+            const indexScores = [data.vci, data.pri, data.wmi, data.psi];
+            const maxIndex = Math.max(...indexScores);
+            const minIndex = Math.min(...indexScores);
+            const indexVariability = maxIndex - minIndex;
+
+            let report = `<h3><b>General Intellectual Functioning</b></h3>\n`;
+            report += `<p>The examinee was well-oriented to person, time, and place.</p>\n\n`;
+
+            if (indexVariability > 23) {
+                report += `<p>Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>\n\n`;
+            } else {
+                report += `<p>${pronoun} intellectual abilities were assessed using the WAIS-IV. ${pronoun} overall score (Full Scale IQ) was in the ${getRange(data.fsiq)} range, at an IQ equivalent of ${data.fsiq}.</p>\n\n`;
+            }
+
+            report += `<p>The WAIS-IV also permits calculation of Index scores that reflect ability in more specific areas, these are given in the table below:</p>\n`;
+            report += `<table class="wais-table">\n`;
+            report += `<tr><th>WAIS-IV INDEX</th><th>PERCENTILE</th><th>RANGE</th></tr>\n`;
+            report += `<tr><td>Verbal Comprehension</td><td>${getOrdinalPercentile(getPercentile(data.vci))}</td><td>${getRange(data
