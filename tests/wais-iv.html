@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>WAIS-IV Clinical Report Generator</title>
     <style>
         body {
@@ -364,8 +367,11 @@
             // Check if minimum required fields are filled
             const fsiq = document.getElementById('fsiq').value;
             const vci = document.getElementById('vci').value;
+            const pri = document.getElementById('pri').value;
+            const wmi = document.getElementById('wmi').value;
+            const psi = document.getElementById('psi').value;
             
-            if (!fsiq && !vci) {
+            if (!fsiq && !vci && !pri && !wmi && !psi) {
                 document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
                 document.getElementById('output').style.display = 'block';
                 return;
@@ -409,45 +415,62 @@
             const pronoun = data.gender === 'Male' ? 'His' : 'Her';
             const pronounLower = data.gender === 'Male' ? 'his' : 'her';
 
-            const indexScores = [data.vci, data.pri, data.wmi, data.psi];
-            const maxIndex = Math.max(...indexScores);
-            const minIndex = Math.min(...indexScores);
+            const indexScores = [data.vci, data.pri, data.wmi, data.psi].filter(s => s > 0);
+            const maxIndex = indexScores.length > 0 ? Math.max(...indexScores) : 0;
+            const minIndex = indexScores.length > 0 ? Math.min(...indexScores) : 0;
             const indexVariability = maxIndex - minIndex;
 
             let report = `<h3><b>General Intellectual Functioning</b></h3>\n`;
             report += `<p>The examinee was well-oriented to person, time, and place.</p>\n\n`;
 
-            if (indexVariability > 23) {
+            if (indexVariability > 23 && data.gai > 0) {
                 report += `<p>Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>\n\n`;
-            } else {
+            } else if (data.fsiq > 0) {
                 report += `<p>${pronoun} intellectual abilities were assessed using the WAIS-IV. ${pronoun} overall score (Full Scale IQ) was in the ${getRange(data.fsiq)} range, at an IQ equivalent of ${data.fsiq}.</p>\n\n`;
             }
 
-            report += `<p>The WAIS-IV also permits calculation of Index scores that reflect ability in more specific areas, these are given in the table below:</p>\n`;
+            if (indexScores.length > 0) {
+                report += `<p>The WAIS-IV also permits calculation of Index scores that reflect ability in more specific areas, these are given in the table below:</p>\n`;
 
-            report += `<table class="wais-table">\n`;
-            report += `<tr><th>WAIS-IV INDEX</th><th>PERCENTILE</th><th>RANGE</th></tr>\n`;
-            report += `<tr><td>Verbal Comprehension</td><td>${getOrdinalPercentile(getPercentile(data.vci))}</td><td>${getRange(data.vci)}</td></tr>\n`;
-            report += `<tr><td>Perceptual Reasoning</td><td>${getOrdinalPercentile(getPercentile(data.pri))}</td><td>${getRange(data.pri)}</td></tr>\n`;
-            report += `<tr><td>Working Memory</td><td>${getOrdinalPercentile(getPercentile(data.wmi))}</td><td>${getRange(data.wmi)}</td></tr>\n`;
-            report += `<tr><td>Processing Speed</td><td>${getOrdinalPercentile(getPercentile(data.psi))}</td><td>${getRange(data.psi)}</td></tr>\n`;
-            report += `</table>\n`;
+                report += `<table class="wais-table">\n`;
+                report += `<tr><th>WAIS-IV INDEX</th><th>PERCENTILE</th><th>RANGE</th></tr>\n`;
+                
+                if (data.vci > 0) {
+                    report += `<tr><td>Verbal Comprehension</td><td>${getOrdinalPercentile(getPercentile(data.vci))}</td><td>${getRange(data.vci)}</td></tr>\n`;
+                }
+                if (data.pri > 0) {
+                    report += `<tr><td>Perceptual Reasoning</td><td>${getOrdinalPercentile(getPercentile(data.pri))}</td><td>${getRange(data.pri)}</td></tr>\n`;
+                }
+                if (data.wmi > 0) {
+                    report += `<tr><td>Working Memory</td><td>${getOrdinalPercentile(getPercentile(data.wmi))}</td><td>${getRange(data.wmi)}</td></tr>\n`;
+                }
+                if (data.psi > 0) {
+                    report += `<tr><td>Processing Speed</td><td>${getOrdinalPercentile(getPercentile(data.psi))}</td><td>${getRange(data.psi)}</td></tr>\n`;
+                }
+                
+                report += `</table>\n`;
+            }
 
             // Store for completion
             currentNarrative = report.replace(/<[^>]*>/g, '').trim();
 
             // Generate score table
             const adminTests = [];
-            if (data.similarities) adminTests.push(['Similarities', data.similarities, getSubtestRange(data.similarities)]);
-            if (data.vocabulary) adminTests.push(['Vocabulary', data.vocabulary, getSubtestRange(data.vocabulary)]);
-            if (data.information) adminTests.push(['Information', data.information, getSubtestRange(data.information)]);
-            if (data.blockdesign) adminTests.push(['Block Design', data.blockdesign, getSubtestRange(data.blockdesign)]);
-            if (data.matrixreasoning) adminTests.push(['Matrix Reasoning', data.matrixreasoning, getSubtestRange(data.matrixreasoning)]);
-            if (data.visualpuzzles) adminTests.push(['Visual Puzzles', data.visualpuzzles, getSubtestRange(data.visualpuzzles)]);
-            if (data.digitspan) adminTests.push(['Digit Span', data.digitspan, getSubtestRange(data.digitspan)]);
-            if (data.arithmetic) adminTests.push(['Arithmetic', data.arithmetic, getSubtestRange(data.arithmetic)]);
-            if (data.symbolsearch) adminTests.push(['Symbol Search', data.symbolsearch, getSubtestRange(data.symbolsearch)]);
-            if (data.coding) adminTests.push(['Coding', data.coding, getSubtestRange(data.coding)]);
+            if (data.similarities > 0) adminTests.push(['Similarities', data.similarities, getSubtestRange(data.similarities)]);
+            if (data.vocabulary > 0) adminTests.push(['Vocabulary', data.vocabulary, getSubtestRange(data.vocabulary)]);
+            if (data.information > 0) adminTests.push(['Information', data.information, getSubtestRange(data.information)]);
+            if (data.comprehension) adminTests.push(['Comprehension', data.comprehension, getSubtestRange(data.comprehension)]);
+            if (data.blockdesign > 0) adminTests.push(['Block Design', data.blockdesign, getSubtestRange(data.blockdesign)]);
+            if (data.matrixreasoning > 0) adminTests.push(['Matrix Reasoning', data.matrixreasoning, getSubtestRange(data.matrixreasoning)]);
+            if (data.visualpuzzles > 0) adminTests.push(['Visual Puzzles', data.visualpuzzles, getSubtestRange(data.visualpuzzles)]);
+            if (data.picturecompletion) adminTests.push(['Picture Completion', data.picturecompletion, getSubtestRange(data.picturecompletion)]);
+            if (data.figureweights) adminTests.push(['Figure Weights', data.figureweights, getSubtestRange(data.figureweights)]);
+            if (data.digitspan > 0) adminTests.push(['Digit Span', data.digitspan, getSubtestRange(data.digitspan)]);
+            if (data.arithmetic > 0) adminTests.push(['Arithmetic', data.arithmetic, getSubtestRange(data.arithmetic)]);
+            if (data.letternumber) adminTests.push(['Letter-Number Sequencing', data.letternumber, getSubtestRange(data.letternumber)]);
+            if (data.symbolsearch > 0) adminTests.push(['Symbol Search', data.symbolsearch, getSubtestRange(data.symbolsearch)]);
+            if (data.coding > 0) adminTests.push(['Coding', data.coding, getSubtestRange(data.coding)]);
+            if (data.cancellation) adminTests.push(['Cancellation', data.cancellation, getSubtestRange(data.cancellation)]);
 
             currentScoreTable = `
                 <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
@@ -495,11 +518,20 @@
                 completedAt: new Date().toISOString()
             };
 
-            window.parent.postMessage({
-                type: 'testComplete',
-                testName: 'wais-iv',
-                results: results
-            }, '*');
+            // Try to communicate with parent window (Neuroscript dashboard)
+            try {
+                window.parent.postMessage({
+                    type: 'testComplete',
+                    testName: 'wais-iv',
+                    results: results
+                }, '*');
+                alert('WAIS-IV test completed successfully!');
+                // Try to return to dashboard
+                window.parent.hideTestFrame();
+            } catch (e) {
+                console.log('Could not communicate with parent window:', e);
+                alert('Test completed locally!');
+            }
         }
 
         // Listen for client info from parent
@@ -522,6 +554,15 @@
                 if (clientInfo.readingLevel) {
                     document.getElementById('readingLevel').value = clientInfo.readingLevel;
                 }
+                
+                // Don't auto-generate report - wait for user input
+            }
+        });
+
+        // Auto-generate on input change (but only if scores are entered)
+        document.addEventListener('input', function(e) {
+            if (e.target.type === 'number') {
+                setTimeout(generateReport, 500);
             }
         });
     </script>
