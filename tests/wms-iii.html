@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS-III Clinical Report Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .section-header {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .generate-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .generate-btn:hover {
+            background: #0056b3;
+        }
+        .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        h3 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WMS-III Clinical Report Generator</h1>
+        <p>Enter WMS-III scores to generate clinical narrative text in Neuroscript format</p>
+
+        <div class="input-section">
+            <h3>Demographics</h3>
+            <div class="input-group">
+                <label>Gender:</label>
+                <select id="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Reading Level (grade):</label>
+                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+            </div>
+
+            <div class="section-header">Primary Index Scores (Standard Scores)</div>
+            <div class="score-grid">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audiImmediate_admin" checked>
+                    <label>Auditory Immediate:</label>
+                    <input type="number" id="audiImmediate" value="83">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audiDelayed_admin" checked>
+                    <label>Auditory Delayed:</label>
+                    <input type="number" id="audiDelayed" value="89">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audiRecogDelayed_admin" checked>
+                    <label>Auditory Recognition Delayed:</label>
+                    <input type="number" id="audiRecogDelayed" value="110">
+                </div>
+            </div>
+
+            <div class="section-header">Subtest Scaled Scores</div>
+            <div class="score-grid">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="lm1_admin" checked>
+                    <label>Logical Memory I:</label>
+                    <input type="number" id="lm1" value="9">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="lm2_admin" checked>
+                    <label>Logical Memory II:</label>
+                    <input type="number" id="lm2" value="10">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="vpa1_admin" checked>
+                    <label>Verbal Paired Assoc I:</label>
+                    <input type="number" id="vpa1" value="5">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="vpa2_admin" checked>
+                    <label>Verbal Paired Assoc II:</label>
+                    <input type="number" id="vpa2" value="6">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="spatialSpan_admin" checked>
+                    <label>Spatial Span:</label>
+                    <input type="number" id="spatialSpan" value="8">
+                </div>
+            </div>
+
+            <div class="section-header">Process Scores (Optional)</div>
+            <div class="score-grid">
+                <div>
+                    <label>LM Retention (%):</label>
+                    <input type="number" id="lmRetention" value="96" min="0" max="100">
+                </div>
+                <div>
+                    <label>VPA Retention (%):</label>
+                    <input type="number" id="vpaRetention" value="100" min="0" max="100">
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateWMSReport()">Generate WMS-III Report</button>
+            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+        </div>
+
+        <div id="output" class="output-section" style="display:none;">
+            <!-- Generated report will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // Data management
+        let currentNarrative = '';
+        let currentScoreTable = '';
+
+        function getScaledRange(scaledScore) {
+            if (scaledScore >= 16) return "Very Superior";
+            if (scaledScore >= 14) return "Superior";
+            if (scaledScore >= 12) return "High Average";
+            if (scaledScore >= 8) return "Average";
+            if (scaledScore >= 6) return "Low Average";
+            if (scaledScore >= 4) return "Below Average";
+            if (scaledScore >= 2) return "Mildly Impaired";
+            return "Moderately Impaired";
+        }
+
+        function getHeatonLevel(score, isStandardScore = true) {
+            const percentile = isStandardScore ? getPercentileFromStandard(score) : getPercentileFromScaled(score);
+            if (percentile >= 16) return "";
+            if (percentile >= 7 && percentile <= 15) return "Mild";
+            if (percentile >= 2 && percentile <= 6) return "Mild to Moderate";
+            if (percentile >= 0.6 && percentile <= 1.9) return "Moderate";
+            if (percentile >= 0.1 && percentile <= 0.5) return "Moderate to Severe";
+            return "Severe";
+        }
+
+        function getPercentileFromStandard(score) {
+            if (score >= 130) return 98;
+            if (score >= 120) return 91;
+            if (score >= 110) return 75;
+            if (score >= 100) return 50;
+            if (score >= 90) return 25;
+            if (score >= 80) return 9;
+            if (score >= 70) return 2;
+            return 0.5;
+        }
+
+        function getPercentileFromScaled(score) {
+            if (score >= 16) return 98;
+            if (score >= 14) return 91;
+            if (score >= 12) return 75;
+            if (score >= 10) return 50;
+            if (score >= 8) return 25;
+            if (score >= 6) return 9;
+            if (score >= 4) return 2;
+            return 0.5;
+        }
+
+        function generateValidationWarnings(data) {
+            let warnings = [];
+
+            const indices = [data.audiImmediate, data.audiDelayed, data.audiRecogDelayed].filter(s => s);
+            indices.forEach(score => {
+                if (score < 40 || score > 160) {
+                    warnings.push("⚠️ Extreme index score detected (<40 or >160) - expert review recommended");
+                }
+            });
+
+            if ((data.lm1 || data.lm2) && !data.readingLevel) {
+                warnings.push("⚠️ Reading level not assessed - may affect Logical Memory comprehension");
+            } else if ((data.lm1 || data.lm2) && data.readingLevel < 5) {
+                warnings.push("⚠️ Grade <5 reading level - Logical Memory validity may be compromised");
+            }
+
+            if (indices.length > 0) {
+                const averageIndex = indices.reduce((a, b) => a + b, 0) / indices.length;
+                if (averageIndex < 50) {
+                    warnings.push("⚠️ Pervasively low memory performance - consider effort, sensory, or cultural factors");
+                }
+            }
+
+            return warnings;
+        }
+
+        function generateWMSReport() {
+            const data = {
+                gender: document.getElementById('gender').value,
+                readingLevel: document.getElementById('readingLevel').value ? 
+                    parseFloat(document.getElementById('readingLevel').value) : null,
+                audiImmediate: document.getElementById('audiImmediate_admin').checked ? 
+                    parseInt(document.getElementById('audiImmediate').value) : null,
+                audiDelayed: document.getElementById('audiDelayed_admin').checked ? 
+                    parseInt(document.getElementById('audiDelayed').value) : null,
+                audiRecogDelayed: document.getElementById('audiRecogDelayed_admin').checked ? 
+                    parseInt(document.getElementById('audiRecogDelayed').value) : null,
+                lm1: document.getElementById('lm1_admin').checked ? 
+                    parseInt(document.getElementById('lm1').value) : null,
+                lm2: document.getElementById('lm2_admin').checked ? 
+                    parseInt(document.getElementById('lm2').value) : null,
+                vpa1: document.getElementById('vpa1_admin').checked ? 
+                    parseInt(document.getElementById('vpa1').value) : null,
+                vpa2: document.getElementById('vpa2_admin').checked ? 
+                    parseInt(document.getElementById('vpa2').value) : null,
+                spatialSpan: document.getElementById('spatialSpan_admin').checked ? 
+                    parseInt(document.getElementById('spatialSpan').value) : null,
+                lmRetention: document.getElementById('lmRetention').value ? 
+                    parseInt(document.getElementById('lmRetention').value) : null,
+                vpaRetention: document.getElementById('vpaRetention').value ? 
+                    parseInt(document.getElementById('vpaRetention').value) : null
+            };
+
+            const warnings = generateValidationWarnings(data);
+            const gender = data.gender;
+            const pronoun = gender === 'Male' ? 'His' : 'Her';
+            const pronounLower = gender === 'Male' ? 'his' : 'her';
+            const heShe = gender === 'Male' ? 'he' : 'she';
+
+            let report = '';
+            let attentionSection = '';
+            let memorySection = '';
+
+            // Attention Section - Spatial Span
+            if (data.spatialSpan) {
+                const overallHeaton = getHeatonLevel(data.spatialSpan, false);
+                const overallRange = overallHeaton ? `${overallHeaton}ly Impaired` : getScaledRange(data.spatialSpan);
+                attentionSection += `<p>On a visual task of immediate memory (WMS-III Spatial Span), ${pronounLower} performed overall in the ${overallRange} range.</p>\n\n`;
+            }
+
+            // Memory Section - Logical Memory
+            if (data.lm1 || data.lm2) {
+                let overallRange = '';
+                if (data.lm1 && data.lm2) {
+                    const avgScore = (data.lm1 + data.lm2) / 2;
+                    const avgHeaton = getHeatonLevel(Math.round(avgScore), false);
+                    overallRange = avgHeaton ? `${avgHeaton}ly Impaired` : getScaledRange(Math.round(avgScore));
+                } else if (data.lm1) {
+                    const lm1Heaton = getHeatonLevel(data.lm1, false);
+                    overallRange = lm1Heaton ? `${lm1Heaton}ly Impaired` : getScaledRange(data.lm1);
+                } else if (data.lm2) {
+                    const lm2Heaton = getHeatonLevel(data.lm2, false);
+                    overallRange = lm2Heaton ? `${lm2Heaton}ly Impaired` : getScaledRange(data.lm2);
+                }
+                memorySection += `<p>Recall of prose passages was in the ${overallRange} range under either immediate or delayed conditions.</p>\n\n`;
+            }
+
+            // Verbal Paired Associates
+            if (data.vpa1 || data.vpa2) {
+                let vpaText = '';
+                if (data.vpa1) {
+                    const vpa1Heaton = getHeatonLevel(data.vpa1, false);
+                    const vpa1Range = vpa1Heaton ? `${vpa1Heaton}ly Impaired` : getScaledRange(data.vpa1);
+                    vpaText += `Learning of associations between unrelated pairs of words (WMS-III Verbal Paired Associates) was in the ${vpa1Range} range`;
+                }
+                if (data.vpa2) {
+                    const vpa2Heaton = getHeatonLevel(data.vpa2, false);
+                    const vpa2Range = vpa2Heaton ? `${vpa2Heaton}ly Impaired` : getScaledRange(data.vpa2);
+                    vpaText += data.vpa1 ? `, while retention of those associations following a delay was in the ${vpa2Range} range` : `Retention of word pair associations (WMS-III Verbal Paired Associates) following a delay was in the ${vpa2Range} range`;
+                }
+                if (vpaText) {
+                    memorySection += `<p>${vpaText}.</p>\n\n`;
+                }
+            }
+
+            // Compile final report
+            if (attentionSection) {
+                report += `<h3><b>Attention</b></h3>\n${attentionSection}`;
+            }
+            if (memorySection) {
+                report += `<h3><b>Learning and Memory</b></h3>\n${memorySection}`;
+            }
+
+            if (!report) {
+                report = '<p>No tests were selected for administration. Please check the boxes for the tests you want to include in the report.</p>';
+            }
+
+            // Store for completion
+            currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+
+            // Generate score table
+            const adminTests = [];
+            if (data.spatialSpan) adminTests.push(['Spatial Span', data.spatialSpan, getScaledRange(data.spatialSpan)]);
+            if (data.lm1) adminTests.push(['Logical Memory I', data.lm1, getScaledRange(data.lm1)]);
+            if (data.lm2) adminTests.push(['Logical Memory II', data.lm2, getScaledRange(data.lm2)]);
+            if (data.vpa1) adminTests.push(['Verbal Paired Associates I', data.vpa1, getScaledRange(data.vpa1)]);
+            if (data.vpa2) adminTests.push(['Verbal Paired Associates II', data.vpa2, getScaledRange(data.vpa2)]);
+
+            currentScoreTable = `
+                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 8px; text-align: left;">WMS-III Subtest</th>
+                        <th style="padding: 8px; text-align: center;">Scaled Score</th>
+                        <th style="padding: 8px; text-align: center;">Range</th>
+                    </tr>
+                    ${adminTests.map(test => `
+                        <tr>
+                            <td style="padding: 8px;">${test[0]}</td>
+                            <td style="padding: 8px; text-align: center;">${test[1]}</td>
+                            <td style="padding: 8px; text-align: center;">${test[2]}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+
+            // Display the report
+            document.getElementById('output').innerHTML = report;
+
+            // Add validation warnings if any
+            if (warnings.length > 0) {
+                document.getElementById('output').innerHTML += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                document.getElementById('output').innerHTML += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                warnings.forEach(warning => {
+                    document.getElementById('output').innerHTML += `<p style="margin: 5px 0;">${warning}</p>`;
+                });
+                document.getElementById('output').innerHTML += `</div>`;
+            }
+
+            document.getElementById('output').style.display = 'block';
+        }
+
+        function completeTest() {
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
+            }
+
+            const results = {
+                narrative: currentNarrative,
+                scoreTable: currentScoreTable,
+                testName: 'WMS-III',
+                completedAt: new Date().toISOString()
+            };
+
+            window.parent.postMessage({
+                type: 'testComplete',
+                testName: 'wms-iii',
+                results: results
+            }, '*');
+        }
+
+        // Listen for client info from parent
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                const clientInfo = event.data.data;
+                
+                if (clientInfo.clientGender) {
+                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
+                }
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
+                }
+                
+                generateWMSReport();
+            }
+        });
+
+        // Auto-generate on page load
+        window.onload = function() {
+            generateWMSReport();
+        };
+    </script>
+</body>
+</html>
