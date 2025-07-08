@@ -65,6 +65,20 @@
         .generate-btn:hover {
             background: #0056b3;
         }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
         .output-section {
             background: white;
             border: 2px solid #dee2e6;
@@ -83,99 +97,72 @@
 <body>
     <div class="container">
         <h1>CPT-II Clinical Report Generator</h1>
-        <p>Enter CPT-II T-scores to generate clinical narrative text in Neuroscript format</p>
-        
+        <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
+
         <div class="input-section">
             <h3>Demographics</h3>
+            <div class="input-group">
+                <label>Age (years):</label>
+                <input type="number" id="age" value="" min="6" max="70" placeholder="6-70">
+            </div>
             <div class="input-group">
                 <label>Gender:</label>
                 <select id="gender">
                     <option value="Male">Male</option>
-                    <option value="Female" selected>Female</option>
+                    <option value="Female">Female</option>
                 </select>
+            </div>
+            <div class="input-group">
+                <label>Education (years):</label>
+                <input type="number" id="education" value="" min="6" max="25" placeholder="6-25">
             </div>
             <div class="input-group">
                 <label>Reading Level (grade):</label>
                 <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
             </div>
 
-            <div class="section-header">Primary CPT-II Measures (T-Scores)</div>
+            <div class="section-header">CPT-II T-Scores</div>
             <div class="score-grid">
                 <div>
                     <label>Omissions T-Score:</label>
-                    <input type="number" id="omissionsTScore" value="69.51" min="20" max="100">
+                    <input type="number" id="omissions" value="" placeholder="30-90">
                 </div>
                 <div>
                     <label>Commissions T-Score:</label>
-                    <input type="number" id="commissionsTScore" value="56.40" min="20" max="100">
+                    <input type="number" id="commissions" value="" placeholder="30-90">
                 </div>
                 <div>
                     <label>Hit RT T-Score:</label>
-                    <input type="number" id="hitRTTScore" value="50.50" min="20" max="100">
+                    <input type="number" id="hitRT" value="" placeholder="30-90">
                 </div>
                 <div>
-                    <label>Hit RT Std Error T-Score:</label>
-                    <input type="number" id="hitRTStdErrorTScore" value="54.92" min="20" max="100">
+                    <label>Hit RT SE T-Score:</label>
+                    <input type="number" id="hitRTSE" value="" placeholder="30-90">
                 </div>
                 <div>
                     <label>Variability T-Score:</label>
-                    <input type="number" id="variabilityTScore" value="57.45" min="20" max="100">
+                    <input type="number" id="variability" value="" placeholder="30-90">
                 </div>
                 <div>
-                    <label>Detectability (d') T-Score:</label>
-                    <input type="number" id="detectabilityTScore" value="57.46" min="20" max="100" step="0.01">
-                </div>
-                <div>
-                    <label>Response Style (β) T-Score:</label>
-                    <input type="number" id="responseStyleTScore" value="53.84" min="20" max="100">
-                </div>
-                <div>
-                    <label>Perseverations T-Score:</label>
-                    <input type="number" id="perseverationsTScore" value="85.39" min="20" max="100">
+                    <label>Detectability T-Score:</label>
+                    <input type="number" id="detectability" value="" placeholder="30-90">
                 </div>
             </div>
 
-            <div class="section-header">Block Change Measures (T-Scores)</div>
+            <div class="section-header">Response Style (Optional)</div>
             <div class="score-grid">
                 <div>
-                    <label>Hit RT Block Change T-Score:</label>
-                    <input type="number" id="hitRTBlockChangeTScore" value="56.34" min="20" max="100">
+                    <label>Response Style β:</label>
+                    <input type="number" id="responseStyle" value="" placeholder="Response bias" step="0.01">
                 </div>
                 <div>
-                    <label>Hit SE Block Change T-Score:</label>
-                    <input type="number" id="hitSEBlockChangeTScore" value="57.93" min="20" max="100">
-                </div>
-                <div>
-                    <label>Hit RT ISI Change T-Score:</label>
-                    <input type="number" id="hitRTISIChangeTScore" value="37.73" min="20" max="100">
-                </div>
-                <div>
-                    <label>Hit SE ISI Change T-Score:</label>
-                    <input type="number" id="hitSEISIChangeTScore" value="32.66" min="20" max="100">
-                </div>
-            </div>
-
-            <div class="section-header">Raw Values for Context</div>
-            <div class="score-grid">
-                <div>
-                    <label>Omissions (raw):</label>
-                    <input type="number" id="omissionsRaw" value="7" min="0" max="100">
-                </div>
-                <div>
-                    <label>Commissions (raw):</label>
-                    <input type="number" id="commissionsRaw" value="13" min="0" max="100">
-                </div>
-                <div>
-                    <label>Hit RT (ms):</label>
-                    <input type="number" id="hitRTRaw" value="409.43" min="200" max="800" step="0.01">
-                </div>
-                <div>
-                    <label>Perseverations (raw):</label>
-                    <input type="number" id="perseverationsRaw" value="2" min="0" max="50">
+                    <label>Perseverations:</label>
+                    <input type="number" id="perseverations" value="" placeholder="0+" min="0">
                 </div>
             </div>
 
             <button class="generate-btn" onclick="generateCPTReport()">Generate CPT-II Report</button>
+            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
         </div>
 
         <div id="output" class="output-section" style="display:none;">
@@ -184,82 +171,89 @@
     </div>
 
     <script>
-        function getClinicalRange(tScore) {
-            const convertedScore = convertCPTScore(tScore);
-            if (convertedScore >= 90) return "within normal limits";
-            if (convertedScore >= 60) return "Moderately Atypical";
-            return "Markedly Atypical";
+        // Data management
+        let currentNarrative = '';
+        let currentScoreTable = '';
+
+        function getTScoreRange(tScore) {
+            if (tScore >= 65) return "Significantly Atypical";
+            if (tScore >= 60) return "Mildly Atypical";
+            if (tScore >= 55) return "Slightly Atypical";
+            if (tScore >= 45) return "Typical";
+            if (tScore >= 40) return "Slightly Better";
+            return "Much Better";
         }
 
-        function getImpairmentLevel(tScore) {
-            const convertedScore = convertCPTScore(tScore);
-            if (convertedScore >= 90) return "Average";
-            if (convertedScore >= 80) return "Below Average";
-            if (convertedScore >= 70) return "Mildly Impaired";
-            if (convertedScore >= 55) return "Mildly to Moderately Impaired";
-            if (convertedScore >= 40) return "Moderately Impaired";
-            return "Severely Impaired";
+        function getPercentileFromT(tScore) {
+            // Approximate T-score to percentile conversion
+            const percentiles = {
+                30: 2, 35: 7, 40: 16, 45: 31, 50: 50, 55: 69, 60: 84, 65: 93, 70: 98, 75: 99, 80: 99.5
+            };
+            
+            // Find closest T-score
+            const keys = Object.keys(percentiles).map(Number).sort((a, b) => a - b);
+            let closest = keys[0];
+            let minDiff = Math.abs(tScore - closest);
+            
+            for (let key of keys) {
+                const diff = Math.abs(tScore - key);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = key;
+                }
+            }
+            
+            return percentiles[closest];
         }
 
-        function convertCPTScore(tScore) {
-            // Convert CPT-II inverted T-scores to traditional scoring
-            // CPT T-score 57.46 becomes 50 - (57.46 - 50) = 42.54
-            return 50 - (tScore - 50);
-        }
+        function getCPTInterpretation(measure, tScore) {
+            const interpretations = {
+                omissions: {
+                    high: "suggesting difficulty sustaining attention and increased inattentiveness",
+                    typical: "indicating typical sustained attention",
+                    low: "suggesting good sustained attention"
+                },
+                commissions: {
+                    high: "indicating impulsivity and difficulty inhibiting responses",
+                    typical: "suggesting typical response inhibition",
+                    low: "indicating good response control"
+                },
+                hitRT: {
+                    high: "suggesting slowed processing speed",
+                    typical: "indicating typical response speed",
+                    low: "suggesting fast response speed"
+                },
+                hitRTSE: {
+                    high: "indicating inconsistent response speed",
+                    typical: "suggesting consistent response times",
+                    low: "indicating very consistent responding"
+                },
+                variability: {
+                    high: "suggesting variable attention and inconsistent performance",
+                    typical: "indicating consistent attention",
+                    low: "suggesting very consistent attention"
+                },
+                detectability: {
+                    high: "indicating good perceptual sensitivity",
+                    typical: "suggesting typical perceptual sensitivity", 
+                    low: "indicating poor perceptual sensitivity"
+                }
+            };
 
-        function getDetectabilityRange(tScore) {
-            const convertedScore = convertCPTScore(tScore);
-            console.log(`T-score: ${tScore}, Converted: ${convertedScore}`);
-            if (convertedScore >= 110) return "Superior";
-            if (convertedScore >= 90) return "Average";
-            if (convertedScore >= 30) return "Below Average";  // Much broader range
-            if (convertedScore >= 20) return "Mildly Impaired";
-            if (convertedScore >= 10) return "Mildly to Moderately Impaired";
-            return "Severely Impaired";
-        }
+            const interp = interpretations[measure];
+            if (!interp) return "";
 
-        function getCommissionLevel(tScore) {
-            if (tScore >= 65) return "very significantly higher than average";
-            if (tScore >= 60) return "significantly higher than average";
-            if (tScore >= 55) return "higher than average";
-            return "average";
-        }
-
-        function getOmissionLevel(tScore) {
-            if (tScore >= 65) return "very significantly higher than average";
-            if (tScore >= 60) return "significantly higher than average";
-            if (tScore >= 55) return "higher than average";
-            return "average";
-        }
-
-        function getRTLevel(tScore) {
-            if (tScore >= 60) return "significantly slower than average";
-            if (tScore >= 55) return "slower than average";
-            if (tScore <= 40) return "significantly faster than average";
-            if (tScore <= 45) return "faster than average";
-            return "average";
-        }
-
-        function getVariabilityLevel(tScore) {
-            if (tScore >= 60) return "varied considerably";
-            if (tScore >= 55) return "varied moderately";
-            return "were consistent";
-        }
-
-        function getProgressiveLoss(blockChangeTScore) {
-            return blockChangeTScore >= 60;
-        }
-
-        function isImpulsivePattern(commissionsTScore, hitRTTScore) {
-            return commissionsTScore >= 55 && hitRTTScore <= 50;
+            if (tScore >= 60) return interp.high;
+            if (tScore >= 45) return interp.typical;
+            return interp.low;
         }
 
         function generateValidationWarnings(data) {
             let warnings = [];
 
-            // Extreme detectability impairment
-            if (data.detectabilityTScore >= 70) {
-                warnings.push("⚠️ Severely impaired detectability - consider validity, sensory, or comprehension factors");
+            // Age boundary warnings
+            if (data.age < 6 || data.age > 70) {
+                warnings.push("⚠️ Age outside CPT-II normative range (6-70 years)");
             }
 
             // Reading level concerns
@@ -269,101 +263,144 @@
                 warnings.push("⚠️ Grade <5 reading level - instruction comprehension may be compromised");
             }
 
-            // Unusual response style
-            if (data.responseStyleTScore >= 65 || data.responseStyleTScore <= 35) {
-                warnings.push("⚠️ Unusual response style detected - may affect interpretation");
+            // Extreme scores
+            if (data.omissions >= 70) {
+                warnings.push("⚠️ Very high omissions (T≥70) - consider effort, comprehension, or severe inattention");
             }
 
-            // Multiple elevated measures
-            const elevatedCount = [
-                data.omissionsTScore,
-                data.commissionsTScore,
-                data.detectabilityTScore,
-                data.variabilityTScore
-            ].filter(score => score >= 60).length;
+            if (data.commissions >= 70) {
+                warnings.push("⚠️ Very high commissions (T≥70) - suggests significant impulsivity");
+            }
 
-            if (elevatedCount >= 3) {
-                warnings.push("⚠️ Multiple elevated measures - consider comprehensive evaluation");
+            // Response pattern analysis
+            if (data.omissions >= 65 && data.commissions >= 65) {
+                warnings.push("⚠️ Both high omissions and commissions - unusual pattern requiring review");
+            }
+
+            // Perseverations
+            if (data.perseverations > 10) {
+                warnings.push("⚠️ High perseverations (>10) - consider response set difficulties");
+            }
+
+            // Response bias
+            if (data.responseStyle > 1.0) {
+                warnings.push("⚠️ Conservative response style (β>1.0) - may indicate cautious approach");
+            } else if (data.responseStyle < 0.5) {
+                warnings.push("⚠️ Liberal response style (β<0.5) - may indicate impulsive approach");
             }
 
             return warnings;
         }
 
         function generateCPTReport() {
+            // Check if minimum required fields are filled
+            const omissions = document.getElementById('omissions').value;
+            const commissions = document.getElementById('commissions').value;
+            
+            if (!omissions && !commissions) {
+                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                document.getElementById('output').style.display = 'block';
+                return;
+            }
+
             const data = {
+                age: parseInt(document.getElementById('age').value) || 0,
                 gender: document.getElementById('gender').value,
+                education: parseInt(document.getElementById('education').value) || 0,
                 readingLevel: document.getElementById('readingLevel').value ? 
                     parseFloat(document.getElementById('readingLevel').value) : null,
-                omissionsTScore: parseFloat(document.getElementById('omissionsTScore').value),
-                commissionsTScore: parseFloat(document.getElementById('commissionsTScore').value),
-                hitRTTScore: parseFloat(document.getElementById('hitRTTScore').value),
-                hitRTStdErrorTScore: parseFloat(document.getElementById('hitRTStdErrorTScore').value),
-                variabilityTScore: parseFloat(document.getElementById('variabilityTScore').value),
-                detectabilityTScore: parseFloat(document.getElementById('detectabilityTScore').value),
-                responseStyleTScore: parseFloat(document.getElementById('responseStyleTScore').value),
-                perseverationsTScore: parseFloat(document.getElementById('perseverationsTScore').value),
-                hitRTBlockChangeTScore: parseFloat(document.getElementById('hitRTBlockChangeTScore').value),
-                hitSEBlockChangeTScore: parseFloat(document.getElementById('hitSEBlockChangeTScore').value),
-                hitRTISIChangeTScore: parseFloat(document.getElementById('hitRTISIChangeTScore').value),
-                hitSEISIChangeTScore: parseFloat(document.getElementById('hitSEISIChangeTScore').value),
-                omissionsRaw: parseInt(document.getElementById('omissionsRaw').value),
-                commissionsRaw: parseInt(document.getElementById('commissionsRaw').value),
-                hitRTRaw: parseFloat(document.getElementById('hitRTRaw').value),
-                perseverationsRaw: parseInt(document.getElementById('perseverationsRaw').value)
+                omissions: parseInt(document.getElementById('omissions').value) || 0,
+                commissions: parseInt(document.getElementById('commissions').value) || 0,
+                hitRT: parseInt(document.getElementById('hitRT').value) || 0,
+                hitRTSE: parseInt(document.getElementById('hitRTSE').value) || 0,
+                variability: parseInt(document.getElementById('variability').value) || 0,
+                detectability: parseInt(document.getElementById('detectability').value) || 0,
+                responseStyle: parseFloat(document.getElementById('responseStyle').value) || null,
+                perseverations: parseInt(document.getElementById('perseverations').value) || 0
             };
 
             const warnings = generateValidationWarnings(data);
-
             const gender = data.gender;
             const pronoun = gender === 'Male' ? 'His' : 'Her';
             const pronounLower = gender === 'Male' ? 'his' : 'her';
             const heShe = gender === 'Male' ? 'He' : 'She';
-            const heSheLower = gender === 'Male' ? 'he' : 'she';
 
-            let report = `<h3><b>Attention</b></h3>\n`;
+            let report = '';
 
-            // Main interpretation paragraph
-            const detectabilityRange = getDetectabilityRange(data.detectabilityTScore);
-            console.log(`Debug: d' T-score = ${data.detectabilityTScore}, converted = ${convertCPTScore(data.detectabilityTScore)}, range = ${detectabilityRange}`);
-            const omissionLevel = getOmissionLevel(data.omissionsTScore);
-            const commissionLevel = getCommissionLevel(data.commissionsTScore);
-            const rtLevel = getRTLevel(data.hitRTTScore);
-            const variabilityLevel = getVariabilityLevel(data.variabilityTScore);
+            // Attention Section
+            report += `<h3><b>Attention</b></h3>\n`;
+            report += `<p>On the Conners' Continuous Performance Test-II (CPT-II), a computerized measure of sustained attention, ${pronounLower} performance was characterized by the following pattern:</p>\n\n`;
 
-            report += `<p>${pronoun} ability to discriminate between targets and nontargets on a sustained visual vigilance task (CPT) was in the ${detectabilityRange} range. `;
-            
-            report += `${heShe} committed ${omissionLevel === "average" ? "an" : "a"} ${omissionLevel} number of errors of omission (not responding when ${heSheLower} should have responded) and ${commissionLevel === "average" ? "an" : "a"} ${commissionLevel} number of errors of commission (responding when ${heSheLower} should not have responded). `;
-
-            report += `${pronoun} reaction times were ${rtLevel} overall; ${pronounLower} reaction times ${variabilityLevel} throughout the session. `;
-
-            // Impulsivity vs inattention pattern
-            if (isImpulsivePattern(data.commissionsTScore, data.hitRTTScore)) {
-                report += `The number of errors of commission along with the fast reaction time, suggested impulsive responding. `;
-            } else if (data.commissionsTScore < 55 && data.omissionsTScore >= 60) {
-                report += `The low number of errors of commission indicated no significant problems with impulsive responding. `;
+            // Omissions analysis
+            if (data.omissions > 0) {
+                const omissionRange = getTScoreRange(data.omissions);
+                const omissionInterp = getCPTInterpretation('omissions', data.omissions);
+                report += `<p>Omission errors (missing target responses) were in the ${omissionRange} range (T-score: ${data.omissions}), ${omissionInterp}.</p>\n`;
             }
 
-            // Progressive loss of attention
-            const progressiveLoss = getProgressiveLoss(data.hitRTBlockChangeTScore);
-            if (progressiveLoss) {
-                report += `A progressive loss of attention was suggested over the 14-minute duration of the test.`;
-            } else {
-                report += `No progressive loss of attention was noted over the 14-minute duration of the test.`;
+            // Commissions analysis
+            if (data.commissions > 0) {
+                const commissionRange = getTScoreRange(data.commissions);
+                const commissionInterp = getCPTInterpretation('commissions', data.commissions);
+                report += `<p>Commission errors (responding to non-targets) were in the ${commissionRange} range (T-score: ${data.commissions}), ${commissionInterp}.</p>\n`;
             }
 
-            report += `</p>\n\n`;
+            // Response time analysis
+            if (data.hitRT > 0) {
+                const rtRange = getTScoreRange(data.hitRT);
+                const rtInterp = getCPTInterpretation('hitRT', data.hitRT);
+                report += `<p>Response time was in the ${rtRange} range (T-score: ${data.hitRT}), ${rtInterp}.</p>\n`;
+            }
+
+            // Variability analysis
+            if (data.variability > 0) {
+                const varRange = getTScoreRange(data.variability);
+                const varInterp = getCPTInterpretation('variability', data.variability);
+                report += `<p>Response time variability was in the ${varRange} range (T-score: ${data.variability}), ${varInterp}.</p>\n`;
+            }
+
+            report += `\n`;
+
+            // Store for completion
+            currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+
+            // Generate score table
+            const adminMeasures = [];
+            if (data.omissions) adminMeasures.push(['Omissions', data.omissions, getTScoreRange(data.omissions)]);
+            if (data.commissions) adminMeasures.push(['Commissions', data.commissions, getTScoreRange(data.commissions)]);
+            if (data.hitRT) adminMeasures.push(['Hit RT', data.hitRT, getTScoreRange(data.hitRT)]);
+            if (data.hitRTSE) adminMeasures.push(['Hit RT SE', data.hitRTSE, getTScoreRange(data.hitRTSE)]);
+            if (data.variability) adminMeasures.push(['Variability', data.variability, getTScoreRange(data.variability)]);
+            if (data.detectability) adminMeasures.push(['Detectability', data.detectability, getTScoreRange(data.detectability)]);
+
+            currentScoreTable = `
+                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 8px; text-align: left;">CPT-II Measure</th>
+                        <th style="padding: 8px; text-align: center;">T-Score</th>
+                        <th style="padding: 8px; text-align: center;">Range</th>
+                    </tr>
+                    ${adminMeasures.map(measure => `
+                        <tr>
+                            <td style="padding: 8px;">${measure[0]}</td>
+                            <td style="padding: 8px; text-align: center;">${measure[1]}</td>
+                            <td style="padding: 8px; text-align: center;">${measure[2]}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
 
             // Technical details section
             report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
             report += `<h4><b>Technical Details</b></h4>`;
-            report += `<p><strong>Primary Measures:</strong></p>`;
-            report += `<p>• Omissions: ${data.omissionsRaw} errors (T=${data.omissionsTScore}) - ${getClinicalRange(data.omissionsTScore)}</p>`;
-            report += `<p>• Commissions: ${data.commissionsRaw} errors (T=${data.commissionsTScore}) - ${getClinicalRange(data.commissionsTScore)}</p>`;
-            report += `<p>• Hit Reaction Time: ${data.hitRTRaw}ms (T=${data.hitRTTScore}) - ${getClinicalRange(data.hitRTTScore)}</p>`;
-            report += `<p>• Detectability (d'): T=${data.detectabilityTScore} - ${getClinicalRange(data.detectabilityTScore)}</p>`;
-            report += `<p>• Variability: T=${data.variabilityTScore} - ${getClinicalRange(data.variabilityTScore)}</p>`;
-            report += `<p>• Perseverations: ${data.perseverationsRaw} responses (T=${data.perseverationsTScore}) - ${getClinicalRange(data.perseverationsTScore)}</p>`;
-            report += `<p><strong>Note:</strong> Higher T-scores indicate worse performance on CPT-II</p>`;
+            report += `<p><strong>CPT-II T-Scores:</strong></p>`;
+            if (data.omissions) report += `<p>• Omissions: ${data.omissions} (${getPercentileFromT(data.omissions)}th percentile)</p>`;
+            if (data.commissions) report += `<p>• Commissions: ${data.commissions} (${getPercentileFromT(data.commissions)}th percentile)</p>`;
+            if (data.hitRT) report += `<p>• Hit RT: ${data.hitRT} (${getPercentileFromT(data.hitRT)}th percentile)</p>`;
+            if (data.variability) report += `<p>• Variability: ${data.variability} (${getPercentileFromT(data.variability)}th percentile)</p>`;
+            if (data.perseverations) report += `<p>• Perseverations: ${data.perseverations}</p>`;
+            if (data.responseStyle) report += `<p>• Response Style β: ${data.responseStyle.toFixed(2)}</p>`;
+            report += `<p><strong>Note:</strong> T-scores ≥60 are considered clinically significant</p>`;
             report += `</div>`;
 
             // Add validation warnings if any
@@ -380,10 +417,48 @@
             document.getElementById('output').style.display = 'block';
         }
 
-        // Auto-generate on page load
-        window.onload = function() {
-            generateCPTReport();
-        };
+        function completeTest() {
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
+            }
+
+            const results = {
+                narrative: currentNarrative,
+                scoreTable: currentScoreTable,
+                testName: 'CPT-II',
+                completedAt: new Date().toISOString()
+            };
+
+            window.parent.postMessage({
+                type: 'testComplete',
+                testName: 'cpt-ii',
+                results: results
+            }, '*');
+        }
+
+        // Listen for client info from parent
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                const clientInfo = event.data.data;
+                
+                if (clientInfo.clientAge) {
+                    document.getElementById('age').value = clientInfo.clientAge;
+                }
+                
+                if (clientInfo.clientGender) {
+                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
+                }
+                
+                if (clientInfo.clientEducation) {
+                    document.getElementById('education').value = clientInfo.clientEducation;
+                }
+                
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
+                }
+            }
+        });
     </script>
 </body>
 </html>
