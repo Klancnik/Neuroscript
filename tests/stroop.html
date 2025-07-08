@@ -1,397 +1,420 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stroop Color-Word Test Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .input-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        input[type="number"] {
-            width: 80px;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-        .score-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .section-header {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .generate-btn {
-            background: #007bff;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .generate-btn:hover {
-            background: #0056b3;
-        }
-        .complete-btn {
-            background: #28a745;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .complete-btn:hover {
-            background: #1e7e34;
-        }
-        .output-section {
-            background: white;
-            border: 2px solid #dee2e6;
-            padding: 25px;
-            margin-top: 30px;
-            font-family: 'Times New Roman', serif;
-            line-height: 1.6;
-        }
-        h3 {
-            color: #333;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-        }
-        .attention-section {
-            border-left: 4px solid #28a745;
-            padding-left: 15px;
-            margin-bottom: 30px;
-        }
-        .executive-section {
-            border-left: 4px solid #dc3545;
-            padding-left: 15px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Stroop Color-Word Test Generator</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+background-color: #f5f5f5;
+}
+.container {
+background: white;
+padding: 30px;
+border-radius: 8px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.input-section {
+background: #f8f9fa;
+padding: 20px;
+border-radius: 5px;
+margin-bottom: 30px;
+}
+.input-group {
+margin-bottom: 15px;
+}
+label {
+display: block;
+font-weight: bold;
+margin-bottom: 5px;
+}
+input[type="number"] {
+width: 80px;
+padding: 5px;
+border: 1px solid #ddd;
+border-radius: 3px;
+}
+.score-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 15px;
+margin-top: 15px;
+}
+.section-header {
+background: #e9ecef;
+padding: 10px;
+border-radius: 5px;
+font-weight: bold;
+margin-top: 20px;
+margin-bottom: 10px;
+}
+.generate-btn {
+background: #007bff;
+color: white;
+padding: 12px 24px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 16px;
+font-weight: bold;
+}
+.generate-btn:hover {
+background: #0056b3;
+}
+.complete-btn {
+background: #28a745;
+color: white;
+padding: 12px 24px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 16px;
+font-weight: bold;
+margin-left: 10px;
+}
+.complete-btn:hover {
+background: #1e7e34;
+}
+.output-section {
+background: white;
+border: 2px solid #dee2e6;
+padding: 25px;
+margin-top: 30px;
+font-family: 'Times New Roman', serif;
+line-height: 1.6;
+}
+h3 {
+color: #333;
+border-bottom: 2px solid #007bff;
+padding-bottom: 5px;
+}
+.attention-section {
+border-left: 4px solid #28a745;
+padding-left: 15px;
+margin-bottom: 30px;
+}
+.executive-section {
+border-left: 4px solid #dc3545;
+padding-left: 15px;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Stroop Color-Word Test Generator</h1>
-        <p>Enter Stroop raw scores to generate clinical narrative text in Neuroscript format</p>
+<div class="container">
+<h1>Stroop Color-Word Test Generator</h1>
+<p>Enter Stroop raw scores to generate clinical narrative text in Neuroscript format</p>
 
-        <div class="input-section">
-            <h3>Demographics</h3>
-            <div class="input-group">
-                <label>Gender:</label>
-                <select id="gender">
-                    <option value="Male">Male</option>
-                    <option value="Female" selected>Female</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Reading Level (grade):</label>
-                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
-            </div>
+<div class="input-section">
+<h3>Demographics</h3>
+<div class="input-group">
+<label>Gender:</label>
+<select id="gender">
+<option value="Male">Male</option>
+<option value="Female" selected>Female</option>
+</select>
+</div>
+<div class="input-group">
+<label>Reading Level (grade):</label>
+<input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+</div>
 
-            <div class="section-header">Raw Scores (Number of Words in 45 seconds)</div>
-            <div class="score-grid">
-                <div>
-                    <label>Word Reading (W):</label>
-                    <input type="number" id="wordReading" value="107" min="0" max="150">
-                </div>
-                <div>
-                    <label>Color Naming (C):</label>
-                    <input type="number" id="colorNaming" value="78" min="0" max="120">
-                </div>
-                <div>
-                    <label>Color-Word Naming (CW):</label>
-                    <input type="number" id="colorWordNaming" value="38" min="0" max="120">
-                </div>
-            </div>
+<div class="section-header">Raw Scores (Number of Words in 45 seconds)</div>
+<div class="score-grid">
+<div>
+<label>Word Reading (W):</label>
+<input type="number" id="wordReading" value="" placeholder="0-150" min="0" max="150">
+</div>
+<div>
+<label>Color Naming (C):</label>
+<input type="number" id="colorNaming" value="" placeholder="0-120" min="0" max="120">
+</div>
+<div>
+<label>Color-Word Naming (CW):</label>
+<input type="number" id="colorWordNaming" value="" placeholder="0-120" min="0" max="120">
+</div>
+</div>
 
-            <button class="generate-btn" onclick="generateStroopReport()">Generate Stroop Report</button>
-            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
-        </div>
+<button class="generate-btn" onclick="generateStroopReport()">Generate Stroop Report</button>
+<button class="complete-btn" onclick="completeTest()">Complete Test</button>
+</div>
 
-        <div id="output" class="output-section" style="display:none;">
-            <!-- Generated report will appear here -->
-        </div>
-    </div>
+<div id="output" class="output-section" style="display:none;">
+<!-- Generated report will appear here -->
+</div>
+</div>
 
-    <script>
-        // Data management
-        let currentNarrative = '';
-        let currentScoreTable = '';
+<script>
+// Data management
+let currentNarrative = '';
+let currentScoreTable = '';
 
-        // ⚠️ PLACEHOLDER FUNCTION - NEEDS ACTUAL GOLDEN (1978) NORMS
-        function getStroopTScore(rawScore, testType) {
-            // TEMPORARY ROUGH APPROXIMATIONS - NOT CLINICALLY ACCURATE
-            // TODO: Replace with actual Golden (1978) normative tables
-            if (testType === 'word') {
-                if (rawScore >= 100) return 60;
-                if (rawScore >= 90) return 55;
-                if (rawScore >= 80) return 50;
-                if (rawScore >= 70) return 45;
-                if (rawScore >= 60) return 40;
-                return 35;
-            } else if (testType === 'color') {
-                if (rawScore >= 80) return 60;
-                if (rawScore >= 70) return 55;
-                if (rawScore >= 60) return 50;
-                if (rawScore >= 50) return 45;
-                if (rawScore >= 40) return 40;
-                return 35;
-            } else if (testType === 'colorword') {
-                if (rawScore >= 50) return 60;
-                if (rawScore >= 45) return 55;
-                if (rawScore >= 40) return 50;
-                if (rawScore >= 35) return 45;
-                if (rawScore >= 30) return 40;
-                return 35;
-            }
-            return 50;
-        }
+// ⚠️ PLACEHOLDER FUNCTION - NEEDS ACTUAL GOLDEN (1978) NORMS
+function getStroopTScore(rawScore, testType) {
+// TEMPORARY ROUGH APPROXIMATIONS - NOT CLINICALLY ACCURATE
+// TODO: Replace with actual Golden (1978) normative tables
+if (testType === 'word') {
+if (rawScore >= 100) return 60;
+if (rawScore >= 90) return 55;
+if (rawScore >= 80) return 50;
+if (rawScore >= 70) return 45;
+if (rawScore >= 60) return 40;
+return 35;
+} else if (testType === 'color') {
+if (rawScore >= 80) return 60;
+if (rawScore >= 70) return 55;
+if (rawScore >= 60) return 50;
+if (rawScore >= 50) return 45;
+if (rawScore >= 40) return 40;
+return 35;
+} else if (testType === 'colorword') {
+if (rawScore >= 50) return 60;
+if (rawScore >= 45) return 55;
+if (rawScore >= 40) return 50;
+if (rawScore >= 35) return 45;
+if (rawScore >= 30) return 40;
+return 35;
+}
+return 50;
+}
 
-        function getStroopRange(tScore) {
-            if (tScore >= 65) return "Superior";
-            if (tScore >= 55) return "High Average";
-            if (tScore >= 45) return "Average";
-            if (tScore >= 35) return "Below Average";
-            if (tScore >= 25) return "Mildly Impaired";
-            return "Moderately Impaired";
-        }
+function getStroopRange(tScore) {
+if (tScore >= 65) return "Superior";
+if (tScore >= 55) return "High Average";
+if (tScore >= 45) return "Average";
+if (tScore >= 35) return "Below Average";
+if (tScore >= 25) return "Mildly Impaired";
+return "Moderately Impaired";
+}
 
-        function calculateInterference(wordScore, colorScore, colorWordScore) {
-            // Golden's formula: Interference = CW - [(W×C)/(W + C)]
-            if (wordScore + colorScore === 0) return 0;
-            const predicted = (wordScore * colorScore) / (wordScore + colorScore);
-            return colorWordScore - predicted;
-        }
+function calculateInterference(wordScore, colorScore, colorWordScore) {
+// Golden's formula: Interference = CW - [(W×C)/(W + C)]
+if (wordScore + colorScore === 0) return 0;
+const predicted = (wordScore * colorScore) / (wordScore + colorScore);
+return colorWordScore - predicted;
+}
 
-        function getInterferenceRange(interferenceScore) {
-            // Positive scores indicate good interference control
-            // Negative scores indicate poor interference control
-            if (interferenceScore >= 10) return "Superior";
-            if (interferenceScore >= 5) return "High Average";
-            if (interferenceScore >= -5) return "Average";
-            if (interferenceScore >= -10) return "Below Average";
-            if (interferenceScore >= -15) return "Mildly Impaired";
-            return "Moderately Impaired";
-        }
+function getInterferenceRange(interferenceScore) {
+// Positive scores indicate good interference control
+// Negative scores indicate poor interference control
+if (interferenceScore >= 10) return "Superior";
+if (interferenceScore >= 5) return "High Average";
+if (interferenceScore >= -5) return "Average";
+if (interferenceScore >= -10) return "Below Average";
+if (interferenceScore >= -15) return "Mildly Impaired";
+return "Moderately Impaired";
+}
 
-        function generateValidationWarnings(data) {
-            let warnings = [];
+function generateValidationWarnings(data) {
+let warnings = [];
 
-            // Reading level concerns
-            if (!data.readingLevel) {
-                warnings.push("⚠️ Reading level not assessed - critical for Stroop performance interpretation");
-            } else if (data.readingLevel < 5) {
-                warnings.push("⚠️ Grade <5 reading level - Stroop validity compromised");
-            }
+// Reading level concerns
+if (!data.readingLevel) {
+warnings.push("⚠️ Reading level not assessed - critical for Stroop performance interpretation");
+} else if (data.readingLevel < 5) {
+warnings.push("⚠️ Grade <5 reading level - Stroop validity compromised");
+}
 
-            // Unusual performance patterns
-            if (data.colorWordNaming > data.colorNaming) {
-                warnings.push("⚠️ Color-word score higher than color naming - unusual pattern requiring review");
-            }
+// Unusual performance patterns
+if (data.colorWordNaming > data.colorNaming) {
+warnings.push("⚠️ Color-word score higher than color naming - unusual pattern requiring review");
+}
 
-            if (data.colorWordNaming > data.wordReading) {
-                warnings.push("⚠️ Color-word score higher than word reading - highly unusual pattern");
-            }
+if (data.colorWordNaming > data.wordReading) {
+warnings.push("⚠️ Color-word score higher than word reading - highly unusual pattern");
+}
 
-            // Extremely low scores
-            if (data.wordReading < 30 && data.readingLevel >= 8) {
-                warnings.push("⚠️ Very low word reading despite adequate reading level - consider effort or validity");
-            }
+// Extremely low scores
+if (data.wordReading < 30 && data.readingLevel >= 8) {
+warnings.push("⚠️ Very low word reading despite adequate reading level - consider effort or validity");
+}
 
-            // Very poor interference control
-            const interference = calculateInterference(data.wordReading, data.colorNaming, data.colorWordNaming);
-            if (interference < -20) {
-                warnings.push("⚠️ Severely impaired interference control - consider executive dysfunction");
-            }
+// Very poor interference control
+const interference = calculateInterference(data.wordReading, data.colorNaming, data.colorWordNaming);
+if (interference < -20) {
+warnings.push("⚠️ Severely impaired interference control - consider executive dysfunction");
+}
 
-            return warnings;
-        }
+return warnings;
+}
 
-        function generateStroopReport() {
-            const data = {
-                gender: document.getElementById('gender').value,
-                readingLevel: document.getElementById('readingLevel').value ? 
-                    parseFloat(document.getElementById('readingLevel').value) : null,
-                wordReading: parseInt(document.getElementById('wordReading').value),
-                colorNaming: parseInt(document.getElementById('colorNaming').value),
-                colorWordNaming: parseInt(document.getElementById('colorWordNaming').value)
-            };
+function generateStroopReport() {
+// Check if any scores are entered
+const wordReading = document.getElementById('wordReading').value;
+const colorNaming = document.getElementById('colorNaming').value;
+const colorWordNaming = document.getElementById('colorWordNaming').value;
 
-            const warnings = generateValidationWarnings(data);
-            const gender = data.gender;
-            const pronoun = gender === 'Male' ? 'His' : 'Her';
-            const pronounLower = gender === 'Male' ? 'his' : 'her';
+if (!wordReading || !colorNaming || !colorWordNaming) {
+document.getElementById('output').innerHTML = '<p>Please enter all test scores to generate the report.</p>';
+document.getElementById('output').style.display = 'block';
+return;
+}
 
-            // Calculate T-scores and ranges
-            const wordTScore = getStroopTScore(data.wordReading, 'word');
-            const colorTScore = getStroopTScore(data.colorNaming, 'color');
-            const colorWordTScore = getStroopTScore(data.colorWordNaming, 'colorword');
+const data = {
+gender: document.getElementById('gender').value,
+readingLevel: document.getElementById('readingLevel').value ? 
+parseFloat(document.getElementById('readingLevel').value) : null,
+wordReading: parseInt(wordReading),
+colorNaming: parseInt(colorNaming),
+colorWordNaming: parseInt(colorWordNaming)
+};
 
-            const wordRange = getStroopRange(wordTScore);
-            const colorRange = getStroopRange(colorTScore);
-            const colorWordRange = getStroopRange(colorWordTScore);
+const warnings = generateValidationWarnings(data);
+const gender = data.gender;
+const pronoun = gender === 'Male' ? 'His' : 'Her';
+const pronounLower = gender === 'Male' ? 'his' : 'her';
 
-            // Calculate interference
-            const interferenceScore = calculateInterference(data.wordReading, data.colorNaming, data.colorWordNaming);
-            const interferenceRange = getInterferenceRange(interferenceScore);
+// Calculate T-scores and ranges
+const wordTScore = getStroopTScore(data.wordReading, 'word');
+const colorTScore = getStroopTScore(data.colorNaming, 'color');
+const colorWordTScore = getStroopTScore(data.colorWordNaming, 'colorword');
 
-            let report = '';
+const wordRange = getStroopRange(wordTScore);
+const colorRange = getStroopRange(colorTScore);
+const colorWordRange = getStroopRange(colorWordTScore);
 
-            // Attention Section
-            report += `<div class="attention-section">`;
-            report += `<h3><b>Attention</b></h3>\n`;
-            report += `<p>On the Stroop Colour-Word Test, reading speed and color naming speed were in the ${wordRange} and ${colorRange} ranges respectively, while color-word naming speed was in the ${colorWordRange} range.</p>\n\n`;
-            report += `</div>`;
+// Calculate interference
+const interferenceScore = calculateInterference(data.wordReading, data.colorNaming, data.colorWordNaming);
+const interferenceRange = getInterferenceRange(interferenceScore);
 
-            // Executive Functioning Section
-            report += `<div class="executive-section">`;
-            report += `<h3><b>Executive Functioning</b></h3>\n`;
-            const inhibitionLevel = interferenceScore >= 0 ? "normal" : "impaired";
-            report += `<p>The Stroop interference effect was in the ${interferenceRange} range, indicating ${inhibitionLevel === "normal" ? "a normal" : "an impaired"} level of inhibition from competing responses.</p>\n\n`;
-            report += `</div>`;
+let report = '';
 
-            // Store for completion
-            currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+// Attention Section
+report += `<div class="attention-section">`;
+report += `<h3><b>Attention</b></h3>\n`;
+report += `<p>On the Stroop Colour-Word Test, reading speed and color naming speed were in the ${wordRange} and ${colorRange} ranges respectively, while color-word naming speed was in the ${colorWordRange} range.</p>\n\n`;
+report += `</div>`;
 
-            // Generate score table
-            currentScoreTable = `
-                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
-                    <tr style="background-color: #f5f5f5;">
-                        <th style="padding: 8px; text-align: left;">Stroop Measure</th>
-                        <th style="padding: 8px; text-align: center;">Raw Score</th>
-                        <th style="padding: 8px; text-align: center;">T-Score (Approx)</th>
-                        <th style="padding: 8px; text-align: center;">Range</th>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">Word Reading</td>
-                        <td style="padding: 8px; text-align: center;">${data.wordReading}</td>
-                        <td style="padding: 8px; text-align: center;">${wordTScore}</td>
-                        <td style="padding: 8px; text-align: center;">${wordRange}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">Color Naming</td>
-                        <td style="padding: 8px; text-align: center;">${data.colorNaming}</td>
-                        <td style="padding: 8px; text-align: center;">${colorTScore}</td>
-                        <td style="padding: 8px; text-align: center;">${colorRange}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">Color-Word Naming</td>
-                        <td style="padding: 8px; text-align: center;">${data.colorWordNaming}</td>
-                        <td style="padding: 8px; text-align: center;">${colorWordTScore}</td>
-                        <td style="padding: 8px; text-align: center;">${colorWordRange}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;"><strong>Interference Score</strong></td>
-                        <td style="padding: 8px; text-align: center;">${interferenceScore.toFixed(1)}</td>
-                        <td style="padding: 8px; text-align: center;">--</td>
-                        <td style="padding: 8px; text-align: center;">${interferenceRange}</td>
-                    </tr>
-                </table>
-            `;
+// Executive Functioning Section
+report += `<div class="executive-section">`;
+report += `<h3><b>Executive Functioning</b></h3>\n`;
 
-            // Technical details section
-            report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
-            report += `<h4><b>Technical Details</b></h4>`;
-            report += `<p><strong>Raw Scores (45 seconds):</strong></p>`;
-            report += `<p>• Word Reading: ${data.wordReading} (T≈${wordTScore} - PLACEHOLDER) - ${wordRange}</p>`;
-            report += `<p>• Color Naming: ${data.colorNaming} (T≈${colorTScore} - PLACEHOLDER) - ${colorRange}</p>`;
-            report += `<p>• Color-Word Naming: ${data.colorWordNaming} (T≈${colorWordTScore} - PLACEHOLDER) - ${colorWordRange}</p>`;
-            report += `<p><strong>⚠️ NOTE:</strong> T-scores are rough approximations - requires actual Golden (1978) norms</p>`;
-            report += `<p><strong>Interference Calculation (Golden, 1978):</strong></p>`;
-            report += `<p>• Predicted CW Score: ${((data.wordReading * data.colorNaming) / (data.wordReading + data.colorNaming)).toFixed(1)}</p>`;
-            report += `<p>• Interference Index: ${interferenceScore.toFixed(1)} - ${interferenceRange}</p>`;
-            report += `<p>• Formula: CW - [(W×C)/(W + C)] = ${data.colorWordNaming} - [${data.wordReading}×${data.colorNaming})/(${data.wordReading} + ${data.colorNaming})]</p>`;
-            report += `</div>`;
+const inhibitionLevel = interferenceScore >= 0 ? "normal" : "impaired";
+report += `<p>The Stroop interference effect was in the ${interferenceRange} range, indicating ${inhibitionLevel === "normal" ? "a normal" : "an impaired"} level of inhibition from competing responses.</p>\n\n`;
+report += `</div>`;
 
-            // Add validation warnings if any
-            if (warnings.length > 0) {
-                report += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
-                report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
-                warnings.forEach(warning => {
-                    report += `<p style="margin: 5px 0;">${warning}</p>`;
-                });
-                report += `</div>`;
-            }
+// Store for completion
+currentNarrative = report.replace(/<[^>]*>/g, '').trim();
 
-            document.getElementById('output').innerHTML = report;
-            document.getElementById('output').style.display = 'block';
-        }
+// Generate score table
+currentScoreTable = `
+<table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+<tr style="background-color: #f5f5f5;">
+<th style="padding: 8px; text-align: left;">Stroop Measure</th>
+<th style="padding: 8px; text-align: center;">Raw Score</th>
+<th style="padding: 8px; text-align: center;">T-Score (Approx)</th>
+<th style="padding: 8px; text-align: center;">Range</th>
+</tr>
+<tr>
+<td style="padding: 8px;">Word Reading</td>
+<td style="padding: 8px; text-align: center;">${data.wordReading}</td>
+<td style="padding: 8px; text-align: center;">${wordTScore}</td>
+<td style="padding: 8px; text-align: center;">${wordRange}</td>
+</tr>
+<tr>
+<td style="padding: 8px;">Color Naming</td>
+<td style="padding: 8px; text-align: center;">${data.colorNaming}</td>
+<td style="padding: 8px; text-align: center;">${colorTScore}</td>
+<td style="padding: 8px; text-align: center;">${colorRange}</td>
+</tr>
+<tr>
+<td style="padding: 8px;">Color-Word Naming</td>
+<td style="padding: 8px; text-align: center;">${data.colorWordNaming}</td>
+<td style="padding: 8px; text-align: center;">${colorWordTScore}</td>
+<td style="padding: 8px; text-align: center;">${colorWordRange}</td>
+</tr>
+<tr>
+<td style="padding: 8px;"><strong>Interference Score</strong></td>
+<td style="padding: 8px; text-align: center;">${interferenceScore.toFixed(1)}</td>
+<td style="padding: 8px; text-align: center;">--</td>
+<td style="padding: 8px; text-align: center;">${interferenceRange}</td>
+</tr>
+</table>
+`;
 
-        function completeTest() {
-            if (!currentNarrative) {
-                alert('Please generate the report first before completing the test.');
-                return;
-            }
+// Technical details section
+report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+report += `<h4><b>Technical Details</b></h4>`;
+report += `<p><strong>Raw Scores (45 seconds):</strong></p>`;
+report += `<p>• Word Reading: ${data.wordReading} (T≈${wordTScore} - PLACEHOLDER) - ${wordRange}</p>`;
+report += `<p>• Color Naming: ${data.colorNaming} (T≈${colorTScore} - PLACEHOLDER) - ${colorRange}</p>`;
+report += `<p>• Color-Word Naming: ${data.colorWordNaming} (T≈${colorWordTScore} - PLACEHOLDER) - ${colorWordRange}</p>`;
+report += `<p><strong>⚠️ NOTE:</strong> T-scores are rough approximations - requires actual Golden (1978) norms</p>`;
+report += `<p><strong>Interference Calculation (Golden, 1978):</strong></p>`;
+report += `<p>• Predicted CW Score: ${((data.wordReading * data.colorNaming) / (data.wordReading + data.colorNaming)).toFixed(1)}</p>`;
+report += `<p>• Interference Index: ${interferenceScore.toFixed(1)} - ${interferenceRange}</p>`;
+report += `<p>• Formula: CW - [(W×C)/(W + C)] = ${data.colorWordNaming} - [${data.wordReading}×${data.colorNaming})/(${data.wordReading} + ${data.colorNaming})]</p>`;
+report += `</div>`;
 
-            const results = {
-                narrative: currentNarrative,
-                scoreTable: currentScoreTable,
-                testName: 'Stroop Color-Word Test',
-                completedAt: new Date().toISOString()
-            };
+// Add validation warnings if any
+if (warnings.length > 0) {
+report += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+warnings.forEach(warning => {
+report += `<p style="margin: 5px 0;">${warning}</p>`;
+});
+report += `</div>`;
+}
 
-            window.parent.postMessage({
-                type: 'testComplete',
-                testName: 'stroop',
-                results: results
-            }, '*');
-        }
+document.getElementById('output').innerHTML = report;
+document.getElementById('output').style.display = 'block';
+}
 
-        // Listen for client info from parent
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'clientInfo') {
-                const clientInfo = event.data.data;
-                
-                if (clientInfo.clientGender) {
-                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
-                }
-                
-                if (clientInfo.readingLevel) {
-                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
-                }
-                
-                generateStroopReport();
-            }
-        });
+function completeTest() {
+if (!currentNarrative) {
+alert('Please generate the report first before completing the test.');
+return;
+}
 
-        // Auto-generate on page load
-        window.onload = function() {
-            generateStroopReport();
-        };
-    </script>
+const results = {
+narrative: currentNarrative,
+scoreTable: currentScoreTable,
+testName: 'Stroop Color-Word Test',
+completedAt: new Date().toISOString()
+};
+
+// Try to communicate with parent window (Neuroscript dashboard)
+try {
+window.parent.postMessage({
+type: 'testComplete',
+testName: 'stroop',
+results: results
+}, '*');
+alert('Stroop test completed successfully!');
+// Try to return to dashboard
+window.parent.hideTestFrame();
+} catch (e) {
+console.log('Could not communicate with parent window:', e);
+alert('Test completed locally!');
+}
+}
+
+// Listen for client info from parent
+window.addEventListener('message', function(event) {
+if (event.data.type === 'clientInfo') {
+const clientInfo = event.data.data;
+if (clientInfo.clientGender) {
+document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
+}
+if (clientInfo.readingLevel) {
+document.getElementById('readingLevel').value = clientInfo.readingLevel;
+}
+// Don't auto-generate report - wait for user input
+}
+});
+
+// Auto-generate on input change (but only if scores are entered)
+document.addEventListener('input', function(e) {
+if (e.target.type === 'number') {
+setTimeout(generateStroopReport, 500);
+}
+});
+</script>
 </body>
 </html>
