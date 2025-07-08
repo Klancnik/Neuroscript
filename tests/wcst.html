@@ -40,12 +40,6 @@
             gap: 15px;
             margin-bottom: 15px;
         }
-        .input-row-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
         button {
             background-color: #007bff;
             color: white;
@@ -58,6 +52,20 @@
         }
         button:hover {
             background-color: #0056b3;
+        }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
         }
         .output {
             background-color: white;
@@ -109,135 +117,111 @@
             padding-bottom: 5px;
             border-bottom: 2px solid #3498db;
         }
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-        }
-        .checkbox-item input[type="checkbox"] {
-            width: auto;
-            margin-right: 8px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Wisconsin Card Sorting Test Clinical Report Generator</h1>
         <p><strong>Based on Heaton et al. (1993) normative data with comprehensive validation warnings</strong></p>
-        
-        <div class="section-title">Test Administration Selection</div>
-        <div class="checkbox-group">
-            <div class="checkbox-item">
-                <input type="checkbox" id="wcstAdministered" checked>
-                <label for="wcstAdministered">Wisconsin Card Sorting Test administered</label>
+
+        <div class="section-title">Client Information</div>
+        <div class="input-row">
+            <div class="input-group">
+                <label for="clientGender">Client Gender:</label>
+                <select id="clientGender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="clientAge">Client Age:</label>
+                <input type="number" id="clientAge" min="16" max="89" value="" placeholder="20-89" step="1">
+            </div>
+            <div class="input-group">
+                <label for="clientEducation">Education (years):</label>
+                <input type="number" id="clientEducation" min="6" max="20" value="" placeholder="6-20" step="1">
             </div>
         </div>
 
-        <div id="wcstSection">
-            <div class="section-title">Client Information</div>
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="clientGender">Client Gender:</label>
-                    <select id="clientGender">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="clientAge">Client Age:</label>
-                    <input type="number" id="clientAge" min="16" max="89" value="47" step="1">
-                </div>
-                <div class="input-group">
-                    <label for="clientEducation">Education (years):</label>
-                    <input type="number" id="clientEducation" min="6" max="20" value="13" step="1">
-                </div>
+        <div class="section-title">WCST Raw Scores</div>
+        <div class="input-row">
+            <div class="input-group">
+                <label for="trialsAdmin">Trials Administered:</label>
+                <input type="number" id="trialsAdmin" value="" min="1" max="128" placeholder="1-128">
             </div>
-
-            <div class="section-title">WCST Raw Scores</div>
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="trialsAdmin">Trials Administered:</label>
-                    <input type="number" id="trialsAdmin" value="70" min="1" max="128">
-                </div>
-                <div class="input-group">
-                    <label for="totalCorrect">Total Correct:</label>
-                    <input type="number" id="totalCorrect" value="61" min="0" max="128">
-                </div>
-                <div class="input-group">
-                    <label for="totalErrors">Total Errors:</label>
-                    <input type="number" id="totalErrors" value="9" min="0" max="128">
-                </div>
+            <div class="input-group">
+                <label for="totalCorrect">Total Correct:</label>
+                <input type="number" id="totalCorrect" value="" min="0" max="128" placeholder="0-128">
             </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="persevResponses">Perseverative Responses:</label>
-                    <input type="number" id="persevResponses" value="5" min="0" max="128">
-                </div>
-                <div class="input-group">
-                    <label for="persevErrors">Perseverative Errors:</label>
-                    <input type="number" id="persevErrors" value="5" min="0" max="128">
-                </div>
-                <div class="input-group">
-                    <label for="nonpersevErrors">Nonperseverative Errors:</label>
-                    <input type="number" id="nonpersevErrors" value="4" min="0" max="128">
-                </div>
+            <div class="input-group">
+                <label for="totalErrors">Total Errors:</label>
+                <input type="number" id="totalErrors" value="" min="0" max="128" placeholder="0-128">
             </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="conceptualResponses">Conceptual Level Responses:</label>
-                    <input type="number" id="conceptualResponses" value="61" min="0" max="128">
-                </div>
-                <div class="input-group">
-                    <label for="categoriesCompleted">Categories Completed:</label>
-                    <input type="number" id="categoriesCompleted" value="6" min="0" max="6">
-                </div>
-                <div class="input-group">
-                    <label for="trialsFirstCategory">Trials to Complete 1st Category:</label>
-                    <input type="number" id="trialsFirstCategory" value="13" min="1" max="128">
-                </div>
-            </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="failureMaintainSet">Failure to Maintain Set:</label>
-                    <input type="number" id="failureMaintainSet" value="0" min="0" max="10">
-                </div>
-                <div class="input-group">
-                    <label for="learningToLearn">Learning to Learn:</label>
-                    <input type="number" id="learningToLearn" value="2.95" min="-5" max="15" step="0.01">
-                </div>
-                <div class="input-group">
-                    <label for="readingLevel">Reading Level (grades):</label>
-                    <input type="number" id="readingLevel" value="12" min="1" max="16" step="0.5">
-                </div>
-            </div>
-
-            <div class="section-title">Normative Reference Scores (from PAR printout)</div>
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="totalErrorsT">Total Errors T-score:</label>
-                    <input type="number" id="totalErrorsT" value="55" min="20" max="80">
-                </div>
-                <div class="input-group">
-                    <label for="persevErrorsT">Perseverative Errors T-score:</label>
-                    <input type="number" id="persevErrorsT" value="55" min="20" max="80">
-                </div>
-                <div class="input-group">
-                    <label for="conceptualT">Conceptual Level Responses T-score:</label>
-                    <input type="number" id="conceptualT" value="57" min="20" max="80">
-                </div>
-            </div>
-
-            <button onclick="generateReport()">Generate WCST Report</button>
-            <button onclick="clearForm()">Clear Form</button>
         </div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label for="persevResponses">Perseverative Responses:</label>
+                <input type="number" id="persevResponses" value="" min="0" max="128" placeholder="0-128">
+            </div>
+            <div class="input-group">
+                <label for="persevErrors">Perseverative Errors:</label>
+                <input type="number" id="persevErrors" value="" min="0" max="128" placeholder="0-128">
+            </div>
+            <div class="input-group">
+                <label for="nonpersevErrors">Nonperseverative Errors:</label>
+                <input type="number" id="nonpersevErrors" value="" min="0" max="128" placeholder="0-128">
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label for="conceptualResponses">Conceptual Level Responses:</label>
+                <input type="number" id="conceptualResponses" value="" min="0" max="128" placeholder="0-128">
+            </div>
+            <div class="input-group">
+                <label for="categoriesCompleted">Categories Completed:</label>
+                <input type="number" id="categoriesCompleted" value="" min="0" max="6" placeholder="0-6">
+            </div>
+            <div class="input-group">
+                <label for="trialsFirstCategory">Trials to Complete 1st Category:</label>
+                <input type="number" id="trialsFirstCategory" value="" min="1" max="128" placeholder="1-128">
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label for="failureMaintainSet">Failure to Maintain Set:</label>
+                <input type="number" id="failureMaintainSet" value="" min="0" max="10" placeholder="0-10">
+            </div>
+            <div class="input-group">
+                <label for="learningToLearn">Learning to Learn:</label>
+                <input type="number" id="learningToLearn" value="" min="-5" max="15" step="0.01" placeholder="-5 to 15">
+            </div>
+            <div class="input-group">
+                <label for="readingLevel">Reading Level (grades):</label>
+                <input type="number" id="readingLevel" value="" min="1" max="16" step="0.5" placeholder="Optional">
+            </div>
+        </div>
+
+        <div class="section-title">Normative Reference Scores (from PAR printout)</div>
+        <div class="input-row">
+            <div class="input-group">
+                <label for="totalErrorsT">Total Errors T-score:</label>
+                <input type="number" id="totalErrorsT" value="" min="20" max="80" placeholder="20-80">
+            </div>
+            <div class="input-group">
+                <label for="persevErrorsT">Perseverative Errors T-score:</label>
+                <input type="number" id="persevErrorsT" value="" min="20" max="80" placeholder="20-80">
+            </div>
+            <div class="input-group">
+                <label for="conceptualT">Conceptual Level Responses T-score:</label>
+                <input type="number" id="conceptualT" value="" min="20" max="80" placeholder="20-80">
+            </div>
+        </div>
+
+        <button onclick="generateReport()">Generate WCST Report</button>
+        <button class="complete-btn" onclick="completeTest()">Complete Test</button>
 
         <div id="validationWarnings" class="validation-warnings" style="display: none;">
             <div class="warning-title">⚠️ Validation Warnings</div>
@@ -265,6 +249,10 @@
     </div>
 
     <script>
+        // Data management
+        let currentNarrative = '';
+        let currentScoreTable = '';
+
         // Heaton et al. (1993) T-score to percentile conversion
         const tScoreToPercentile = {
             20: 0.1, 21: 0.1, 22: 0.1, 23: 0.1, 24: 0.2, 25: 0.3, 26: 0.4, 27: 0.5, 28: 0.6, 29: 0.8,
@@ -315,53 +303,46 @@
             const totalErrorsT = parseFloat(document.getElementById('totalErrorsT').value);
             const persevErrorsT = parseFloat(document.getElementById('persevErrorsT').value);
 
-            // Age boundaries
             if (age < 20 || age > 89) {
                 warnings.push("Client age is outside Heaton et al. (1993) normative range (20-89 years). Use age-matched norms with caution.");
             }
 
-            // Education boundaries
             if (education < 6 || education > 20) {
                 warnings.push("Education level is outside typical normative range. Interpret scores cautiously.");
             }
 
-            // Reading level validation
             if (readingLevel < 5) {
                 warnings.push("Reading level below 5th grade may compromise test validity. Consider impact on comprehension of instructions.");
             }
 
-            // Extreme performance patterns
             if (totalErrorsT <= 30) {
                 warnings.push("Total Errors T-score ≤30 indicates severely impaired executive functioning. Consider effort/validity.");
             }
+
             if (totalErrorsT >= 70) {
                 warnings.push("Total Errors T-score ≥70 indicates exceptionally good performance. Verify administration.");
             }
 
-            // Perseveration analysis
             if (persevErrorsT <= 30) {
                 warnings.push("Perseverative Errors T-score ≤30 suggests significant cognitive inflexibility/set-shifting deficits.");
             }
 
-            // Category completion patterns
             if (categoriesCompleted === 0) {
                 warnings.push("Zero categories completed suggests severe executive dysfunction or possible poor effort/motivation.");
             }
+
             if (categoriesCompleted === 6 && trialsFirstCategory > 50) {
                 warnings.push("All categories completed but slow initial learning suggests possible working memory issues.");
             }
 
-            // Set maintenance issues
             if (failureMaintainSet >= 3) {
                 warnings.push("Multiple failures to maintain set (≥3) suggests attention/working memory deficits.");
             }
 
-            // Ratio analysis
             if (persevErrors > totalErrors * 0.8) {
                 warnings.push("Perseverative errors >80% of total errors suggests significant cognitive inflexibility.");
             }
 
-            // First category learning
             if (trialsFirstCategory > 25) {
                 warnings.push("Trials to first category >25 suggests difficulty with initial concept formation.");
             }
@@ -370,10 +351,12 @@
         }
 
         function generateReport() {
-            if (!document.getElementById('wcstAdministered').checked) {
-                document.getElementById('output').textContent = '';
-                document.getElementById('validationWarnings').style.display = 'none';
-                document.getElementById('scoreTable').style.display = 'none';
+            // Check if minimum required fields are filled
+            const totalErrorsT = document.getElementById('totalErrorsT').value;
+            const categoriesCompleted = document.getElementById('categoriesCompleted').value;
+            
+            if (!totalErrorsT && !categoriesCompleted) {
+                document.getElementById('output').textContent = 'Please enter test scores to generate the report.';
                 return;
             }
 
@@ -382,35 +365,26 @@
             const pronounCap = gender === 'male' ? 'He' : 'She';
             const possessive = gender === 'male' ? 'his' : 'her';
 
-            // Get all values
-            const totalErrors = parseInt(document.getElementById('totalErrors').value);
-            const persevErrors = parseInt(document.getElementById('persevErrors').value);
-            const categoriesCompleted = parseInt(document.getElementById('categoriesCompleted').value);
-            const trialsFirstCategory = parseInt(document.getElementById('trialsFirstCategory').value);
-            const failureMaintainSet = parseInt(document.getElementById('failureMaintainSet').value);
-            const totalErrorsT = parseFloat(document.getElementById('totalErrorsT').value);
-            const persevErrorsT = parseFloat(document.getElementById('persevErrorsT').value);
-            const conceptualT = parseFloat(document.getElementById('conceptualT').value);
+            const totalErrors = parseInt(document.getElementById('totalErrors').value) || 0;
+            const persevErrors = parseInt(document.getElementById('persevErrors').value) || 0;
+            const categoriesCompleted = parseInt(document.getElementById('categoriesCompleted').value) || 0;
+            const trialsFirstCategory = parseInt(document.getElementById('trialsFirstCategory').value) || 0;
+            const failureMaintainSet = parseInt(document.getElementById('failureMaintainSet').value) || 0;
 
-            // Generate score table
+            const totalErrorsT = parseFloat(document.getElementById('totalErrorsT').value) || 0;
+            const persevErrorsT = parseFloat(document.getElementById('persevErrorsT').value) || 0;
+            const conceptualT = parseFloat(document.getElementById('conceptualT').value) || 0;
+
             generateScoreTable();
 
-            // Determine performance classification
-            const errorClassification = getHeatonClassification(totalErrorsT);
-            const persevClassification = getHeatonClassification(persevErrorsT);
-            const conceptualClassification = getHeatonClassification(conceptualT);
-
-            // Generate narrative
             let narrative = '';
 
-            // Overall performance opening
             if (totalErrorsT >= 40) {
                 narrative += `${pronounCap} scored in the ${getHeatonWithTScore(totalErrorsT)} on a non-verbal test of conceptualization and mental flexibility that required ${possessive} to sort cards to changing criteria (WCST). `;
             } else {
                 narrative += `${pronounCap} scored in the ${getHeatonWithTScore(totalErrorsT)}, indicating ${getHeatonClassification(totalErrorsT).toLowerCase()} performance, on a non-verbal test of conceptualization and mental flexibility that required ${possessive} to sort cards to changing criteria, with immediate feedback as to error (WCST). `;
             }
 
-            // Initial condition solving
             if (trialsFirstCategory <= 15) {
                 narrative += `${pronounCap} solved the initial condition easily, `;
             } else if (trialsFirstCategory <= 25) {
@@ -419,7 +393,6 @@
                 narrative += `${pronounCap} was slow in determining the initial solution to the visual reasoning problem, `;
             }
 
-            // Set maintenance and switching
             if (failureMaintainSet === 0) {
                 if (categoriesCompleted === 6) {
                     narrative += `and had no difficulty maintaining or switching mental set as appropriate. `;
@@ -432,7 +405,6 @@
                 narrative += `and had greater than average difficulty in maintaining response set. `;
             }
 
-            // Overall categories completed
             if (categoriesCompleted === 6) {
                 narrative += `${pronounCap} was able to deduce all sorting rules. `;
             } else if (categoriesCompleted >= 4) {
@@ -445,7 +417,6 @@
                 narrative += `${pronounCap} was unable to solve any of the sorting rules beyond the initial condition. `;
             }
 
-            // Perseveration analysis
             if (persevErrorsT >= 40) {
                 narrative += `The total number of errors and the number of both perseverative or repetitive errors and non-perseverative errors was within ${getHeatonClassification(persevErrorsT)} limits relative to age- and education-matched peers. `;
             } else if (persevErrorsT >= 35) {
@@ -456,18 +427,21 @@
                 narrative += `${pronounCap} showed a very high degree of perseveration (repetition of incorrect response strategies), with perseverative errors in the ${getHeatonWithTScore(persevErrorsT)}. `;
             }
 
-            // Additional clinical details for impaired performance
             if (totalErrorsT < 45) {
                 if (categoriesCompleted === 0) {
                     narrative += `${pronounCap} was unable to solve the initial sorting rule and demonstrated significant cognitive inflexibility. `;
                 }
+
                 if (persevErrors > totalErrors * 0.6) {
                     narrative += `The majority of ${possessive} errors were perseverative in nature, suggesting difficulty shifting away from response sets when they were not appropriate. `;
                 }
             }
 
-            // Set validation warnings
+            // Store for completion
+            currentNarrative = narrative;
+
             const warnings = validateWCSTData();
+
             if (warnings.length > 0) {
                 document.getElementById('validationWarnings').style.display = 'block';
                 document.getElementById('warningsList').innerHTML = warnings.map(w => `<div class="warning-item">• ${w}</div>`).join('');
@@ -479,18 +453,13 @@
         }
 
         function generateScoreTable() {
-            const totalErrors = parseInt(document.getElementById('totalErrors').value);
-            const persevErrors = parseInt(document.getElementById('persevErrors').value);
-            const conceptualResponses = parseInt(document.getElementById('conceptualResponses').value);
-            const categoriesCompleted = parseInt(document.getElementById('categoriesCompleted').value);
-            const trialsFirstCategory = parseInt(document.getElementById('trialsFirstCategory').value);
-            
-            const totalErrorsT = parseFloat(document.getElementById('totalErrorsT').value);
-            const persevErrorsT = parseFloat(document.getElementById('persevErrorsT').value);
-            const conceptualT = parseFloat(document.getElementById('conceptualT').value);
+            const totalErrors = parseInt(document.getElementById('totalErrors').value) || 0;
+            const persevErrors = parseInt(document.getElementById('persevErrors').value) || 0;
+            const conceptualResponses = parseInt(document.getElementById('conceptualResponses').value) || 0;
 
-            const tableBody = document.getElementById('scoreTableBody');
-            tableBody.innerHTML = '';
+            const totalErrorsT = parseFloat(document.getElementById('totalErrorsT').value) || 0;
+            const persevErrorsT = parseFloat(document.getElementById('persevErrorsT').value) || 0;
+            const conceptualT = parseFloat(document.getElementById('conceptualT').value) || 0;
 
             const scores = [
                 {
@@ -513,88 +482,96 @@
                     tScore: conceptualT,
                     percentile: getPercentileFromT(conceptualT),
                     classification: getHeatonClassification(conceptualT)
-                },
-                {
-                    measure: 'Categories Completed',
-                    raw: categoriesCompleted,
-                    tScore: '---',
-                    percentile: '---',
-                    classification: categoriesCompleted === 6 ? 'Average' : categoriesCompleted >= 4 ? 'Below Average' : categoriesCompleted >= 2 ? 'Mildly Impaired' : 'Moderately Impaired'
-                },
-                {
-                    measure: 'Trials to 1st Category',
-                    raw: trialsFirstCategory,
-                    tScore: '---',
-                    percentile: '---',
-                    classification: trialsFirstCategory <= 15 ? 'Average' : trialsFirstCategory <= 25 ? 'Below Average' : trialsFirstCategory <= 40 ? 'Mildly Impaired' : 'Moderately Impaired'
                 }
             ];
+
+            // Store score table for completion
+            currentScoreTable = `
+                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 8px; text-align: left;">WCST Measure</th>
+                        <th style="padding: 8px; text-align: center;">Raw Score</th>
+                        <th style="padding: 8px; text-align: center;">T-Score</th>
+                        <th style="padding: 8px; text-align: center;">Percentile</th>
+                        <th style="padding: 8px; text-align: center;">Classification</th>
+                    </tr>
+                    ${scores.map(score => `
+                        <tr>
+                            <td style="padding: 8px;">${score.measure}</td>
+                            <td style="padding: 8px; text-align: center;">${score.raw}</td>
+                            <td style="padding: 8px; text-align: center;">${score.tScore}</td>
+                            <td style="padding: 8px; text-align: center;">${score.percentile}%</td>
+                            <td style="padding: 8px; text-align: center;">${score.classification}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+
+            const tableBody = document.getElementById('scoreTableBody');
+            tableBody.innerHTML = '';
 
             scores.forEach(score => {
                 const row = tableBody.insertRow();
                 row.insertCell(0).textContent = score.measure;
                 row.insertCell(1).textContent = score.raw;
                 row.insertCell(2).textContent = score.tScore;
-                row.insertCell(3).textContent = typeof score.percentile === 'number' ? score.percentile + '%' : score.percentile;
+                row.insertCell(3).textContent = score.percentile + '%';
                 row.insertCell(4).textContent = score.classification;
             });
 
             document.getElementById('scoreTable').style.display = 'block';
         }
 
-        function clearForm() {
-            // Tim G case data for testing
-            document.getElementById('clientAge').value = '61';
-            document.getElementById('clientEducation').value = '16';
-            document.getElementById('clientGender').value = 'male';
-            document.getElementById('trialsAdmin').value = '128';
-            document.getElementById('totalCorrect').value = '72';
-            document.getElementById('totalErrors').value = '56';
-            document.getElementById('persevResponses').value = '21';
-            document.getElementById('persevErrors').value = '21';
-            document.getElementById('nonpersevErrors').value = '35';
-            document.getElementById('conceptualResponses').value = '55';
-            document.getElementById('categoriesCompleted').value = '2';
-            document.getElementById('trialsFirstCategory').value = '52';
-            document.getElementById('failureMaintainSet').value = '2';
-            document.getElementById('learningToLearn').value = '5.00';
-            document.getElementById('readingLevel').value = '16';
-            document.getElementById('totalErrorsT').value = '35';
-            document.getElementById('persevErrorsT').value = '43';
-            document.getElementById('conceptualT').value = '37';
-            document.getElementById('output').textContent = '';
-            document.getElementById('validationWarnings').style.display = 'none';
-            document.getElementById('scoreTable').style.display = 'none';
+        function completeTest() {
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
+            }
+
+            const results = {
+                narrative: currentNarrative,
+                scoreTable: currentScoreTable,
+                testName: 'Wisconsin Card Sorting Test',
+                completedAt: new Date().toISOString()
+            };
+
+            window.parent.postMessage({
+                type: 'testComplete',
+                testName: 'wcst',
+                results: results
+            }, '*');
         }
+
+        // Listen for client info from parent
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                const clientInfo = event.data.data;
+
+                if (clientInfo.clientAge) {
+                    document.getElementById('clientAge').value = clientInfo.clientAge;
+                }
+
+                if (clientInfo.clientGender) {
+                    document.getElementById('clientGender').value = clientInfo.clientGender;
+                }
+
+                if (clientInfo.clientEducation) {
+                    document.getElementById('clientEducation').value = clientInfo.clientEducation;
+                }
+
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
+                }
+            }
+        });
 
         // Auto-generate on input changes
         document.addEventListener('DOMContentLoaded', function() {
-            // Set Natasha B values on load to test generator
-            document.getElementById('clientGender').value = 'female';
-            document.getElementById('clientAge').value = '44';
-            document.getElementById('clientEducation').value = '14';
-            document.getElementById('trialsAdmin').value = '120';
-            document.getElementById('totalCorrect').value = '77';
-            document.getElementById('totalErrors').value = '43';
-            document.getElementById('persevResponses').value = '14';
-            document.getElementById('persevErrors').value = '13';
-            document.getElementById('nonpersevErrors').value = '30';
-            document.getElementById('conceptualResponses').value = '64';
-            document.getElementById('categoriesCompleted').value = '6';
-            document.getElementById('trialsFirstCategory').value = '11';
-            document.getElementById('failureMaintainSet').value = '0';
-            document.getElementById('learningToLearn').value = '-7.88';
-            document.getElementById('readingLevel').value = '14';
-            document.getElementById('totalErrorsT').value = '37';
-            document.getElementById('persevErrorsT').value = '45';
-            document.getElementById('conceptualT').value = '37';
-            
             const inputs = document.querySelectorAll('input, select');
             inputs.forEach(input => {
                 input.addEventListener('input', generateReport);
                 input.addEventListener('change', generateReport);
             });
-            generateReport(); // Initial generation with Natasha B data
         });
     </script>
 </body>
