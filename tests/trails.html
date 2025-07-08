@@ -103,7 +103,7 @@
             <h3>Demographics</h3>
             <div class="input-group">
                 <label>Age (years):</label>
-                <input type="number" id="age" value="45" min="18" max="89">
+                <input type="number" id="age" value="" min="18" max="89" placeholder="18-89">
             </div>
             <div class="input-group">
                 <label>Gender:</label>
@@ -114,7 +114,7 @@
             </div>
             <div class="input-group">
                 <label>Education (years):</label>
-                <input type="number" id="education" value="16" min="6" max="25">
+                <input type="number" id="education" value="" min="6" max="25" placeholder="6-25">
             </div>
             <div class="input-group">
                 <label>Reading Level (grade):</label>
@@ -125,11 +125,11 @@
             <div class="score-grid">
                 <div>
                     <label>Trail Making A:</label>
-                    <input type="number" id="trailsA" value="25" min="0" max="300">
+                    <input type="number" id="trailsA" value="" min="0" max="300" placeholder="Seconds">
                 </div>
                 <div>
                     <label>Trail Making B:</label>
-                    <input type="number" id="trailsB" value="60" min="0" max="300">
+                    <input type="number" id="trailsB" value="" min="0" max="300" placeholder="Seconds">
                 </div>
             </div>
 
@@ -237,14 +237,24 @@
         }
 
         function generateTrailsReport() {
+            // Check if minimum required fields are filled
+            const trailsA = document.getElementById('trailsA').value;
+            const trailsB = document.getElementById('trailsB').value;
+            
+            if (!trailsA && !trailsB) {
+                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                document.getElementById('output').style.display = 'block';
+                return;
+            }
+
             const data = {
-                age: parseInt(document.getElementById('age').value),
+                age: parseInt(document.getElementById('age').value) || 0,
                 gender: document.getElementById('gender').value,
-                education: parseInt(document.getElementById('education').value),
+                education: parseInt(document.getElementById('education').value) || 0,
                 readingLevel: document.getElementById('readingLevel').value ? 
                     parseFloat(document.getElementById('readingLevel').value) : null,
-                trailsA: parseInt(document.getElementById('trailsA').value),
-                trailsB: parseInt(document.getElementById('trailsB').value)
+                trailsA: parseInt(document.getElementById('trailsA').value) || 0,
+                trailsB: parseInt(document.getElementById('trailsB').value) || 0
             };
 
             const warnings = generateValidationWarnings(data);
@@ -268,7 +278,7 @@
 
             // Attention/Executive Functioning Section
             report += `<h3><b>Attention</b></h3>\n`;
-            report += `<p>On the Trail Making Test, a measure of visual scanning, psychomotor speed, and mental flexibility, ${heShe} completed Part A (number sequencing) in ${data.trailsA} seconds, placing ${pronounLower} performance in the ${rangeA} range. ${pronounLower} completion of Part B (number-letter switching) took ${data.trailsB} seconds, which was in the ${rangeB} range.</p>\n\n`;
+            report += `<p>On the Trail Making Test, a measure of visual scanning, psychomotor speed, and mental flexibility, ${heShe} completed Part A (number sequencing) in ${data.trailsA} seconds, placing ${pronounLower} performance in the ${rangeA} range. ${pronoun} completion of Part B (number-letter switching) took ${data.trailsB} seconds, which was in the ${rangeB} range.</p>\n\n`;
 
             if (bMinusA > 60) {
                 report += `<h3><b>Executive Functioning</b></h3>\n`;
@@ -374,15 +384,8 @@
                 if (clientInfo.readingLevel) {
                     document.getElementById('readingLevel').value = clientInfo.readingLevel;
                 }
-                
-                generateTrailsReport();
             }
         });
-
-        // Auto-generate on page load
-        window.onload = function() {
-            generateTrailsReport();
-        };
     </script>
 </body>
 </html>
