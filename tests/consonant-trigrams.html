@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consonant Trigrams Test Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .section-header {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .generate-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .generate-btn:hover {
+            background: #0056b3;
+        }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
+        .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+        h3 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        .attention-section {
+            border-left: 4px solid #28a745;
+            padding-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consonant Trigrams Test Generator</h1>
+        <p>Enter Brown-Peterson Consonant Trigrams scores to generate clinical narrative text in Neuroscript format</p>
+
+        <div class="input-section">
+            <h3>Demographics</h3>
+            <div class="input-group">
+                <label>Age (years):</label>
+                <input type="number" id="age" value="45" min="18" max="85">
+            </div>
+            <div class="input-group">
+                <label>Gender:</label>
+                <select id="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female" selected>Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Education (years):</label>
+                <input type="number" id="education" value="16" min="8" max="25">
+            </div>
+            <div class="input-group">
+                <label>Reading Level (grade):</label>
+                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+            </div>
+
+            <div class="section-header">Raw Scores (Letters Recalled out of 15 per condition)</div>
+            <div class="score-grid">
+                <div>
+                    <label>0-Second Delay:</label>
+                    <input type="number" id="delay0" value="15" min="0" max="15">
+                </div>
+                <div>
+                    <label>9-Second Delay:</label>
+                    <input type="number" id="delay9" value="12" min="0" max="15">
+                </div>
+                <div>
+                    <label>18-Second Delay:</label>
+                    <input type="number" id="delay18" value="8" min="0" max="15">
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateTrigramsReport()">Generate Consonant Trigrams Report</button>
+            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+        </div>
+
+        <div id="output" class="output-section" style="display:none;">
+            <!-- Generated report will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // Data management
+        let currentNarrative = '';
+        let currentScoreTable = '';
+
+        // Embedded Stuss et al. (1987) normative data for Consonant Trigrams
+        // Based on Strauss, Sherman & Spreen (2006) and Lezak references
+        const stussNorms = {
+            // Mean performance by delay interval (out of 15 letters)
+            delay0: { mean: 14.2, sd: 1.1, range: [13, 15] },
+            delay9: { mean: 10.8, sd: 2.3, range: [8, 13] },
+            delay18: { mean: 7.4, sd: 2.8, range: [4, 11] }
+        };
+
+        function getPercentileFromScore(score, delay) {
+            const norms = stussNorms[`delay${delay}`];
+            if (!norms) return 50;
+            
+            // Convert raw score to z-score, then to percentile
+            const zScore = (score - norms.mean) / norms.sd;
+            return zScoreToPercentile(zScore);
+        }
+
+        function zScoreToPercentile(z) {
+            // Approximate z-score to percentile conversion
+            if (z >= 2.33) return 99;
+            if (z >= 1.96) return 97.5;
+            if (z >= 1.65) return 95;
+            if (z >= 1.28) return 90;
+            if (z >= 1.04) return 85;
+            if (z >= 0.84) return 80;
+            if (z >= 0.67) return 75;
+            if (z >= 0.52) return 70;
+            if (z >= 0.25) return 60;
+            if (z >= 0) return 50;
+            if (z >= -0.25) return 40;
+            if (z >= -0.52) return 30;
+            if (z >= -0.67) return 25;
+            if (z >= -0.84) return 20;
+            if (z >= -1.04) return 15;
+            if (z >= -1.28) return 10;
+            if (z >= -1.65) return 5;
+            if (z >= -1.96) return 2.5;
+            return 1;
+        }
+
+        function getClinicalRange(percentile) {
+            if (percentile >= 75) return "Average";
+            if (percentile >= 25) return "Low Average";
+            if (percentile >= 16) return "Below Average";
+            if (percentile >= 9) return "Mildly Impaired";
+            if (percentile >= 7) return "Mildly Impaired";
+            if (percentile >= 2) return "Mildly to Moderately Impaired";
+            if (percentile >= 0.6) return "Moderately Impaired";
+            return "Severely Impaired";
+        }
+
+        function getWorkingMemoryInterpretation(delay9Score, delay18Score) {
+            const decay9to18 = delay9Score - delay18Score;
+            
+            if (decay9to18 <= 1) {
+                return "minimal decay over the delay intervals, suggesting adequate working memory maintenance";
+            } else if (decay9to18 <= 3) {
+                return "normal decay over the delay intervals";
+            } else if (decay9to18 <= 5) {
+                return "moderately rapid decay over the delay intervals, indicating working memory difficulties";
+            } else {
+                return "rapid decay over the delay intervals, suggesting significant working memory impairment";
+            }
+        }
+
+        function generateValidationWarnings(data) {
+            let warnings = [];
+
+            // Reading level concerns
+            if (!data.readingLevel) {
+                warnings.push("⚠️ Reading level not assessed - may affect instruction comprehension");
+            } else if (data.readingLevel < 5) {
+                warnings.push("⚠️ Grade <5 reading level - instruction comprehension may be compromised");
+            }
+
+            // Age boundary warnings
+            if (data.age < 18 || data.age > 70) {
+                warnings.push("⚠️ Age outside primary Stuss et al. (1987) normative range (18-69 years)");
+            }
+
+            // Unusual performance patterns
+            if (data.delay0 < 12) {
+                warnings.push("⚠️ Poor immediate recall - consider hearing, attention, or comprehension issues");
+            }
+
+            if (data.delay9 > data.delay0) {
+                warnings.push("⚠️ 9-second recall better than immediate - unusual pattern requiring review");
+            }
+
+            if (data.delay18 > data.delay9) {
+                warnings.push("⚠️ 18-second recall better than 9-second - highly unusual pattern");
+            }
+
+            // Extremely poor working memory
+            const totalDecay = data.delay0 - data.delay18;
+            if (totalDecay > 10) {
+                warnings.push("⚠️ Severe working memory decay - consider validity or significant impairment");
+            }
+
+            // Floor effects
+            if (data.delay18 === 0) {
+                warnings.push("⚠️ Zero recall at 18 seconds - consider severe impairment or validity concerns");
+            }
+
+            return warnings;
+        }
+
+        function generateTrigramsReport() {
+            const data = {
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                education: parseInt(document.getElementById('education').value),
+                readingLevel: document.getElementById('readingLevel').value ? 
+                    parseFloat(document.getElementById('readingLevel').value) : null,
+                delay0: parseInt(document.getElementById('delay0').value),
+                delay9: parseInt(document.getElementById('delay9').value),
+                delay18: parseInt(document.getElementById('delay18').value)
+            };
+
+            const warnings = generateValidationWarnings(data);
+            const gender = data.gender;
+            const pronoun = gender === 'Male' ? 'His' : 'Her';
+            const pronounLower = gender === 'Male' ? 'his' : 'her';
+            const heShe = gender === 'Male' ? 'He' : 'She';
+
+            // Calculate percentiles and ranges
+            const perc0 = getPercentileFromScore(data.delay0, 0);
+            const perc9 = getPercentileFromScore(data.delay9, 9);
+            const perc18 = getPercentileFromScore(data.delay18, 18);
+
+            const range9 = getClinicalRange(perc9);
+            const range18 = getClinicalRange(perc18);
+
+            // Working memory analysis
+            const workingMemoryInterpretation = getWorkingMemoryInterpretation(data.delay9, data.delay18);
+
+            let report = '';
+
+            // Attention Section
+            report += `<div class="attention-section">`;
+            report += `<h3><b>Attention</b></h3>\n`;
+            report += `<p>On Consonant Trigrams this cooperative patient recalled ${data.delay9}/15 letters after the 9 sec delay trials and ${data.delay18}/15 after 18 sec, demonstrating ${workingMemoryInterpretation}. Performance after the 9-second delay was in the ${range9} range, while performance after the 18-second delay was in the ${range18} range.</p>\n\n`;
+            report += `</div>`;
+
+            // Store for completion
+            currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+
+            // Generate score table
+            currentScoreTable = `
+                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 8px; text-align: left;">Delay Condition</th>
+                        <th style="padding: 8px; text-align: center;">Raw Score</th>
+                        <th style="padding: 8px; text-align: center;">Percentile</th>
+                        <th style="padding: 8px; text-align: center;">Range</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px;">0-Second Delay</td>
+                        <td style="padding: 8px; text-align: center;">${data.delay0}/15</td>
+                        <td style="padding: 8px; text-align: center;">${Math.round(perc0)}%</td>
+                        <td style="padding: 8px; text-align: center;">${getClinicalRange(perc0)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px;">9-Second Delay</td>
+                        <td style="padding: 8px; text-align: center;">${data.delay9}/15</td>
+                        <td style="padding: 8px; text-align: center;">${Math.round(perc9)}%</td>
+                        <td style="padding: 8px; text-align: center;">${range9}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px;">18-Second Delay</td>
+                        <td style="padding: 8px; text-align: center;">${data.delay18}/15</td>
+                        <td style="padding: 8px; text-align: center;">${Math.round(perc18)}%</td>
+                        <td style="padding: 8px; text-align: center;">${range18}</td>
+                    </tr>
+                </table>
+            `;
+
+            // Technical details section
+            report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+            report += `<h4><b>Technical Details</b></h4>`;
+            report += `<p><strong>Raw Scores (letters recalled out of 15):</strong></p>`;
+            report += `<p>• 0-Second Delay: ${data.delay0}/15 (${Math.round(perc0)}th percentile)</p>`;
+            report += `<p>• 9-Second Delay: ${data.delay9}/15 (${Math.round(perc9)}th percentile) - ${range9}</p>`;
+            report += `<p>• 18-Second Delay: ${data.delay18}/15 (${Math.round(perc18)}th percentile) - ${range18}</p>`;
+            report += `<p><strong>Working Memory Analysis:</strong></p>`;
+            report += `<p>• Decay from 0 to 9 seconds: ${data.delay0 - data.delay9} letters</p>`;
+            report += `<p>• Decay from 9 to 18 seconds: ${data.delay9 - data.delay18} letters</p>`;
+            report += `<p>• Total decay: ${data.delay0 - data.delay18} letters</p>`;
+            report += `<p><strong>Normative Source:</strong> Stuss, Stethem, & Poirier (1987) - Adults ages 18-69</p>`;
+            report += `<p><strong>Note:</strong> Based on Brown-Peterson paradigm with interference task</p>`;
+            report += `</div>`;
+
+            // Add validation warnings if any
+            if (warnings.length > 0) {
+                report += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                warnings.forEach(warning => {
+                    report += `<p style="margin: 5px 0;">${warning}</p>`;
+                });
+                report += `</div>`;
+            }
+
+            document.getElementById('output').innerHTML = report;
+            document.getElementById('output').style.display = 'block';
+        }
+
+        function completeTest() {
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
+            }
+
+            const results = {
+                narrative: currentNarrative,
+                scoreTable: currentScoreTable,
+                testName: 'Consonant Trigrams',
+                completedAt: new Date().toISOString()
+            };
+
+            window.parent.postMessage({
+                type: 'testComplete',
+                testName: 'consonant-trigrams',
+                results: results
+            }, '*');
+        }
+
+        // Listen for client info from parent
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                const clientInfo = event.data.data;
+                
+                if (clientInfo.clientAge) {
+                    document.getElementById('age').value = clientInfo.clientAge;
+                }
+                
+                if (clientInfo.clientGender) {
+                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
+                }
+                
+                if (clientInfo.clientEducation) {
+                    document.getElementById('education').value = clientInfo.clientEducation;
+                }
+                
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
+                }
+                
+                generateTrigramsReport();
+            }
+        });
+
+        // Auto-generate on page load
+        window.onload = function() {
+            generateTrigramsReport();
+        };
+    </script>
+</body>
+</html>
