@@ -65,6 +65,20 @@
         .generate-btn:hover {
             background: #0056b3;
         }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
         .output-section {
             background: white;
             border: 2px solid #dee2e6;
@@ -86,20 +100,6 @@
             color: #333;
             border-bottom: 2px solid #007bff;
             padding-bottom: 5px;
-        }
-        .complete-btn {
-            background: #28a745;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .complete-btn:hover {
-            background: #1e7e34;
         }
     </style>
 </head>
@@ -127,17 +127,17 @@
                 <div class="checkbox-group">
                     <input type="checkbox" id="audiImmediate_admin" checked>
                     <label>Auditory Immediate:</label>
-                    <input type="number" id="audiImmediate" value="83">
+                    <input type="number" id="audiImmediate" value="" placeholder="40-160">
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="audiDelayed_admin" checked>
                     <label>Auditory Delayed:</label>
-                    <input type="number" id="audiDelayed" value="89">
+                    <input type="number" id="audiDelayed" value="" placeholder="40-160">
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="audiRecogDelayed_admin" checked>
                     <label>Auditory Recognition Delayed:</label>
-                    <input type="number" id="audiRecogDelayed" value="110">
+                    <input type="number" id="audiRecogDelayed" value="" placeholder="40-160">
                 </div>
             </div>
 
@@ -146,27 +146,27 @@
                 <div class="checkbox-group">
                     <input type="checkbox" id="lm1_admin" checked>
                     <label>Logical Memory I:</label>
-                    <input type="number" id="lm1" value="9">
+                    <input type="number" id="lm1" value="" placeholder="1-19">
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="lm2_admin" checked>
                     <label>Logical Memory II:</label>
-                    <input type="number" id="lm2" value="10">
+                    <input type="number" id="lm2" value="" placeholder="1-19">
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="vpa1_admin" checked>
                     <label>Verbal Paired Assoc I:</label>
-                    <input type="number" id="vpa1" value="5">
+                    <input type="number" id="vpa1" value="" placeholder="1-19">
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="vpa2_admin" checked>
                     <label>Verbal Paired Assoc II:</label>
-                    <input type="number" id="vpa2" value="6">
+                    <input type="number" id="vpa2" value="" placeholder="1-19">
                 </div>
                 <div class="checkbox-group">
                     <input type="checkbox" id="spatialSpan_admin" checked>
                     <label>Spatial Span:</label>
-                    <input type="number" id="spatialSpan" value="8">
+                    <input type="number" id="spatialSpan" value="" placeholder="1-19">
                 </div>
             </div>
 
@@ -174,11 +174,11 @@
             <div class="score-grid">
                 <div>
                     <label>LM Retention (%):</label>
-                    <input type="number" id="lmRetention" value="96" min="0" max="100">
+                    <input type="number" id="lmRetention" value="" min="0" max="100" placeholder="0-100">
                 </div>
                 <div>
                     <label>VPA Retention (%):</label>
-                    <input type="number" id="vpaRetention" value="100" min="0" max="100">
+                    <input type="number" id="vpaRetention" value="" min="0" max="100" placeholder="0-100">
                 </div>
             </div>
 
@@ -266,6 +266,18 @@
         }
 
         function generateWMSReport() {
+            // Check if any scores are entered
+            const hasScores = document.getElementById('lm1').value || 
+                             document.getElementById('lm2').value || 
+                             document.getElementById('spatialSpan').value ||
+                             document.getElementById('audiImmediate').value;
+
+            if (!hasScores) {
+                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                document.getElementById('output').style.display = 'block';
+                return;
+            }
+
             const data = {
                 gender: document.getElementById('gender').value,
                 readingLevel: document.getElementById('readingLevel').value ? 
@@ -334,11 +346,13 @@
                     const vpa1Range = vpa1Heaton ? `${vpa1Heaton}ly Impaired` : getScaledRange(data.vpa1);
                     vpaText += `Learning of associations between unrelated pairs of words (WMS-III Verbal Paired Associates) was in the ${vpa1Range} range`;
                 }
+
                 if (data.vpa2) {
                     const vpa2Heaton = getHeatonLevel(data.vpa2, false);
                     const vpa2Range = vpa2Heaton ? `${vpa2Heaton}ly Impaired` : getScaledRange(data.vpa2);
                     vpaText += data.vpa1 ? `, while retention of those associations following a delay was in the ${vpa2Range} range` : `Retention of word pair associations (WMS-III Verbal Paired Associates) following a delay was in the ${vpa2Range} range`;
                 }
+
                 if (vpaText) {
                     memorySection += `<p>${vpaText}.</p>\n\n`;
                 }
@@ -348,6 +362,7 @@
             if (attentionSection) {
                 report += `<h3><b>Attention</b></h3>\n${attentionSection}`;
             }
+
             if (memorySection) {
                 report += `<h3><b>Learning and Memory</b></h3>\n${memorySection}`;
             }
@@ -428,18 +443,12 @@
                 if (clientInfo.clientGender) {
                     document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
                 }
+                
                 if (clientInfo.readingLevel) {
                     document.getElementById('readingLevel').value = clientInfo.readingLevel;
                 }
-                
-                generateWMSReport();
             }
         });
-
-        // Auto-generate on page load
-        window.onload = function() {
-            generateWMSReport();
-        };
     </script>
 </body>
 </html>
