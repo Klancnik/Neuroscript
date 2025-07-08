@@ -7,6 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>WAIS-IV Clinical Report Generator</title>
+    <!-- Load shared normative database -->
+    <script src="../neuroscript-norms.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -140,27 +142,27 @@
             <div class="subtest-grid">
                 <div>
                     <label>VCI Score:</label>
-                    <input type="number" id="vci" value="" placeholder="40-160">
+                    <input type="number" id="vci" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div>
                     <label>PRI Score:</label>
-                    <input type="number" id="pri" value="" placeholder="40-160">
+                    <input type="number" id="pri" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div>
                     <label>WMI Score:</label>
-                    <input type="number" id="wmi" value="" placeholder="40-160">
+                    <input type="number" id="wmi" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div>
                     <label>PSI Score:</label>
-                    <input type="number" id="psi" value="" placeholder="40-160">
+                    <input type="number" id="psi" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div>
                     <label>FSIQ Score:</label>
-                    <input type="number" id="fsiq" value="" placeholder="40-160">
+                    <input type="number" id="fsiq" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div>
                     <label>GAI Score:</label>
-                    <input type="number" id="gai" value="" placeholder="40-160">
+                    <input type="number" id="gai" value="" placeholder="40-160" min="40" max="160">
                 </div>
             </div>
 
@@ -168,43 +170,43 @@
             <div class="subtest-grid">
                 <div>
                     <label>Similarities:</label>
-                    <input type="number" id="similarities" value="" placeholder="1-19">
+                    <input type="number" id="similarities" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Vocabulary:</label>
-                    <input type="number" id="vocabulary" value="" placeholder="1-19">
+                    <input type="number" id="vocabulary" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Information:</label>
-                    <input type="number" id="information" value="" placeholder="1-19">
+                    <input type="number" id="information" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Block Design:</label>
-                    <input type="number" id="blockdesign" value="" placeholder="1-19">
+                    <input type="number" id="blockdesign" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Matrix Reasoning:</label>
-                    <input type="number" id="matrixreasoning" value="" placeholder="1-19">
+                    <input type="number" id="matrixreasoning" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Visual Puzzles:</label>
-                    <input type="number" id="visualpuzzles" value="" placeholder="1-19">
+                    <input type="number" id="visualpuzzles" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Digit Span:</label>
-                    <input type="number" id="digitspan" value="" placeholder="1-19">
+                    <input type="number" id="digitspan" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Arithmetic:</label>
-                    <input type="number" id="arithmetic" value="" placeholder="1-19">
+                    <input type="number" id="arithmetic" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Symbol Search:</label>
-                    <input type="number" id="symbolsearch" value="" placeholder="1-19">
+                    <input type="number" id="symbolsearch" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div>
                     <label>Coding:</label>
-                    <input type="number" id="coding" value="" placeholder="1-19">
+                    <input type="number" id="coding" value="" placeholder="1-19" min="1" max="19">
                 </div>
             </div>
 
@@ -212,23 +214,23 @@
             <div class="subtest-grid">
                 <div>
                     <label>Comprehension:</label>
-                    <input type="number" id="comprehension" value="" placeholder="Optional">
+                    <input type="number" id="comprehension" value="" placeholder="Optional" min="1" max="19">
                 </div>
                 <div>
                     <label>Letter-Number Seq:</label>
-                    <input type="number" id="letternumber" value="" placeholder="Optional">
+                    <input type="number" id="letternumber" value="" placeholder="Optional" min="1" max="19">
                 </div>
                 <div>
                     <label>Picture Completion:</label>
-                    <input type="number" id="picturecompletion" value="" placeholder="Optional">
+                    <input type="number" id="picturecompletion" value="" placeholder="Optional" min="1" max="19">
                 </div>
                 <div>
                     <label>Cancellation:</label>
-                    <input type="number" id="cancellation" value="" placeholder="Optional">
+                    <input type="number" id="cancellation" value="" placeholder="Optional" min="1" max="19">
                 </div>
                 <div>
                     <label>Figure Weights:</label>
-                    <input type="number" id="figureweights" value="" placeholder="Optional">
+                    <input type="number" id="figureweights" value="" placeholder="Optional" min="1" max="19">
                 </div>
             </div>
 
@@ -275,20 +277,29 @@
             return getRange(score) + " range";
         }
 
+        // Use shared database functions (loaded from neuroscript-norms.js)
         function getPercentile(score) {
-            const percentiles = {
-                85: 16, 86: 18, 87: 19, 88: 21, 89: 23,
-                90: 25, 91: 27, 92: 30, 93: 32, 94: 34,
-                95: 37, 96: 39, 97: 42, 98: 45, 99: 47,
-                100: 50, 101: 53, 102: 55, 103: 58, 104: 61,
-                105: 63, 106: 66, 107: 68, 108: 70, 109: 73,
-                110: 75, 111: 77, 112: 79, 113: 81, 114: 82,
-                115: 84, 116: 86, 117: 87, 118: 88, 119: 90,
-                120: 91, 121: 92, 122: 93, 123: 94, 124: 95,
-                125: 95, 126: 96, 127: 96, 128: 97, 129: 97,
-                130: 98, 135: 99, 140: 99.6
-            };
-            return percentiles[score] || 50;
+            return window.NeuroscriptDB.getPercentile(score, 'standard');
+        }
+
+        function getScaledPercentile(scaledScore) {
+            return window.NeuroscriptDB.getPercentile(scaledScore, 'wechsler');
+        }
+
+        function getRange(score) {
+            return window.NeuroscriptDB.getRange(score, 'standard');
+        }
+
+        function getSubtestRange(scaledScore) {
+            return window.NeuroscriptDB.getRange(scaledScore, 'wechsler');
+        }
+
+        function getDetailedInterpretation(score, isScaled = false) {
+            return window.NeuroscriptDB.getDetailedInterpretation(score, isScaled ? 'wechsler' : 'standard');
+        }
+
+        function getOrdinalPercentile(percentile) {
+            return window.NeuroscriptDB.getOrdinalPercentile(percentile);
         }
 
         function getOrdinalPercentile(percentile) {
@@ -421,7 +432,6 @@
             const indexVariability = maxIndex - minIndex;
 
             let report = `<h3><b>General Intellectual Functioning</b></h3>\n`;
-            report += `<p>The examinee was well-oriented to person, time, and place.</p>\n\n`;
 
             if (indexVariability > 23 && data.gai > 0) {
                 report += `<p>Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>\n\n`;
@@ -449,6 +459,54 @@
                 }
                 
                 report += `</table>\n`;
+            }
+
+            // Add subtest analysis section
+            if (indexScores.length > 0) {
+                report += `<h3><b>Cognitive Strengths and Weaknesses</b></h3>\n`;
+                
+                // Analyze subtest patterns
+                const subtestScores = [
+                    {name: 'Similarities', score: data.similarities, domain: 'Verbal Comprehension'},
+                    {name: 'Vocabulary', score: data.vocabulary, domain: 'Verbal Comprehension'},
+                    {name: 'Information', score: data.information, domain: 'Verbal Comprehension'},
+                    {name: 'Comprehension', score: data.comprehension, domain: 'Verbal Comprehension'},
+                    {name: 'Block Design', score: data.blockdesign, domain: 'Perceptual Reasoning'},
+                    {name: 'Matrix Reasoning', score: data.matrixreasoning, domain: 'Perceptual Reasoning'},
+                    {name: 'Visual Puzzles', score: data.visualpuzzles, domain: 'Perceptual Reasoning'},
+                    {name: 'Picture Completion', score: data.picturecompletion, domain: 'Perceptual Reasoning'},
+                    {name: 'Figure Weights', score: data.figureweights, domain: 'Perceptual Reasoning'},
+                    {name: 'Digit Span', score: data.digitspan, domain: 'Working Memory'},
+                    {name: 'Arithmetic', score: data.arithmetic, domain: 'Working Memory'},
+                    {name: 'Letter-Number Sequencing', score: data.letternumber, domain: 'Working Memory'},
+                    {name: 'Symbol Search', score: data.symbolsearch, domain: 'Processing Speed'},
+                    {name: 'Coding', score: data.coding, domain: 'Processing Speed'},
+                    {name: 'Cancellation', score: data.cancellation, domain: 'Processing Speed'}
+                ].filter(subtest => subtest.score > 0);
+
+                if (subtestScores.length > 0) {
+                    const avgSubtest = subtestScores.reduce((sum, s) => sum + s.score, 0) / subtestScores.length;
+                    const strengths = subtestScores.filter(s => s.score >= avgSubtest + 3);
+                    const weaknesses = subtestScores.filter(s => s.score <= avgSubtest - 3);
+
+                    if (strengths.length > 0) {
+                        const strengthList = strengths.map(s => `${s.name} (${getSubtestRange(s.score)})`).join(', ');
+                        report += `<p><strong>Relative Strengths:</strong> ${strengthList}.</p>\n`;
+                    }
+
+                    if (weaknesses.length > 0) {
+                        const weaknessList = weaknesses.map(s => `${s.name} (${getSubtestRange(s.score)})`).join(', ');
+                        report += `<p><strong>Relative Weaknesses:</strong> ${weaknessList}.</p>\n`;
+                    }
+
+                    // Subtest descriptions
+                    report += `<p><strong>Subtest Interpretations:</strong></p>\n`;
+                    subtestScores.forEach(subtest => {
+                        const description = getSubtestDescription(subtest.name.toLowerCase().replace(/[^a-z]/g, ''));
+                        const range = getSubtestRange(subtest.score);
+                        report += `<p>• <strong>${subtest.name}</strong> (${range}): Performance on ${description} was in the ${range} range.</p>\n`;
+                    });
+                }
             }
 
             // Store for completion
@@ -525,12 +583,12 @@
                     testName: 'wais-iv',
                     results: results
                 }, '*');
-                alert('WAIS-IV test completed successfully!');
+                alert('WAIS-IV test completed and saved successfully! Data preserved.');
                 // Try to return to dashboard
                 window.parent.hideTestFrame();
             } catch (e) {
                 console.log('Could not communicate with parent window:', e);
-                alert('Test completed locally!');
+                alert('Test completed and saved locally! Data preserved.');
             }
         }
 
