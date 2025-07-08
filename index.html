@@ -401,7 +401,7 @@
                         <button class="generate-report-btn" id="generateReportBtn" disabled>
                             Generate Professional Report
                         </button>
-                        <button class="btn-secondary" onclick="resetSession()">New Session</button>
+                        <button class="btn-secondary" onclick="resetSession()">New Client</button>
                     </div>
                 </div>
             </div>
@@ -673,7 +673,7 @@
 
         // Reset session function
         function resetSession() {
-            if (confirm('Are you sure you want to start a new session? This will clear all current data.')) {
+            if (confirm('Are you sure you want to start a new client? This will clear all current data and test results.')) {
                 localStorage.removeItem('neuroscript_client');
                 localStorage.removeItem('neuroscript_results');
                 location.reload();
