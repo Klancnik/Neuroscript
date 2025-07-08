@@ -277,6 +277,50 @@
             return getRange(score) + " range";
         }
 
+        // Enhanced input validation with visual feedback
+        function validateInput(input) {
+            const value = parseInt(input.value);
+            const min = parseInt(input.min);
+            const max = parseInt(input.max);
+            
+            if (value < min || value > max) {
+                input.style.backgroundColor = '#ffcccc';
+                input.style.border = '2px solid #ff0000';
+                setTimeout(() => {
+                    input.value = '';
+                    input.style.backgroundColor = '';
+                    input.style.border = '';
+                    alert(`Score must be between ${min} and ${max}. Please enter a valid score.`);
+                    input.focus();
+                }, 100);
+                return false;
+            }
+            input.style.backgroundColor = '';
+            input.style.border = '';
+            return true;
+        }
+
+        // Add validation to all number inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value) {
+                        validateInput(this);
+                    }
+                });
+                input.addEventListener('input', function() {
+                    const value = parseInt(this.value);
+                    const min = parseInt(this.min);
+                    const max = parseInt(this.max);
+                    if (this.value && (value < min || value > max)) {
+                        this.style.backgroundColor = '#ffeeee';
+                    } else {
+                        this.style.backgroundColor = '';
+                    }
+                });
+            });
+        });
         // Use shared database functions (loaded from neuroscript-norms.js)
         function getPercentile(score) {
             return window.NeuroscriptDB.getPercentile(score, 'standard');
@@ -431,7 +475,8 @@
             const minIndex = indexScores.length > 0 ? Math.min(...indexScores) : 0;
             const indexVariability = maxIndex - minIndex;
 
-            let report = `<h3><b>General Intellectual Functioning</b></h3>\n`;
+            // Generate comprehensive narrative with proper structure (based on clinical example)
+            report += `<h3><b>General Intellectual Functioning</b></h3>\n`;
 
             if (indexVariability > 23 && data.gai > 0) {
                 report += `<p>Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>\n\n`;
@@ -458,30 +503,46 @@
                     report += `<tr><td>Processing Speed</td><td>${getOrdinalPercentile(getPercentile(data.psi))}</td><td>${getRange(data.psi)}</td></tr>\n`;
                 }
                 
-                report += `</table>\n`;
-            }
+                report += `</table>\n\n`;
 
-            // Add subtest analysis section
-            if (indexScores.length > 0) {
-                report += `<h3><b>Cognitive Strengths and Weaknesses</b></h3>\n`;
-                
-                // Analyze subtest patterns
+                // Index interpretations (like clinical example)
+                if (data.vci > 0) {
+                    const vciInterpretation = getDetailedInterpretation(data.vci, false);
+                    report += `<p>${pronoun} score fell within the ${vciInterpretation} on the Verbal Comprehension Index, a measure of acquired verbal knowledge and verbal reasoning.</p>\n`;
+                }
+
+                if (data.pri > 0) {
+                    const priInterpretation = getDetailedInterpretation(data.pri, false);
+                    report += `<p>${pronoun} score fell within the ${priInterpretation} on the Perceptual Reasoning Index, a measure of visual-spatial reasoning, perceptual abilities, and visual-motor integration.</p>\n`;
+                }
+
+                if (data.wmi > 0) {
+                    const wmiInterpretation = getDetailedInterpretation(data.wmi, false);
+                    report += `<p>${pronoun} score fell within the ${wmiInterpretation} on the Working Memory Index, a measure of ability to attend to and process verbal information in immediate memory.</p>\n`;
+                }
+
+                if (data.psi > 0) {
+                    const psiInterpretation = getDetailedInterpretation(data.psi, false);
+                    report += `<p>${pronoun} score fell within the ${psiInterpretation} on the Processing Speed Index, a measure of ability to process visual information and act on it quickly, and to perform clerical tasks quickly and accurately.</p>\n`;
+                }
+
+                // Strengths and weaknesses analysis (like clinical example)
                 const subtestScores = [
-                    {name: 'Similarities', score: data.similarities, domain: 'Verbal Comprehension'},
-                    {name: 'Vocabulary', score: data.vocabulary, domain: 'Verbal Comprehension'},
-                    {name: 'Information', score: data.information, domain: 'Verbal Comprehension'},
-                    {name: 'Comprehension', score: data.comprehension, domain: 'Verbal Comprehension'},
-                    {name: 'Block Design', score: data.blockdesign, domain: 'Perceptual Reasoning'},
-                    {name: 'Matrix Reasoning', score: data.matrixreasoning, domain: 'Perceptual Reasoning'},
-                    {name: 'Visual Puzzles', score: data.visualpuzzles, domain: 'Perceptual Reasoning'},
-                    {name: 'Picture Completion', score: data.picturecompletion, domain: 'Perceptual Reasoning'},
-                    {name: 'Figure Weights', score: data.figureweights, domain: 'Perceptual Reasoning'},
-                    {name: 'Digit Span', score: data.digitspan, domain: 'Working Memory'},
-                    {name: 'Arithmetic', score: data.arithmetic, domain: 'Working Memory'},
-                    {name: 'Letter-Number Sequencing', score: data.letternumber, domain: 'Working Memory'},
-                    {name: 'Symbol Search', score: data.symbolsearch, domain: 'Processing Speed'},
-                    {name: 'Coding', score: data.coding, domain: 'Processing Speed'},
-                    {name: 'Cancellation', score: data.cancellation, domain: 'Processing Speed'}
+                    {name: 'Similarities', score: data.similarities, description: 'a verbal test of abstract reasoning'},
+                    {name: 'Vocabulary', score: data.vocabulary, description: 'a test requiring him to provide word definitions'},
+                    {name: 'Information', score: data.information, description: 'a verbal test of remote factual memory and general academic knowledge'},
+                    {name: 'Comprehension', score: data.comprehension, description: 'a test of practical judgment and common sense reasoning'},
+                    {name: 'Block Design', score: data.blockdesign, description: 'a test requiring him to reproduce set designs from colored blocks'},
+                    {name: 'Matrix Reasoning', score: data.matrixreasoning, description: 'a visual test of fluid intelligence and perceptual organization'},
+                    {name: 'Visual Puzzles', score: data.visualpuzzles, description: 'a test requiring mental reconstruction of visual images'},
+                    {name: 'Picture Completion', score: data.picturecompletion, description: 'a test requiring identification of missing elements in pictures'},
+                    {name: 'Figure Weights', score: data.figureweights, description: 'a test of quantitative and analogical reasoning'},
+                    {name: 'Digit Span', score: data.digitspan, description: 'a test requiring him to recall strings of numbers read aloud'},
+                    {name: 'Arithmetic', score: data.arithmetic, description: 'a test of mental arithmetic'},
+                    {name: 'Letter-Number Sequencing', score: data.letternumber, description: 'a test requiring reordering of intermixed letters and numbers'},
+                    {name: 'Symbol Search', score: data.symbolsearch, description: 'a test of visual search speed requiring minimal graphomotor dexterity'},
+                    {name: 'Coding', score: data.coding, description: 'a test requiring him to write symbols arbitrarily paired with specific digits'},
+                    {name: 'Cancellation', score: data.cancellation, description: 'a visual attention and response inhibition task'}
                 ].filter(subtest => subtest.score > 0);
 
                 if (subtestScores.length > 0) {
@@ -489,23 +550,25 @@
                     const strengths = subtestScores.filter(s => s.score >= avgSubtest + 3);
                     const weaknesses = subtestScores.filter(s => s.score <= avgSubtest - 3);
 
-                    if (strengths.length > 0) {
-                        const strengthList = strengths.map(s => `${s.name} (${getSubtestRange(s.score)})`).join(', ');
-                        report += `<p><strong>Relative Strengths:</strong> ${strengthList}.</p>\n`;
+                    if (strengths.length > 0 || weaknesses.length > 0) {
+                        report += `\n<p>Among the WAIS-IV specific subtests, `;
+                        
+                        if (strengths.length > 0) {
+                            const strengthDescriptions = strengths.map(s => `${s.name}, ${s.description}`);
+                            report += `he showed significant relative strength on ${strengthDescriptions.join('; and on ')}`;
+                            
+                            if (weaknesses.length > 0) {
+                                report += `. He showed significant relative weakness on `;
+                                const weaknessDescriptions = weaknesses.map(s => `${s.name}, ${s.description}`);
+                                report += `${weaknessDescriptions.join('; and on ')}`;
+                            }
+                        } else if (weaknesses.length > 0) {
+                            const weaknessDescriptions = weaknesses.map(s => `${s.name}, ${s.description}`);
+                            report += `he showed significant relative weakness on ${weaknessDescriptions.join('; and on ')}`;
+                        }
+                        
+                        report += `.</p>\n`;
                     }
-
-                    if (weaknesses.length > 0) {
-                        const weaknessList = weaknesses.map(s => `${s.name} (${getSubtestRange(s.score)})`).join(', ');
-                        report += `<p><strong>Relative Weaknesses:</strong> ${weaknessList}.</p>\n`;
-                    }
-
-                    // Subtest descriptions
-                    report += `<p><strong>Subtest Interpretations:</strong></p>\n`;
-                    subtestScores.forEach(subtest => {
-                        const description = getSubtestDescription(subtest.name.toLowerCase().replace(/[^a-z]/g, ''));
-                        const range = getSubtestRange(subtest.score);
-                        report += `<p>• <strong>${subtest.name}</strong> (${range}): Performance on ${description} was in the ${range} range.</p>\n`;
-                    });
                 }
             }
 
