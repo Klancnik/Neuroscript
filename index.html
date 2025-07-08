@@ -407,14 +407,14 @@
             </div>
 
             <!-- Test iframes will be loaded here -->
-            <iframe id="wais-iv-frame" class="test-iframe" src="tests/wais-iv.html"></iframe>
-            <iframe id="cvlt-3-frame" class="test-iframe" src="tests/cvlt-3.html"></iframe>
-            <iframe id="wms-iii-frame" class="test-iframe" src="tests/wms-iii.html"></iframe>
-            <iframe id="consonant-trigrams-frame" class="test-iframe" src="tests/consonant-trigrams.html"></iframe>
-            <iframe id="trails-frame" class="test-iframe" src="tests/trails.html"></iframe>
-            <iframe id="cpt-ii-frame" class="test-iframe" src="tests/cpt-ii.html"></iframe>
-            <iframe id="wcst-frame" class="test-iframe" src="tests/wcst.html"></iframe>
-            <iframe id="stroop-frame" class="test-iframe" src="tests/stroop.html"></iframe>
+            <iframe id="wais-iv-frame" class="test-iframe" src=""></iframe>
+            <iframe id="cvlt-3-frame" class="test-iframe" src=""></iframe>
+            <iframe id="wms-iii-frame" class="test-iframe" src=""></iframe>
+            <iframe id="consonant-trigrams-frame" class="test-iframe" src=""></iframe>
+            <iframe id="trails-frame" class="test-iframe" src=""></iframe>
+            <iframe id="cpt-ii-frame" class="test-iframe" src=""></iframe>
+            <iframe id="wcst-frame" class="test-iframe" src=""></iframe>
+            <iframe id="stroop-frame" class="test-iframe" src=""></iframe>
         </main>
     </div>
 
@@ -499,9 +499,12 @@
                     iframe.classList.remove('active');
                 });
                 
-                // Show target iframe
+                // Show target iframe with cache-busting
                 const iframe = document.getElementById(`${testName}-frame`);
                 if (iframe) {
+                    // Add cache-busting timestamp to prevent browser caching
+                    const timestamp = new Date().getTime();
+                    iframe.src = `tests/${testName}.html?v=${timestamp}`;
                     iframe.classList.add('active');
                     this.currentTest = testName;
                     
@@ -511,7 +514,7 @@
                     });
                     document.querySelector(`[data-test="${testName}"]`).classList.add('active');
                     
-                    // Send client info to test
+                    // Send client info to test after it loads
                     setTimeout(() => {
                         this.broadcastClientInfo(iframe.contentWindow);
                     }, 1000);
