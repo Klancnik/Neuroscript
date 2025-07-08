@@ -57,6 +57,20 @@
         .generate-btn:hover {
             background: #0056b3;
         }
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
         .output-section {
             background: white;
             border: 2px solid #dee2e6;
@@ -90,20 +104,6 @@
             border-bottom: 2px solid #007bff;
             padding-bottom: 5px;
         }
-        .complete-btn {
-            background: #28a745;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .complete-btn:hover {
-            background: #1e7e34;
-        }
     </style>
 </head>
 <body>
@@ -115,7 +115,7 @@
             <h3>Demographics</h3>
             <div class="input-group">
                 <label>Age (years):</label>
-                <input type="number" id="age" value="60">
+                <input type="number" id="age" value="" placeholder="16-90">
             </div>
             <div class="input-group">
                 <label>Gender:</label>
@@ -126,7 +126,7 @@
             </div>
             <div class="input-group">
                 <label>Education (years):</label>
-                <input type="number" id="education" value="16">
+                <input type="number" id="education" value="" placeholder="6-25">
             </div>
             <div class="input-group">
                 <label>Reading Level (grade):</label>
@@ -137,27 +137,27 @@
             <div class="subtest-grid">
                 <div>
                     <label>VCI Score:</label>
-                    <input type="number" id="vci" value="108">
+                    <input type="number" id="vci" value="" placeholder="40-160">
                 </div>
                 <div>
                     <label>PRI Score:</label>
-                    <input type="number" id="pri" value="125">
+                    <input type="number" id="pri" value="" placeholder="40-160">
                 </div>
                 <div>
                     <label>WMI Score:</label>
-                    <input type="number" id="wmi" value="129">
+                    <input type="number" id="wmi" value="" placeholder="40-160">
                 </div>
                 <div>
                     <label>PSI Score:</label>
-                    <input type="number" id="psi" value="106">
+                    <input type="number" id="psi" value="" placeholder="40-160">
                 </div>
                 <div>
                     <label>FSIQ Score:</label>
-                    <input type="number" id="fsiq" value="122">
+                    <input type="number" id="fsiq" value="" placeholder="40-160">
                 </div>
                 <div>
                     <label>GAI Score:</label>
-                    <input type="number" id="gai" value="120">
+                    <input type="number" id="gai" value="" placeholder="40-160">
                 </div>
             </div>
 
@@ -165,43 +165,43 @@
             <div class="subtest-grid">
                 <div>
                     <label>Similarities:</label>
-                    <input type="number" id="similarities" value="11">
+                    <input type="number" id="similarities" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Vocabulary:</label>
-                    <input type="number" id="vocabulary" value="13">
+                    <input type="number" id="vocabulary" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Information:</label>
-                    <input type="number" id="information" value="11">
+                    <input type="number" id="information" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Block Design:</label>
-                    <input type="number" id="blockdesign" value="11">
+                    <input type="number" id="blockdesign" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Matrix Reasoning:</label>
-                    <input type="number" id="matrixreasoning" value="16">
+                    <input type="number" id="matrixreasoning" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Visual Puzzles:</label>
-                    <input type="number" id="visualpuzzles" value="16">
+                    <input type="number" id="visualpuzzles" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Digit Span:</label>
-                    <input type="number" id="digitspan" value="11">
+                    <input type="number" id="digitspan" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Arithmetic:</label>
-                    <input type="number" id="arithmetic" value="19">
+                    <input type="number" id="arithmetic" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Symbol Search:</label>
-                    <input type="number" id="symbolsearch" value="10">
+                    <input type="number" id="symbolsearch" value="" placeholder="1-19">
                 </div>
                 <div>
                     <label>Coding:</label>
-                    <input type="number" id="coding" value="12">
+                    <input type="number" id="coding" value="" placeholder="1-19">
                 </div>
             </div>
 
@@ -318,6 +318,7 @@
 
         function generateValidationWarnings(data) {
             let warnings = [];
+
             const indices = [data.vci, data.pri, data.wmi, data.psi, data.fsiq, data.gai];
             indices.forEach(score => {
                 if (score && (score < 40 || score > 160)) {
@@ -329,6 +330,7 @@
                              data.matrixreasoning, data.visualpuzzles, data.digitspan, data.arithmetic,
                              data.symbolsearch, data.coding];
             const validSubtests = subtests.filter(s => s && s > 0);
+
             if (validSubtests.length > 0) {
                 const maxSubtest = Math.max(...validSubtests);
                 const minSubtest = Math.min(...validSubtests);
@@ -354,40 +356,51 @@
                     warnings.push("⚠️ Pervasively low performance - consider effort, sensory, or cultural factors");
                 }
             }
+
             return warnings;
         }
 
         function generateReport() {
+            // Check if minimum required fields are filled
+            const fsiq = document.getElementById('fsiq').value;
+            const vci = document.getElementById('vci').value;
+            
+            if (!fsiq && !vci) {
+                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                document.getElementById('output').style.display = 'block';
+                return;
+            }
+
             const data = {
-                age: parseInt(document.getElementById('age').value),
+                age: parseInt(document.getElementById('age').value) || 0,
                 gender: document.getElementById('gender').value,
-                education: parseInt(document.getElementById('education').value),
+                education: parseInt(document.getElementById('education').value) || 0,
                 readingLevel: document.getElementById('readingLevel').value ? 
                     parseFloat(document.getElementById('readingLevel').value) : null,
-                vci: parseInt(document.getElementById('vci').value),
-                pri: parseInt(document.getElementById('pri').value),
-                wmi: parseInt(document.getElementById('wmi').value),
-                psi: parseInt(document.getElementById('psi').value),
-                fsiq: parseInt(document.getElementById('fsiq').value),
-                gai: parseInt(document.getElementById('gai').value),
-                similarities: parseInt(document.getElementById('similarities').value),
-                vocabulary: parseInt(document.getElementById('vocabulary').value),
-                information: parseInt(document.getElementById('information').value),
+                vci: parseInt(document.getElementById('vci').value) || 0,
+                pri: parseInt(document.getElementById('pri').value) || 0,
+                wmi: parseInt(document.getElementById('wmi').value) || 0,
+                psi: parseInt(document.getElementById('psi').value) || 0,
+                fsiq: parseInt(document.getElementById('fsiq').value) || 0,
+                gai: parseInt(document.getElementById('gai').value) || 0,
+                similarities: parseInt(document.getElementById('similarities').value) || 0,
+                vocabulary: parseInt(document.getElementById('vocabulary').value) || 0,
+                information: parseInt(document.getElementById('information').value) || 0,
                 comprehension: document.getElementById('comprehension').value ? 
                     parseInt(document.getElementById('comprehension').value) : null,
-                blockdesign: parseInt(document.getElementById('blockdesign').value),
-                matrixreasoning: parseInt(document.getElementById('matrixreasoning').value),
-                visualpuzzles: parseInt(document.getElementById('visualpuzzles').value),
+                blockdesign: parseInt(document.getElementById('blockdesign').value) || 0,
+                matrixreasoning: parseInt(document.getElementById('matrixreasoning').value) || 0,
+                visualpuzzles: parseInt(document.getElementById('visualpuzzles').value) || 0,
                 picturecompletion: document.getElementById('picturecompletion').value ? 
                     parseInt(document.getElementById('picturecompletion').value) : null,
                 figureweights: document.getElementById('figureweights').value ? 
                     parseInt(document.getElementById('figureweights').value) : null,
-                digitspan: parseInt(document.getElementById('digitspan').value),
-                arithmetic: parseInt(document.getElementById('arithmetic').value),
+                digitspan: parseInt(document.getElementById('digitspan').value) || 0,
+                arithmetic: parseInt(document.getElementById('arithmetic').value) || 0,
                 letternumber: document.getElementById('letternumber').value ? 
                     parseInt(document.getElementById('letternumber').value) : null,
-                symbolsearch: parseInt(document.getElementById('symbolsearch').value),
-                coding: parseInt(document.getElementById('coding').value),
+                symbolsearch: parseInt(document.getElementById('symbolsearch').value) || 0,
+                coding: parseInt(document.getElementById('coding').value) || 0,
                 cancellation: document.getElementById('cancellation').value ? 
                     parseInt(document.getElementById('cancellation').value) : null
             };
@@ -411,6 +424,106 @@
             }
 
             report += `<p>The WAIS-IV also permits calculation of Index scores that reflect ability in more specific areas, these are given in the table below:</p>\n`;
+
             report += `<table class="wais-table">\n`;
             report += `<tr><th>WAIS-IV INDEX</th><th>PERCENTILE</th><th>RANGE</th></tr>\n`;
-            report += `<tr><td>Verbal Comprehension</td><td>${getOrdinalPercentile(getPercentile(data.vci))}</td><td>${getRange(data
+            report += `<tr><td>Verbal Comprehension</td><td>${getOrdinalPercentile(getPercentile(data.vci))}</td><td>${getRange(data.vci)}</td></tr>\n`;
+            report += `<tr><td>Perceptual Reasoning</td><td>${getOrdinalPercentile(getPercentile(data.pri))}</td><td>${getRange(data.pri)}</td></tr>\n`;
+            report += `<tr><td>Working Memory</td><td>${getOrdinalPercentile(getPercentile(data.wmi))}</td><td>${getRange(data.wmi)}</td></tr>\n`;
+            report += `<tr><td>Processing Speed</td><td>${getOrdinalPercentile(getPercentile(data.psi))}</td><td>${getRange(data.psi)}</td></tr>\n`;
+            report += `</table>\n`;
+
+            // Store for completion
+            currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+
+            // Generate score table
+            const adminTests = [];
+            if (data.similarities) adminTests.push(['Similarities', data.similarities, getSubtestRange(data.similarities)]);
+            if (data.vocabulary) adminTests.push(['Vocabulary', data.vocabulary, getSubtestRange(data.vocabulary)]);
+            if (data.information) adminTests.push(['Information', data.information, getSubtestRange(data.information)]);
+            if (data.blockdesign) adminTests.push(['Block Design', data.blockdesign, getSubtestRange(data.blockdesign)]);
+            if (data.matrixreasoning) adminTests.push(['Matrix Reasoning', data.matrixreasoning, getSubtestRange(data.matrixreasoning)]);
+            if (data.visualpuzzles) adminTests.push(['Visual Puzzles', data.visualpuzzles, getSubtestRange(data.visualpuzzles)]);
+            if (data.digitspan) adminTests.push(['Digit Span', data.digitspan, getSubtestRange(data.digitspan)]);
+            if (data.arithmetic) adminTests.push(['Arithmetic', data.arithmetic, getSubtestRange(data.arithmetic)]);
+            if (data.symbolsearch) adminTests.push(['Symbol Search', data.symbolsearch, getSubtestRange(data.symbolsearch)]);
+            if (data.coding) adminTests.push(['Coding', data.coding, getSubtestRange(data.coding)]);
+
+            currentScoreTable = `
+                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 8px; text-align: left;">WAIS-IV Subtest</th>
+                        <th style="padding: 8px; text-align: center;">Scaled Score</th>
+                        <th style="padding: 8px; text-align: center;">Range</th>
+                    </tr>
+                    ${adminTests.map(test => `
+                        <tr>
+                            <td style="padding: 8px;">${test[0]}</td>
+                            <td style="padding: 8px; text-align: center;">${test[1]}</td>
+                            <td style="padding: 8px; text-align: center;">${test[2]}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            `;
+
+            // Display the report
+            document.getElementById('output').innerHTML = report;
+
+            // Add validation warnings if any
+            if (warnings.length > 0) {
+                document.getElementById('output').innerHTML += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                document.getElementById('output').innerHTML += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                warnings.forEach(warning => {
+                    document.getElementById('output').innerHTML += `<p style="margin: 5px 0;">${warning}</p>`;
+                });
+                document.getElementById('output').innerHTML += `</div>`;
+            }
+
+            document.getElementById('output').style.display = 'block';
+        }
+
+        function completeTest() {
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
+            }
+
+            const results = {
+                narrative: currentNarrative,
+                scoreTable: currentScoreTable,
+                testName: 'WAIS-IV',
+                completedAt: new Date().toISOString()
+            };
+
+            window.parent.postMessage({
+                type: 'testComplete',
+                testName: 'wais-iv',
+                results: results
+            }, '*');
+        }
+
+        // Listen for client info from parent
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                const clientInfo = event.data.data;
+                
+                if (clientInfo.clientAge) {
+                    document.getElementById('age').value = clientInfo.clientAge;
+                }
+                
+                if (clientInfo.clientGender) {
+                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
+                }
+                
+                if (clientInfo.clientEducation) {
+                    document.getElementById('education').value = clientInfo.clientEducation;
+                }
+                
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
