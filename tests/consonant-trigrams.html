@@ -107,18 +107,18 @@
             <h3>Demographics</h3>
             <div class="input-group">
                 <label>Age (years):</label>
-                <input type="number" id="age" value="45" min="18" max="85">
+                <input type="number" id="age" value="" min="18" max="85" placeholder="18-85">
             </div>
             <div class="input-group">
                 <label>Gender:</label>
                 <select id="gender">
                     <option value="Male">Male</option>
-                    <option value="Female" selected>Female</option>
+                    <option value="Female">Female</option>
                 </select>
             </div>
             <div class="input-group">
                 <label>Education (years):</label>
-                <input type="number" id="education" value="16" min="8" max="25">
+                <input type="number" id="education" value="" min="8" max="25" placeholder="8-25">
             </div>
             <div class="input-group">
                 <label>Reading Level (grade):</label>
@@ -129,15 +129,15 @@
             <div class="score-grid">
                 <div>
                     <label>0-Second Delay:</label>
-                    <input type="number" id="delay0" value="15" min="0" max="15">
+                    <input type="number" id="delay0" value="" min="0" max="15" placeholder="0-15">
                 </div>
                 <div>
                     <label>9-Second Delay:</label>
-                    <input type="number" id="delay9" value="12" min="0" max="15">
+                    <input type="number" id="delay9" value="" min="0" max="15" placeholder="0-15">
                 </div>
                 <div>
                     <label>18-Second Delay:</label>
-                    <input type="number" id="delay18" value="8" min="0" max="15">
+                    <input type="number" id="delay18" value="" min="0" max="15" placeholder="0-15">
                 </div>
             </div>
 
@@ -264,15 +264,25 @@
         }
 
         function generateTrigramsReport() {
+            // Check if minimum required fields are filled
+            const delay9 = document.getElementById('delay9').value;
+            const delay18 = document.getElementById('delay18').value;
+            
+            if (!delay9 && !delay18) {
+                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                document.getElementById('output').style.display = 'block';
+                return;
+            }
+
             const data = {
-                age: parseInt(document.getElementById('age').value),
+                age: parseInt(document.getElementById('age').value) || 0,
                 gender: document.getElementById('gender').value,
-                education: parseInt(document.getElementById('education').value),
+                education: parseInt(document.getElementById('education').value) || 0,
                 readingLevel: document.getElementById('readingLevel').value ? 
                     parseFloat(document.getElementById('readingLevel').value) : null,
-                delay0: parseInt(document.getElementById('delay0').value),
-                delay9: parseInt(document.getElementById('delay9').value),
-                delay18: parseInt(document.getElementById('delay18').value)
+                delay0: parseInt(document.getElementById('delay0').value) || 0,
+                delay9: parseInt(document.getElementById('delay9').value) || 0,
+                delay18: parseInt(document.getElementById('delay18').value) || 0
             };
 
             const warnings = generateValidationWarnings(data);
@@ -402,15 +412,8 @@
                 if (clientInfo.readingLevel) {
                     document.getElementById('readingLevel').value = clientInfo.readingLevel;
                 }
-                
-                generateTrigramsReport();
             }
         });
-
-        // Auto-generate on page load
-        window.onload = function() {
-            generateTrigramsReport();
-        };
     </script>
 </body>
 </html>
