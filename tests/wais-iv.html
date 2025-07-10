@@ -293,7 +293,52 @@
             });
         });
 
-        function getSubtestDescription(subtest) {
+        // Temporary fix: Direct implementation of statistical conversions
+        // TODO: Fix this in neuroscript-norms.js later
+        function getCorrectRange(score, isSubtest = false) {
+            if (isSubtest) {
+                // Scaled scores (1-19) - Wechsler subtest scores
+                if (score >= 16) return "Exceptionally High";
+                if (score >= 14) return "Above Average";
+                if (score >= 12) return "High Average";
+                if (score >= 8) return "Average";
+                if (score >= 6) return "Low Average";
+                if (score >= 4) return "Below Average";
+                if (score >= 2) return "Exceptionally Low";
+                return "Exceptionally Low";
+            } else {
+                // Standard scores (40-160) - Index scores
+                if (score >= 130) return "Exceptionally High";
+                if (score >= 120) return "Above Average";
+                if (score >= 110) return "High Average";
+                if (score >= 90) return "Average";
+                if (score >= 80) return "Low Average";
+                if (score >= 70) return "Below Average";
+                return "Exceptionally Low";
+            }
+        }
+
+        function getCorrectDetailedInterpretation(score, isSubtest = false) {
+            const range = getCorrectRange(score, isSubtest);
+            
+            if (isSubtest) {
+                // For subtest scores, add Heaton impairment levels for low scores
+                if (score <= 6) {
+                    if (score <= 2) return "Exceptionally Low, indicating a severely impaired level of impairment";
+                    if (score <= 4) return "Below Average, indicating a mildly to moderately impaired level of impairment";
+                    if (score <= 6) return "Low Average, indicating a mildly impaired level of impairment";
+                }
+                return range;
+            } else {
+                // For index scores, add Heaton for very low scores
+                if (score < 80) {
+                    if (score < 55) return "Exceptionally Low, indicating a severely impaired level of impairment";
+                    if (score < 70) return "Below Average, indicating a mildly to moderately impaired level of impairment";
+                    if (score < 80) return "Low Average, indicating a mildly impaired level of impairment";
+                }
+                return range;
+            }
+        }
             const descriptions = {
                 similarities: "a verbal test of abstract reasoning",
                 vocabulary: "a test requiring him to provide word definitions",
@@ -488,10 +533,10 @@
 
                 // Language Section
                 let languageTests = [];
-                if (data.similarities > 0) languageTests.push({name: 'Similarities', score: data.similarities, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.similarities, true), description: 'a verbal test of abstract reasoning'});
-                if (data.vocabulary > 0) languageTests.push({name: 'Vocabulary', score: data.vocabulary, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.vocabulary, true), description: 'a test requiring him to provide word definitions'});
-                if (data.information > 0) languageTests.push({name: 'Information', score: data.information, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.information, true), description: 'a verbal test of remote factual memory and general academic knowledge'});
-                if (data.comprehension) languageTests.push({name: 'Comprehension', score: data.comprehension, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.comprehension, true), description: 'a test of practical judgment and common sense reasoning'});
+                if (data.similarities > 0) languageTests.push({name: 'Similarities', score: data.similarities, interpretation: getCorrectDetailedInterpretation(data.similarities, true), description: 'a verbal test of abstract reasoning'});
+                if (data.vocabulary > 0) languageTests.push({name: 'Vocabulary', score: data.vocabulary, interpretation: getCorrectDetailedInterpretation(data.vocabulary, true), description: 'a test requiring him to provide word definitions'});
+                if (data.information > 0) languageTests.push({name: 'Information', score: data.information, interpretation: getCorrectDetailedInterpretation(data.information, true), description: 'a verbal test of remote factual memory and general academic knowledge'});
+                if (data.comprehension) languageTests.push({name: 'Comprehension', score: data.comprehension, interpretation: getCorrectDetailedInterpretation(data.comprehension, true), description: 'a test of practical judgment and common sense reasoning'});
 
                 if (languageTests.length > 0) {
                     report += '<div style="margin-bottom: 20px;">';
@@ -504,12 +549,12 @@
 
                 // Attention Section  
                 let attentionTests = [];
-                if (data.digitspan > 0) attentionTests.push({name: 'Digit Span', score: data.digitspan, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.digitspan, true), description: 'a test requiring him to recall strings of numbers read aloud'});
-                if (data.arithmetic > 0) attentionTests.push({name: 'Arithmetic', score: data.arithmetic, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.arithmetic, true), description: 'a test of mental arithmetic'});
-                if (data.letternumber) attentionTests.push({name: 'Letter-Number Sequencing', score: data.letternumber, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.letternumber, true), description: 'a test requiring reordering of intermixed letters and numbers'});
-                if (data.symbolsearch > 0) attentionTests.push({name: 'Symbol Search', score: data.symbolsearch, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.symbolsearch, true), description: 'a test of visual search speed requiring minimal graphomotor dexterity'});
-                if (data.coding > 0) attentionTests.push({name: 'Coding', score: data.coding, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.coding, true), description: 'a test requiring him to write symbols arbitrarily paired with specific digits'});
-                if (data.cancellation) attentionTests.push({name: 'Cancellation', score: data.cancellation, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.cancellation, true), description: 'a visual attention and response inhibition task'});
+                if (data.digitspan > 0) attentionTests.push({name: 'Digit Span', score: data.digitspan, interpretation: getCorrectDetailedInterpretation(data.digitspan, true), description: 'a test requiring him to recall strings of numbers read aloud'});
+                if (data.arithmetic > 0) attentionTests.push({name: 'Arithmetic', score: data.arithmetic, interpretation: getCorrectDetailedInterpretation(data.arithmetic, true), description: 'a test of mental arithmetic'});
+                if (data.letternumber) attentionTests.push({name: 'Letter-Number Sequencing', score: data.letternumber, interpretation: getCorrectDetailedInterpretation(data.letternumber, true), description: 'a test requiring reordering of intermixed letters and numbers'});
+                if (data.symbolsearch > 0) attentionTests.push({name: 'Symbol Search', score: data.symbolsearch, interpretation: getCorrectDetailedInterpretation(data.symbolsearch, true), description: 'a test of visual search speed requiring minimal graphomotor dexterity'});
+                if (data.coding > 0) attentionTests.push({name: 'Coding', score: data.coding, interpretation: getCorrectDetailedInterpretation(data.coding, true), description: 'a test requiring him to write symbols arbitrarily paired with specific digits'});
+                if (data.cancellation) attentionTests.push({name: 'Cancellation', score: data.cancellation, interpretation: getCorrectDetailedInterpretation(data.cancellation, true), description: 'a visual attention and response inhibition task'});
 
                 if (attentionTests.length > 0) {
                     report += '<div style="margin-bottom: 20px;">';
@@ -522,9 +567,9 @@
 
                 // Visuospatial / Visuoconstructional Section
                 let visuospatialTests = [];
-                if (data.blockdesign > 0) visuospatialTests.push({name: 'Block Design', score: data.blockdesign, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.blockdesign, true), description: 'ability to reproduce set designs from colored blocks'});
-                if (data.visualpuzzles > 0) visuospatialTests.push({name: 'Visual Puzzles', score: data.visualpuzzles, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.visualpuzzles, true), description: 'test requiring mental reconstruction of visual images'});
-                if (data.picturecompletion) visuospatialTests.push({name: 'Picture Completion', score: data.picturecompletion, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.picturecompletion, true), description: 'test requiring identification of missing elements in pictures'});
+                if (data.blockdesign > 0) visuospatialTests.push({name: 'Block Design', score: data.blockdesign, interpretation: getCorrectDetailedInterpretation(data.blockdesign, true), description: 'ability to reproduce set designs from colored blocks'});
+                if (data.visualpuzzles > 0) visuospatialTests.push({name: 'Visual Puzzles', score: data.visualpuzzles, interpretation: getCorrectDetailedInterpretation(data.visualpuzzles, true), description: 'test requiring mental reconstruction of visual images'});
+                if (data.picturecompletion) visuospatialTests.push({name: 'Picture Completion', score: data.picturecompletion, interpretation: getCorrectDetailedInterpretation(data.picturecompletion, true), description: 'test requiring identification of missing elements in pictures'});
 
                 if (visuospatialTests.length > 0) {
                     report += '<div style="margin-bottom: 20px;">';
@@ -537,8 +582,8 @@
 
                 // Executive Functioning / Problem Solving Section
                 let executiveTests = [];
-                if (data.matrixreasoning > 0) executiveTests.push({name: 'Matrix Reasoning', score: data.matrixreasoning, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.matrixreasoning, true), description: 'He scored within the {range} range on a visual test of fluid intelligence and perceptual organization'});
-                if (data.figureweights) executiveTests.push({name: 'Figure Weights', score: data.figureweights, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.figureweights, true), description: 'test of quantitative and analogical reasoning'});
+                if (data.matrixreasoning > 0) executiveTests.push({name: 'Matrix Reasoning', score: data.matrixreasoning, interpretation: getCorrectDetailedInterpretation(data.matrixreasoning, true), description: 'He scored within the {range} range on a visual test of fluid intelligence and perceptual organization'});
+                if (data.figureweights) executiveTests.push({name: 'Figure Weights', score: data.figureweights, interpretation: getCorrectDetailedInterpretation(data.figureweights, true), description: 'test of quantitative and analogical reasoning'});
 
                 if (executiveTests.length > 0) {
                     report += '<div style="margin-bottom: 20px;">';
@@ -631,7 +676,7 @@
                             <tr>
                                 <td style="padding: 8px;">${test[0]}</td>
                                 <td style="padding: 8px; text-align: center;">${test[1]}</td>
-                                <td style="padding: 8px; text-align: center;">${window.NeuroscriptDB.getRange(test[1], 'wechsler')}</td>
+                                <td style="padding: 8px; text-align: center;">${getCorrectRange(test[1], true)}</td>
                             </tr>
                         `).join('')}
                     </table>
