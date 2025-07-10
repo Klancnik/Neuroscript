@@ -43,6 +43,10 @@
             border: 1px solid #ddd;
             border-radius: 3px;
         }
+        input[type="number"]:invalid {
+            border: 2px solid #ff0000;
+            background-color: #ffe6e6;
+        }
         .score-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -134,42 +138,42 @@
             <div class="section-header">Primary Index Scores (Standard Scores)</div>
             <div class="score-grid">
                 <div class="checkbox-group">
-                    <input type="checkbox" id="audiImmediate_admin" checked>
+                    <input type="checkbox" id="audiImmediate_admin">
                     <label>Auditory Immediate:</label>
                     <input type="number" id="audiImmediate" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="visualImmediate_admin" checked>
+                    <input type="checkbox" id="visualImmediate_admin">
                     <label>Visual Immediate:</label>
                     <input type="number" id="visualImmediate" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="immediateMemory_admin" checked>
+                    <input type="checkbox" id="immediateMemory_admin">
                     <label>Immediate Memory:</label>
                     <input type="number" id="immediateMemory" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="audiDelayed_admin" checked>
+                    <input type="checkbox" id="audiDelayed_admin">
                     <label>Auditory Delayed:</label>
                     <input type="number" id="audiDelayed" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="visualDelayed_admin" checked>
+                    <input type="checkbox" id="visualDelayed_admin">
                     <label>Visual Delayed:</label>
                     <input type="number" id="visualDelayed" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="audiRecogDelayed_admin" checked>
+                    <input type="checkbox" id="audiRecogDelayed_admin">
                     <label>Auditory Recognition Delayed:</label>
                     <input type="number" id="audiRecogDelayed" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="generalMemory_admin" checked>
+                    <input type="checkbox" id="generalMemory_admin">
                     <label>General Memory:</label>
                     <input type="number" id="generalMemory" value="" placeholder="40-160" min="40" max="160">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="workingMemory_admin" checked>
+                    <input type="checkbox" id="workingMemory_admin">
                     <label>Working Memory:</label>
                     <input type="number" id="workingMemory" value="" placeholder="40-160" min="40" max="160">
                 </div>
@@ -178,52 +182,52 @@
             <div class="section-header">Primary Subtest Scaled Scores</div>
             <div class="score-grid">
                 <div class="checkbox-group">
-                    <input type="checkbox" id="lm1_admin" checked>
+                    <input type="checkbox" id="lm1_admin">
                     <label>Logical Memory I:</label>
                     <input type="number" id="lm1" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="lm2_admin" checked>
+                    <input type="checkbox" id="lm2_admin">
                     <label>Logical Memory II:</label>
                     <input type="number" id="lm2" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="faces1_admin" checked>
+                    <input type="checkbox" id="faces1_admin">
                     <label>Faces I:</label>
                     <input type="number" id="faces1" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="faces2_admin" checked>
+                    <input type="checkbox" id="faces2_admin">
                     <label>Faces II:</label>
                     <input type="number" id="faces2" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="vpa1_admin" checked>
+                    <input type="checkbox" id="vpa1_admin">
                     <label>Verbal Paired Assoc I:</label>
                     <input type="number" id="vpa1" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="vpa2_admin" checked>
+                    <input type="checkbox" id="vpa2_admin">
                     <label>Verbal Paired Assoc II:</label>
                     <input type="number" id="vpa2" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="familyPic1_admin" checked>
+                    <input type="checkbox" id="familyPic1_admin">
                     <label>Family Pictures I:</label>
                     <input type="number" id="familyPic1" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="familyPic2_admin" checked>
+                    <input type="checkbox" id="familyPic2_admin">
                     <label>Family Pictures II:</label>
                     <input type="number" id="familyPic2" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="letterNumber_admin" checked>
+                    <input type="checkbox" id="letterNumber_admin">
                     <label>Letter-Number Sequencing:</label>
                     <input type="number" id="letterNumber" value="" placeholder="1-19" min="1" max="19">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="spatialSpan_admin" checked>
+                    <input type="checkbox" id="spatialSpan_admin">
                     <label>Spatial Span:</label>
                     <input type="number" id="spatialSpan" value="" placeholder="1-19" min="1" max="19">
                 </div>
@@ -459,6 +463,14 @@
                 if (!window.NeuroscriptDB) {
                     document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please ensure neuroscript-norms.js is properly loaded.</p>`;
                     document.getElementById('output').style.display = 'block';
+                    return;
+                }
+
+                // Check for invalid inputs before proceeding
+                const invalidInputs = document.querySelectorAll('input[type="number"]:invalid');
+                if (invalidInputs.length > 0) {
+                    alert('Please correct the highlighted fields with invalid values before generating the report.');
+                    invalidInputs[0].focus(); // Focus on first invalid field
                     return;
                 }
 
