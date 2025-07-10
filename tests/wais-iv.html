@@ -367,6 +367,11 @@
                     return;
                 }
 
+                // Debug: Test database functions
+                console.log('Database functions available:', Object.keys(window.NeuroscriptDB));
+                console.log('Test getRange(100):', window.NeuroscriptDB.getRange(100));
+                console.log('Test getDetailedInterpretation(5, true):', window.NeuroscriptDB.getDetailedInterpretation(5, true));
+
                 // Check if minimum required fields are filled
                 const fsiq = document.getElementById('fsiq').value;
                 const vci = document.getElementById('vci').value;
@@ -426,13 +431,9 @@
                 // Generate professional report structure like clinical example
                 let report = '';
 
-                // Simple test first
-                report += '<h2 style="color: red; margin: 20px 0;">TEST HEADER</h2>';
-                report += '<p style="margin: 15px 0; font-weight: bold;">This is a test paragraph to verify HTML rendering.</p>';
-                
                 // General Intellectual Functioning Section
                 report += '<div style="margin-bottom: 20px;">';
-                report += '<h3 style="font-weight: bold; margin: 20px 0 10px 0; color: blue;">General Intellectual Functioning</h3>';
+                report += '<h3 style="font-weight: bold; margin: 20px 0 10px 0;">General Intellectual Functioning</h3>';
 
                 if (indexVariability > 23 && data.gai > 0) {
                     report += `<p style="margin: 10px 0;">Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${window.NeuroscriptDB.getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>`;
@@ -719,7 +720,12 @@
             console.log('window.NeuroscriptDB exists:', !!window.NeuroscriptDB);
             if (window.NeuroscriptDB) {
                 console.log('Database loaded successfully');
-                console.log('Sample database function test:', window.NeuroscriptDB.getPercentile ? 'Functions available' : 'Functions missing');
+                console.log('Available functions:', Object.keys(window.NeuroscriptDB));
+                
+                // Test database functions
+                console.log('Test getRange(100):', window.NeuroscriptDB.getRange ? window.NeuroscriptDB.getRange(100) : 'getRange function not found');
+                console.log('Test getPercentile(100):', window.NeuroscriptDB.getPercentile ? window.NeuroscriptDB.getPercentile(100) : 'getPercentile function not found');
+                console.log('Test getDetailedInterpretation(5, true):', window.NeuroscriptDB.getDetailedInterpretation ? window.NeuroscriptDB.getDetailedInterpretation(5, true) : 'getDetailedInterpretation function not found');
             } else {
                 console.error('Database NOT loaded. Check neuroscript-norms.js file location and loading.');
             }
