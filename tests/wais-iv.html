@@ -426,9 +426,13 @@
                 // Generate professional report structure like clinical example
                 let report = '';
 
+                // Simple test first
+                report += '<h2 style="color: red; margin: 20px 0;">TEST HEADER</h2>';
+                report += '<p style="margin: 15px 0; font-weight: bold;">This is a test paragraph to verify HTML rendering.</p>';
+                
                 // General Intellectual Functioning Section
                 report += '<div style="margin-bottom: 20px;">';
-                report += '<h3 style="font-weight: bold; margin: 20px 0 10px 0;">General Intellectual Functioning</h3>';
+                report += '<h3 style="font-weight: bold; margin: 20px 0 10px 0; color: blue;">General Intellectual Functioning</h3>';
 
                 if (indexVariability > 23 && data.gai > 0) {
                     report += `<p style="margin: 10px 0;">Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${window.NeuroscriptDB.getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>`;
@@ -612,7 +616,7 @@
                 }
 
                 // Store for completion (plain text for parent communication)
-                currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+                currentNarrative = report.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 
                 // Store the formatted score table for completion
                 currentScoreTable = `
@@ -633,6 +637,7 @@
                 `;
 
                 // Display the report
+                console.log('Generated report HTML:', report.substring(0, 500));
                 document.getElementById('output').innerHTML = report;
 
                 // Add validation warnings if any
