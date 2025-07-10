@@ -116,7 +116,7 @@
         <h1>WAIS-IV Clinical Report Generator</h1>
         <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
-                    <div class="input-section">
+        <div class="input-section">
             <h3>Demographics</h3>
             <div class="input-group">
                 <label>Age (years):</label>
@@ -539,8 +539,8 @@
                 }
 
                 // Generate Score Summary Appendix (like clinical example)
-                report += `\n<h3><p></p><p></p><p><b>SCORE SUMMARY</b></p><p></p></h3>\n\n`;
-                report += `<h1><b>WAIS-IV</b>&nbsp;&nbsp;Norms Used: North American</h1>\n\n`;
+                report += `<p><b>SCORE SUMMARY</b></p>\n\n`;
+                report += `<p><b>WAIS-IV</b>&nbsp;&nbsp;Norms Used: North American</p>\n\n`;
 
                 // Index scores table exactly like sample (side-by-side layout)
                 if (indexScores.length > 0) {
