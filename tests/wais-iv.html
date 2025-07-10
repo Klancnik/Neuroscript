@@ -424,70 +424,7 @@
                 const indexVariability = maxIndex - minIndex;
 
                 // Generate professional report structure like clinical example
-                let report = `
-                    <style>
-                        .neuroscript-report {
-                            font-family: Arial, sans-serif;
-                            font-size: 12pt;
-                            line-height: 1.4;
-                            max-width: 800px;
-                            margin: 0 auto;
-                        }
-                        .neuroscript-report h1 {
-                            font-size: 12pt;
-                            font-weight: bold;
-                            margin: 20px 0 10px 0;
-                            border-bottom: none;
-                        }
-                        .neuroscript-report h3 {
-                            font-size: 12pt;
-                            font-weight: bold;
-                            margin: 15px 0 10px 0;
-                        }
-                        .neuroscript-report p {
-                            margin: 8px 0;
-                            text-align: justify;
-                        }
-                        .wais-score-table {
-                            font-family: Arial, sans-serif;
-                            font-size: 12pt;
-                            border-collapse: collapse;
-                            margin: 15px 0;
-                            width: 100%;
-                        }
-                        .wais-score-table th, .wais-score-table td {
-                            border: 1px solid black;
-                            padding: 6px 8px;
-                            text-align: left;
-                        }
-                        .wais-score-table th {
-                            background-color: #f3f3f3;
-                            font-weight: bold;
-                        }
-                        .score-summary {
-                            margin-top: 30px;
-                            padding-top: 20px;
-                            border-top: 2px solid #333;
-                        }
-                        .summary-table {
-                            font-family: Arial, sans-serif;
-                            font-size: 11pt;
-                            border-collapse: collapse;
-                            width: 100%;
-                            margin: 10px 0;
-                        }
-                        .summary-table th, .summary-table td {
-                            border: 1px solid black;
-                            padding: 4px 6px;
-                            text-align: left;
-                        }
-                        .summary-table th {
-                            background-color: #f3f3f3;
-                            font-weight: bold;
-                        }
-                    </style>
-                    <div class="neuroscript-report">
-                `;
+                let report = ``;
 
                 // General Intellectual Functioning Section
                 report += `<h1><b>General Intellectual Functioning</b></h1>\n`;
@@ -501,20 +438,20 @@
                 if (indexScores.length > 0) {
                     report += `<p>The WAIS-IV also permits calculation of Index scores that reflect ability in more specific areas, these are given in the table below:</p>\n`;
 
-                    report += `<table class="wais-score-table">\n`;
-                    report += `<tr><th>WAIS-IV INDEX</th><th>PERCENTILE</th><th>RANGE</th></tr>\n`;
+                    report += `<table style="font-family: Arial, sans-serif; font-size: 12pt; border-collapse: collapse; margin: 15px 0; width: 100%;">\n`;
+                    report += `<tr><th style="border: 1px solid black; padding: 6px 8px; background-color: #f3f3f3; font-weight: bold;">WAIS-IV INDEX</th><th style="border: 1px solid black; padding: 6px 8px; background-color: #f3f3f3; font-weight: bold;">PERCENTILE</th><th style="border: 1px solid black; padding: 6px 8px; background-color: #f3f3f3; font-weight: bold;">RANGE</th></tr>\n`;
                     
                     if (data.vci > 0) {
-                        report += `<tr><td>Verbal Comprehension</td><td>${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.vci))}</td><td>${window.NeuroscriptDB.getRange(data.vci)}</td></tr>\n`;
+                        report += `<tr><td style="border: 1px solid black; padding: 6px 8px;">Verbal Comprehension</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.vci))}</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getRange(data.vci)}</td></tr>\n`;
                     }
                     if (data.pri > 0) {
-                        report += `<tr><td>Perceptual Reasoning</td><td>${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.pri))}</td><td>${window.NeuroscriptDB.getRange(data.pri)}</td></tr>\n`;
+                        report += `<tr><td style="border: 1px solid black; padding: 6px 8px;">Perceptual Reasoning</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.pri))}</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getRange(data.pri)}</td></tr>\n`;
                     }
                     if (data.wmi > 0) {
-                        report += `<tr><td>Working Memory</td><td>${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.wmi))}</td><td>${window.NeuroscriptDB.getRange(data.wmi)}</td></tr>\n`;
+                        report += `<tr><td style="border: 1px solid black; padding: 6px 8px;">Working Memory</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.wmi))}</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getRange(data.wmi)}</td></tr>\n`;
                     }
                     if (data.psi > 0) {
-                        report += `<tr><td>Processing Speed</td><td>${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.psi))}</td><td>${window.NeuroscriptDB.getRange(data.psi)}</td></tr>\n`;
+                        report += `<tr><td style="border: 1px solid black; padding: 6px 8px;">Processing Speed</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.psi))}</td><td style="border: 1px solid black; padding: 6px 8px;">${window.NeuroscriptDB.getRange(data.psi)}</td></tr>\n`;
                     }
                     
                     report += `</table>\n\n`;
@@ -601,7 +538,7 @@
                 }
 
                 // Generate Score Summary Appendix (like clinical example)
-                report += `\n<div class="score-summary">`;
+                report += `\n<div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #333;">`;
                 report += `<h3><b>SCORE SUMMARY</b></h3>\n`;
                 report += `<h1><b>WAIS-IV</b>&nbsp;&nbsp;Norms Used: North American</h1>\n`;
 
@@ -613,7 +550,7 @@
                     if (data.fsiq > 0) report += `<tr><td>FSIQ</td><td style="text-align: right;">${data.fsiq}</td></tr>`;
                     if (data.gai > 0) report += `<tr><td>GAI</td><td style="text-align: right;">${data.gai}</td></tr>`;
                     report += `</table></td>`;
-                    report += `<td style="vertical-align: top;">`;
+                    report += `<td style="vertical-align: top; padding-left: 20px;">`;
                     report += `<table style="width: 100%;">`;
                     if (data.vci > 0) report += `<tr><td>VCI</td><td style="text-align: right;">${data.vci}</td></tr>`;
                     if (data.pri > 0) report += `<tr><td>PRI</td><td style="text-align: right;">${data.pri}</td></tr>`;
@@ -653,7 +590,7 @@
                         report += `<tr><td>${test[0]}</td><td style="text-align: right;">${test[1]}</td></tr>`;
                     });
                     report += `</table></td>`;
-                    report += `<td style="vertical-align: top; width: 50%;">`;
+                    report += `<td style="vertical-align: top; width: 50%; padding-left: 20px;">`;
                     report += `<table style="width: 100%;">`;
                     rightTests.forEach(test => {
                         report += `<tr><td>${test[0]}</td><td style="text-align: right;">${test[1]}</td></tr>`;
@@ -662,7 +599,6 @@
                 }
 
                 report += `</div>`;
-                report += `</div>`; // Close neuroscript-report div
 
                 // Store for completion (plain text for parent communication)
                 currentNarrative = report.replace(/<[^>]*>/g, '').trim();
