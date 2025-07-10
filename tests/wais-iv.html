@@ -481,9 +481,9 @@
                 report += '<h3 style="font-weight: bold; margin: 20px 0 10px 0;">General Intellectual Functioning</h3>';
 
                 if (indexVariability > 23 && data.gai > 0) {
-                    report += `<p style="margin: 10px 0;">Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${window.NeuroscriptDB.getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>`;
+                    report += `<p style="margin: 10px 0;">Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${getCorrectRange(data.gai, false)} range, at an IQ equivalent of ${data.gai}.</p>`;
                 } else if (data.fsiq > 0) {
-                    report += `<p style="margin: 10px 0;">${pronoun} intellectual abilities were assessed using the WAIS-IV. ${pronoun} overall score (Full Scale IQ) was in the ${window.NeuroscriptDB.getRange(data.fsiq)} range, at an IQ equivalent of ${data.fsiq}.</p>`;
+                    report += `<p style="margin: 10px 0;">${pronoun} intellectual abilities were assessed using the WAIS-IV. ${pronoun} overall score (Full Scale IQ) was in the ${getCorrectRange(data.fsiq, false)} range, at an IQ equivalent of ${data.fsiq}.</p>`;
                 }
 
                 if (indexScores.length > 0) {
@@ -494,38 +494,38 @@
 <tr><th style="border: 1px solid black; padding: 8px; background-color: #f3f3f3; font-weight: bold; text-align: left;">WAIS-IV INDEX</th><th style="border: 1px solid black; padding: 8px; background-color: #f3f3f3; font-weight: bold; text-align: left;">PERCENTILE</th><th style="border: 1px solid black; padding: 8px; background-color: #f3f3f3; font-weight: bold; text-align: left;">RANGE</th></tr>`;
                     
                     if (data.vci > 0) {
-                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Verbal Comprehension</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.vci))}</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getRange(data.vci)}</td></tr>`;
+                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Verbal Comprehension</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.vci))}</td><td style="border: 1px solid black; padding: 8px;">${getCorrectRange(data.vci, false)}</td></tr>`;
                     }
                     if (data.pri > 0) {
-                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Perceptual Reasoning</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.pri))}</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getRange(data.pri)}</td></tr>`;
+                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Perceptual Reasoning</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.pri))}</td><td style="border: 1px solid black; padding: 8px;">${getCorrectRange(data.pri, false)}</td></tr>`;
                     }
                     if (data.wmi > 0) {
-                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Working Memory</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.wmi))}</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getRange(data.wmi)}</td></tr>`;
+                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Working Memory</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.wmi))}</td><td style="border: 1px solid black; padding: 8px;">${getCorrectRange(data.wmi, false)}</td></tr>`;
                     }
                     if (data.psi > 0) {
-                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Processing Speed</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.psi))}</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getRange(data.psi)}</td></tr>`;
+                        report += `<tr><td style="border: 1px solid black; padding: 8px;">Processing Speed</td><td style="border: 1px solid black; padding: 8px;">${window.NeuroscriptDB.getOrdinalPercentile(window.NeuroscriptDB.getPercentile(data.psi))}</td><td style="border: 1px solid black; padding: 8px;">${getCorrectRange(data.psi, false)}</td></tr>`;
                     }
                     
                     report += `</table>`;
 
                     // Index interpretations - each in separate paragraph
                     if (data.vci > 0) {
-                        const vciInterpretation = window.NeuroscriptDB.getDetailedInterpretation(data.vci, false);
+                        const vciInterpretation = getCorrectDetailedInterpretation(data.vci, false);
                         report += `<p style="margin: 10px 0;">${pronoun} score fell within the ${vciInterpretation} on the Verbal Comprehension Index, a measure of acquired verbal knowledge and verbal reasoning.</p>`;
                     }
 
                     if (data.pri > 0) {
-                        const priInterpretation = window.NeuroscriptDB.getDetailedInterpretation(data.pri, false);
+                        const priInterpretation = getCorrectDetailedInterpretation(data.pri, false);
                         report += `<p style="margin: 10px 0;">${pronoun} score fell within the ${priInterpretation} on the Perceptual Reasoning Index, a measure of visual-spatial reasoning, perceptual abilities, and visual-motor integration.</p>`;
                     }
 
                     if (data.wmi > 0) {
-                        const wmiInterpretation = window.NeuroscriptDB.getDetailedInterpretation(data.wmi, false);
+                        const wmiInterpretation = getCorrectDetailedInterpretation(data.wmi, false);
                         report += `<p style="margin: 10px 0;">${pronoun} score fell within the ${wmiInterpretation} on the Working Memory Index, a measure of ability to attend to and process verbal information in immediate memory.</p>`;
                     }
 
                     if (data.psi > 0) {
-                        const psiInterpretation = window.NeuroscriptDB.getDetailedInterpretation(data.psi, false);
+                        const psiInterpretation = getCorrectDetailedInterpretation(data.psi, false);
                         report += `<p style="margin: 10px 0;">${pronoun} score fell within the ${psiInterpretation} on the Processing Speed Index, a measure of ability to process visual information and act on it quickly, and to perform clerical tasks quickly and accurately.</p>`;
                     }
                 }
