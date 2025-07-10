@@ -242,12 +242,12 @@
         function getSubtestInterpretation(score) {
             const range = getSubtestRange(score);
             if (score <= 4) {
-                return range + " range (" + score + "), indicating a mildly to moderately impaired level of impairment";
+                return range + " range (ss=" + score + "), indicating a mildly to moderately impaired level of impairment";
             }
             if (score <= 6) {
-                return range + " range (" + score + "), indicating a mildly impaired level of impairment";
+                return range + " range (ss=" + score + "), indicating a mildly impaired level of impairment";
             }
-            return range + " range (" + score + ")";
+            return range + " range (ss=" + score + ")";
         }
 
         function generateReport() {
