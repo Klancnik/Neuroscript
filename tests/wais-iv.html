@@ -237,12 +237,14 @@
             let interpretation = range + " range (ss=" + score + ")";
             
             // Add Heaton impairment levels for low scores based on percentile
+            console.log('Score:', score, 'Percentile:', data.percentile, 'Range:', range);
+            
             if (data.percentile <= 16) {
                 if (data.percentile <= 2) {
                     interpretation += ", indicating a severely impaired level of impairment";
-                } else if (data.percentile <= 9) {
+                } else if (data.percentile <= 7) {
                     interpretation += ", indicating a mildly to moderately impaired level of impairment";
-                } else {
+                } else if (data.percentile <= 16) {
                     interpretation += ", indicating a mildly impaired level of impairment";
                 }
             }
