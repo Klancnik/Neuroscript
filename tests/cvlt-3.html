@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>CVLT-3 Clinical Text Generator</title>
+    <!-- Load shared normative database -->
+    <script src="../neuroscript-norms.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,6 +42,10 @@
             padding: 5px;
             border: 1px solid #ddd;
             border-radius: 3px;
+        }
+        input[type="number"]:invalid {
+            border: 2px solid #ff0000;
+            background-color: #ffe6e6;
         }
         .score-grid {
             display: grid;
@@ -173,7 +182,7 @@
                 </div>
                 <div>
                     <label>Total Intrusions:</label>
-                    <input type="number" id="intrusions" value="" min="0" placeholder="0+">
+                    <input type="number" id="intrusions" value="" min="0" max="50" placeholder="0+">
                 </div>
                 <div>
                     <label>Forced Choice:</label>
@@ -231,27 +240,29 @@
         let currentNarrative = '';
         let currentScoreTable = '';
 
-        function getStandardRange(score) {
-            if (score >= 130) return "Very Superior";
-            if (score >= 120) return "Superior";
-            if (score >= 110) return "High Average";
-            if (score >= 90) return "Average";
-            if (score >= 80) return "Low Average";
-            if (score >= 70) return "Below Average";
-            if (score >= 55) return "Mildly Impaired";
-            if (score >= 40) return "Moderately Impaired";
-            return "Severely Impaired";
-        }
-
-        function getScaledRange(score) {
-            if (score >= 16) return "Very Superior";
-            if (score >= 14) return "Superior";
-            if (score >= 12) return "High Average";
-            if (score >= 8) return "Average";
-            if (score >= 6) return "Low Average";
-            if (score >= 4) return "Below Average";
-            if (score >= 2) return "Mildly Impaired";
-            return "Moderately Impaired";
+        // Database utility functions following WAIS-IV/WMS-III pattern
+        function getIndexInterpretationFromDB(score) {
+            if (!window.NeuroscriptDB || !score) return "Average range";
+            
+            const range = window.NeuroscriptDB.getRange(score, 'standard');
+            const data = window.NeuroscriptDB.getByStandardScore(score);
+            
+            let interpretation = range + " range";
+            
+            // Add Heaton impairment levels for low scores based on percentile
+            if (data.percentile <= 16) {
+                if (data.percentile <= 0.5) {
+                    interpretation += ", indicating a severely impaired level of impairment";
+                } else if (data.percentile <= 2) {
+                    interpretation += ", indicating a moderately to severely impaired level of impairment";
+                } else if (data.percentile <= 7) {
+                    interpretation += ", indicating a mildly to moderately impaired level of impairment";
+                } else if (data.percentile <= 16) {
+                    interpretation += ", indicating a mildly impaired level of impairment";
+                }
+            }
+            
+            return interpretation;
         }
 
         function describeLearningSlope(trial1, trial5, percentile) {
@@ -262,20 +273,22 @@
             return "poor";
         }
 
-        function describeRecallPattern(primacy, recency) {
+        function describeRecallPattern(primacy, recency, gender) {
+            const pronoun = gender === 'Male' ? 'He' : 'She';
             if (recency >= 75 && primacy <= 25) {
-                return "He showed a marked recency effect, being better able to recall words from the end of the list than from the beginning or middle.";
+                return `${pronoun} showed a marked recency effect, being better able to recall words from the end of the list than from the beginning or middle.`;
             }
             if (primacy >= 75 && recency <= 25) {
-                return "He showed a primacy effect, being better able to recall words from the beginning of the list.";
+                return `${pronoun} showed a primacy effect, being better able to recall words from the beginning of the list.`;
             }
             return "";
         }
 
-        function describeClustering(percentile) {
-            if (percentile >= 50) return "He made good use of a strategy of organizing words by meaning for better learning.";
-            if (percentile <= 10) return "He made little use of semantic clustering strategies for learning.";
-            return "He made some use of organizing words by meaning for learning.";
+        function describeClustering(percentile, gender) {
+            const pronoun = gender === 'Male' ? 'He' : 'She';
+            if (percentile >= 50) return `${pronoun} made good use of a strategy of organizing words by meaning for better learning.`;
+            if (percentile <= 10) return `${pronoun} made little use of semantic clustering strategies for learning.`;
+            return `${pronoun} made some use of organizing words by meaning for learning.`;
         }
 
         function describeCuingEffect(shortFree, shortCued, longFree, longCued) {
@@ -291,8 +304,11 @@
             }
         }
 
-        function describeRecognition(hits, falsePos, forcedChoice, data) {
+        function describeRecognition(hits, falsePos, forcedChoice, data, gender) {
             const isImplausible = checkImplausiblePattern(hits, falsePos, forcedChoice, data);
+            const pronoun = gender === 'Male' ? 'he' : 'she';
+            const pronounCap = gender === 'Male' ? 'He' : 'She';
+            const possessive = gender === 'Male' ? 'His' : 'Her';
             
             if (hits >= 15 && falsePos <= 2 && !isImplausible) {
                 return "Performance on yes/no recognition memory trials was flawless.";
@@ -306,7 +322,7 @@
                 return "Performance on yes/no recognition memory trials was impaired.";
             }
             
-            let description = `On yes/no recognition memory trials, ${getGenderPronoun('he')} correctly identified ${hits} out of 16 items, and made ${falsePos} false positive errors.`;
+            let description = `On yes/no recognition memory trials, ${pronoun} correctly identified ${hits} out of 16 items, and made ${falsePos} false positive errors.`;
             
             if (isImplausible) {
                 if (falsePos >= 15) {
@@ -315,19 +331,19 @@
                 
                 if (forcedChoice <= 8) {
                     const accuracy = Math.round((forcedChoice / 16) * 100);
-                    description += ` ${getGenderPronoun('His')} accuracy rate was ${accuracy}% on forced-choice recognition, which is at or below chance level and extremely unusual even in severe memory impairment.`;
+                    description += ` ${possessive} accuracy rate was ${accuracy}% on forced-choice recognition, which is at or below chance level and extremely unusual even in severe memory impairment.`;
                     
                     const maxPreviousRecall = Math.max(data.trial1, data.trial2, data.trial3, data.trial4, data.trial5, data.shortFree, data.longFree);
                     if (forcedChoice < maxPreviousRecall || forcedChoice < hits) {
-                        description += ` Of particular concern, ${getGenderPronoun('he')} failed to recognize words on forced-choice testing that had been previously recalled or recognized, which is extremely implausible.`;
+                        description += ` Of particular concern, ${pronoun} failed to recognize words on forced-choice testing that had been previously recalled or recognized, which is extremely implausible.`;
                     }
                 } else if (forcedChoice < 12) {
                     const accuracy = Math.round((forcedChoice / 16) * 100);
-                    description += ` ${getGenderPronoun('His')} accuracy rate was only ${accuracy}% on forced-choice recognition, where any errors are highly unusual.`;
+                    description += ` ${possessive} accuracy rate was only ${accuracy}% on forced-choice recognition, where any errors are highly unusual.`;
                 }
             } else if (forcedChoice < 12) {
                 const accuracy = Math.round((forcedChoice / 16) * 100);
-                description += ` ${getGenderPronoun('His')} accuracy rate was only ${accuracy}% on forced-choice recognition, where any errors are highly unusual.`;
+                description += ` ${possessive} accuracy rate was only ${accuracy}% on forced-choice recognition, where any errors are highly unusual.`;
             }
             
             return description;
@@ -342,20 +358,9 @@
             return excessiveFalsePositives || belowChanceForcedChoice || forcedChoiceBelowRecall || forcedChoiceBelowRecognition;
         }
 
-        function getGenderPronoun(type) {
-            const gender = document.getElementById('gender').value;
-            const pronouns = {
-                'Male': {
-                    'he': 'he', 'He': 'He', 'his': 'his', 'His': 'His', 'him': 'him'
-                },
-                'Female': {
-                    'he': 'she', 'He': 'She', 'his': 'her', 'His': 'Her', 'him': 'her'
-                }
-            };
-            return pronouns[gender][type] || type;
-        }
-
         function getPercentileFromRaw(rawScore, context) {
+            // Simplified percentile approximations for raw scores
+            // In practice, these would use actual CVLT-3 norms
             if (context === 'trial1') {
                 const trial1Percentiles = { 0: 0.1, 1: 0.5, 2: 2, 3: 5, 4: 9, 5: 16, 6: 25, 7: 37, 8: 50, 9: 63, 10: 75, 11: 84, 12: 91, 13: 95, 14: 98, 15: 99, 16: 99.5 };
                 return trial1Percentiles[rawScore] || 50;
@@ -396,41 +401,75 @@
             return range + heaton;
         }
 
-        function getStandardRangeWithHeaton(score) {
-            let range = getStandardRange(score);
-            let heaton = "";
-            
-            const percentile = getPercentile(score);
-            
-            if (percentile >= 7 && percentile <= 15) {
-                heaton = ", indicating a Mild level of impairment";
-            } else if (percentile >= 2 && percentile <= 6) {
-                heaton = ", indicating a Mild to Moderate level of impairment";
-            } else if (percentile >= 0.6 && percentile <= 1.9) {
-                heaton = ", indicating a Moderate level of impairment";
-            } else if (percentile >= 0.1 && percentile <= 0.5) {
-                heaton = ", indicating a Moderate to Severe level of impairment";
-            } else if (percentile < 0.1) {
-                heaton = ", indicating a Severe level of impairment";
-            }
-            
-            return range + heaton;
-        }
-
-        function getPercentile(score) {
-            if (score >= 130) return 98;
-            if (score >= 120) return 91;
-            if (score >= 110) return 75;
-            if (score >= 100) return 50;
-            if (score >= 90) return 25;
-            if (score >= 80) return 9;
-            if (score >= 70) return 2;
-            return 0.5;
-        }
-
         function generateValidationWarnings(data) {
             let warnings = [];
             
+            // Check if external database is loaded
+            if (!window.NeuroscriptDB) {
+                warnings.push("⚠️ External database not loaded - using approximate values");
+                return warnings;
+            }
+
+            // Input validation for raw scores (0-16)
+            const rawScores = [
+                {score: data.trial1, name: 'Trial 1'},
+                {score: data.trial2, name: 'Trial 2'},
+                {score: data.trial3, name: 'Trial 3'},
+                {score: data.trial4, name: 'Trial 4'},
+                {score: data.trial5, name: 'Trial 5'},
+                {score: data.listB, name: 'List B'},
+                {score: data.shortFree, name: 'Short Delay Free'},
+                {score: data.shortCued, name: 'Short Delay Cued'},
+                {score: data.longFree, name: 'Long Delay Free'},
+                {score: data.longCued, name: 'Long Delay Cued'},
+                {score: data.recogHits, name: 'Recognition Hits'},
+                {score: data.forcedChoice, name: 'Forced Choice'}
+            ];
+
+            rawScores.forEach(item => {
+                if (item.score !== null && item.score !== undefined && item.score !== '' && (item.score < 0 || item.score > 16)) {
+                    warnings.push(`⚠️ ${item.name} score (${item.score}) is outside valid range (0-16) - please check data entry`);
+                }
+            });
+
+            // Input validation for false positives (0-48)
+            if (data.falsePos !== null && data.falsePos !== undefined && data.falsePos !== '' && (data.falsePos < 0 || data.falsePos > 48)) {
+                warnings.push(`⚠️ False Positives score (${data.falsePos}) is outside valid range (0-48) - please check data entry`);
+            }
+
+            // Input validation for intrusions (0-50)
+            if (data.intrusions !== null && data.intrusions !== undefined && data.intrusions !== '' && (data.intrusions < 0 || data.intrusions > 50)) {
+                warnings.push(`⚠️ Total Intrusions score (${data.intrusions}) is outside valid range (0-50) - please check data entry`);
+            }
+
+            // Input validation for index scores (40-160)
+            const indexScores = [
+                {score: data.trials15Total, name: 'Trials 1-5 Total'},
+                {score: data.delayedIndex, name: 'Delayed Recall Index'},
+                {score: data.totalRecall, name: 'Total Recall Index'}
+            ];
+
+            indexScores.forEach(item => {
+                if (item.score !== null && item.score !== undefined && item.score !== '' && (item.score < 40 || item.score > 160)) {
+                    warnings.push(`⚠️ ${item.name} score (${item.score}) is outside valid range (40-160) - please check data entry`);
+                }
+            });
+
+            // Input validation for process scores (0-100%)
+            const processScores = [
+                {score: data.clustering, name: 'Semantic Clustering'},
+                {score: data.primacy, name: 'Primacy Effect'},
+                {score: data.recency, name: 'Recency Effect'},
+                {score: data.learningSlope, name: 'Learning Slope'}
+            ];
+
+            processScores.forEach(item => {
+                if (item.score !== null && item.score !== undefined && item.score !== '' && (item.score < 0 || item.score > 100)) {
+                    warnings.push(`⚠️ ${item.name} percentage (${item.score}%) is outside valid range (0-100%) - please check data entry`);
+                }
+            });
+            
+            // Clinical validity warnings
             if (data.falsePos >= 15) {
                 warnings.push("⚠️ Excessive false positives (≥15) occur in <2% of genuinely impaired individuals - validity concerns");
             }
@@ -439,9 +478,9 @@
                 warnings.push("⚠️ Forced choice at/below chance level (≤8/16) - extremely implausible pattern");
             }
             
-            const maxPreviousRecall = Math.max(data.trial1, data.trial2, data.trial3, data.trial4, data.trial5,
-                                               data.shortFree, data.longFree, data.recogHits);
-            if (data.forcedChoice < maxPreviousRecall) {
+            const maxPreviousRecall = Math.max(data.trial1 || 0, data.trial2 || 0, data.trial3 || 0, data.trial4 || 0, data.trial5 || 0,
+                                               data.shortFree || 0, data.longFree || 0, data.recogHits || 0);
+            if (data.forcedChoice && data.forcedChoice < maxPreviousRecall) {
                 warnings.push("⚠️ Forced choice performance below previously recalled/recognized items - implausible pattern");
             }
             
@@ -449,7 +488,7 @@
                 warnings.push("⚠️ Excessive intrusions (>20) - consider validity or severe impairment");
             }
             
-            if (data.trial5 <= data.trial1) {
+            if (data.trial5 && data.trial1 && data.trial5 <= data.trial1) {
                 warnings.push("⚠️ Flat or negative learning slope - consider effort or severe impairment");
             }
             
@@ -459,7 +498,7 @@
                 warnings.push("⚠️ Grade <5 reading level - verbal instruction comprehension may be compromised");
             }
             
-            if (data.trials15Total < 55) {
+            if (data.trials15Total && data.trials15Total < 55) {
                 warnings.push("⚠️ Pervasively low performance - consider effort, hearing, or comprehension factors");
             }
             
@@ -467,135 +506,183 @@
         }
 
         function generateCVLTText() {
-            // Check if minimum required fields are filled
-            const trial1 = document.getElementById('trial1').value;
-            const trials15Total = document.getElementById('trials15Total').value;
-            
-            if (!trial1 && !trials15Total) {
-                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+            try {
+                // Check if external database is loaded
+                if (!window.NeuroscriptDB) {
+                    document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please ensure neuroscript-norms.js is properly loaded.</p>`;
+                    document.getElementById('output').style.display = 'block';
+                    return;
+                }
+
+                // Check for invalid inputs before proceeding
+                const invalidInputs = document.querySelectorAll('input[type="number"]:invalid');
+                if (invalidInputs.length > 0) {
+                    alert('Please correct the highlighted fields with invalid values before generating the report.');
+                    invalidInputs[0].focus(); // Focus on first invalid field
+                    return;
+                }
+
+                // Check if minimum required fields are filled
+                const trial1 = document.getElementById('trial1').value;
+                const trials15Total = document.getElementById('trials15Total').value;
+                
+                if (!trial1 && !trials15Total) {
+                    document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                    document.getElementById('output').style.display = 'block';
+                    return;
+                }
+
+                const data = {
+                    gender: document.getElementById('gender').value,
+                    readingLevel: document.getElementById('readingLevel').value ? parseFloat(document.getElementById('readingLevel').value) : null,
+                    trial1: parseInt(document.getElementById('trial1').value) || 0,
+                    trial2: parseInt(document.getElementById('trial2').value) || 0,
+                    trial3: parseInt(document.getElementById('trial3').value) || 0,
+                    trial4: parseInt(document.getElementById('trial4').value) || 0,
+                    trial5: parseInt(document.getElementById('trial5').value) || 0,
+                    listB: parseInt(document.getElementById('listB').value) || 0,
+                    shortFree: parseInt(document.getElementById('shortFree').value) || 0,
+                    shortCued: parseInt(document.getElementById('shortCued').value) || 0,
+                    longFree: parseInt(document.getElementById('longFree').value) || 0,
+                    longCued: parseInt(document.getElementById('longCued').value) || 0,
+                    recogHits: parseInt(document.getElementById('recogHits').value) || 0,
+                    falsePos: parseInt(document.getElementById('falsePos').value) || 0,
+                    intrusions: parseInt(document.getElementById('intrusions').value) || 0,
+                    forcedChoice: parseInt(document.getElementById('forcedChoice').value) || 0,
+                    trials15Total: parseInt(document.getElementById('trials15Total').value) || 0,
+                    delayedIndex: parseInt(document.getElementById('delayedIndex').value) || 0,
+                    totalRecall: parseInt(document.getElementById('totalRecall').value) || 0,
+                    clustering: parseFloat(document.getElementById('clustering').value) || 0,
+                    primacy: parseFloat(document.getElementById('primacy').value) || 0,
+                    recency: parseFloat(document.getElementById('recency').value) || 0,
+                    learningSlope: parseFloat(document.getElementById('learningSlope').value) || 0
+                };
+
+                const warnings = generateValidationWarnings(data);
+                const overallRange = data.trials15Total ? getIndexInterpretationFromDB(data.trials15Total) : "not assessed";
+                const hasUnusualFeatures = data.intrusions > 10 || data.falsePos > 10 || data.recency > 90 || data.clustering < 10;
+                const gender = data.gender;
+                const pronoun = gender === 'Male' ? 'His' : 'Her';
+                const pronounLower = gender === 'Male' ? 'his' : 'her';
+                const heShe = gender === 'Male' ? 'He' : 'She';
+
+                let text = `<p><b>Learning and Memory</b></p>\n`;
+                
+                if (data.trials15Total) {
+                    text += `<p>${pronoun} overall performance on a test of verbal list learning (CVLT-3) was within the ${overallRange}`;
+                    if (hasUnusualFeatures) {
+                        text += ", although with some unusual features";
+                    }
+                    text += ". ";
+                } else {
+                    text += `<p>On a test of verbal list learning (CVLT-3): `;
+                }
+
+                if (data.trial1) {
+                    const trial1Percentile = getPercentileFromRaw(data.trial1, 'trial1');
+                    const trial1Range = getRangeFromPercentile(trial1Percentile);
+                    text += `${heShe} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${trial1Range}. `;
+                }
+
+                if (data.trial1 && data.trial5) {
+                    const slopeDescription = describeLearningSlope(data.trial1, data.trial5, data.learningSlope);
+                    if (slopeDescription.includes("flat")) {
+                        text += `${heShe} showed a ${slopeDescription}. `;
+                    } else {
+                        text += `${heShe} showed a ${slopeDescription} learning slope, improving to ${data.trial5} items by the fifth trial. `;
+                    }
+                }
+
+                const recallPattern = describeRecallPattern(data.primacy, data.recency, data.gender);
+                if (recallPattern) {
+                    text += recallPattern + " ";
+                }
+
+                if (data.listB && data.trial1 && data.listB < data.trial1) {
+                    text += `${heShe} showed proactive interference, with learning of one list interfering with the learning of a second, later list. `;
+                }
+
+                if (data.shortFree || data.longFree) {
+                    if (data.shortFree && data.longFree) {
+                        const shortDelayPercentile = getPercentileFromRaw(data.shortFree, 'delayed');
+                        const longDelayPercentile = getPercentileFromRaw(data.longFree, 'delayed');
+                        const shortDelayRange = getRangeFromPercentile(shortDelayPercentile);
+                        const longDelayRange = getRangeFromPercentile(longDelayPercentile);
+                        text += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}), and ${data.longFree} after a longer delay (${longDelayRange}). `;
+                    } else if (data.shortFree) {
+                        const shortDelayPercentile = getPercentileFromRaw(data.shortFree, 'delayed');
+                        const shortDelayRange = getRangeFromPercentile(shortDelayPercentile);
+                        text += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}). `;
+                    } else if (data.longFree) {
+                        const longDelayPercentile = getPercentileFromRaw(data.longFree, 'delayed');
+                        const longDelayRange = getRangeFromPercentile(longDelayPercentile);
+                        text += `${heShe} was able to retain ${data.longFree} items after a longer delay (${longDelayRange}). `;
+                    }
+                }
+
+                if (data.shortFree || data.shortCued || data.longFree || data.longCued) {
+                    text += describeCuingEffect(data.shortFree, data.shortCued, data.longFree, data.longCued) + " ";
+                }
+
+                if (data.clustering) {
+                    text += describeClustering(data.clustering, data.gender) + " ";
+                }
+
+                if (data.recogHits || data.falsePos || data.forcedChoice) {
+                    text += describeRecognition(data.recogHits, data.falsePos, data.forcedChoice, data, data.gender);
+                }
+
+                text += `</p>`;
+
+                // Store for completion
+                currentNarrative = text.replace(/<[^>]*>/g, '').trim();
+
+                // Generate score table using database
+                const adminTests = [];
+                if (data.trials15Total) adminTests.push(['Trials 1-5 Total', data.trial1 + data.trial2 + data.trial3 + data.trial4 + data.trial5, data.trials15Total, window.NeuroscriptDB.getRange(data.trials15Total)]);
+                if (data.shortFree) adminTests.push(['Short Delay Free Recall', data.shortFree, '--', getRangeFromPercentile(getPercentileFromRaw(data.shortFree, 'delayed')).split(',')[0]]);
+                if (data.longFree) adminTests.push(['Long Delay Free Recall', data.longFree, '--', getRangeFromPercentile(getPercentileFromRaw(data.longFree, 'delayed')).split(',')[0]]);
+                if (data.recogHits) adminTests.push(['Recognition Hits', data.recogHits + '/16', '--', data.recogHits >= 15 ? 'Normal' : data.recogHits >= 12 ? 'Borderline' : 'Impaired']);
+                if (data.delayedIndex) adminTests.push(['Delayed Recall Index', '--', data.delayedIndex, window.NeuroscriptDB.getRange(data.delayedIndex)]);
+                if (data.totalRecall) adminTests.push(['Total Recall Index', '--', data.totalRecall, window.NeuroscriptDB.getRange(data.totalRecall)]);
+
+                currentScoreTable = `
+                    <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="padding: 8px; text-align: left;">CVLT-3 Measure</th>
+                            <th style="padding: 8px; text-align: center;">Raw Score</th>
+                            <th style="padding: 8px; text-align: center;">Standard Score</th>
+                            <th style="padding: 8px; text-align: center;">Range</th>
+                        </tr>
+                        ${adminTests.map(test => `
+                            <tr>
+                                <td style="padding: 8px;">${test[0]}</td>
+                                <td style="padding: 8px; text-align: center;">${test[1]}</td>
+                                <td style="padding: 8px; text-align: center;">${test[2]}</td>
+                                <td style="padding: 8px; text-align: center;">${test[3]}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                `;
+
+                document.getElementById('output').innerHTML = text;
+
+                if (warnings.length > 0) {
+                    document.getElementById('output').innerHTML += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                    document.getElementById('output').innerHTML += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                    warnings.forEach(warning => {
+                        document.getElementById('output').innerHTML += `<p style="margin: 5px 0;">${warning}</p>`;
+                    });
+                    document.getElementById('output').innerHTML += `</div>`;
+                }
+
                 document.getElementById('output').style.display = 'block';
-                return;
+
+            } catch (error) {
+                console.error('Error generating CVLT-3 report:', error);
+                document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p>`;
+                document.getElementById('output').style.display = 'block';
             }
-
-            const data = {
-                gender: document.getElementById('gender').value,
-                readingLevel: document.getElementById('readingLevel').value ? parseFloat(document.getElementById('readingLevel').value) : null,
-                trial1: parseInt(document.getElementById('trial1').value) || 0,
-                trial2: parseInt(document.getElementById('trial2').value) || 0,
-                trial3: parseInt(document.getElementById('trial3').value) || 0,
-                trial4: parseInt(document.getElementById('trial4').value) || 0,
-                trial5: parseInt(document.getElementById('trial5').value) || 0,
-                listB: parseInt(document.getElementById('listB').value) || 0,
-                shortFree: parseInt(document.getElementById('shortFree').value) || 0,
-                shortCued: parseInt(document.getElementById('shortCued').value) || 0,
-                longFree: parseInt(document.getElementById('longFree').value) || 0,
-                longCued: parseInt(document.getElementById('longCued').value) || 0,
-                recogHits: parseInt(document.getElementById('recogHits').value) || 0,
-                falsePos: parseInt(document.getElementById('falsePos').value) || 0,
-                intrusions: parseInt(document.getElementById('intrusions').value) || 0,
-                forcedChoice: parseInt(document.getElementById('forcedChoice').value) || 0,
-                trials15Total: parseInt(document.getElementById('trials15Total').value) || 0,
-                delayedIndex: parseInt(document.getElementById('delayedIndex').value) || 0,
-                totalRecall: parseInt(document.getElementById('totalRecall').value) || 0,
-                clustering: parseFloat(document.getElementById('clustering').value) || 0,
-                primacy: parseFloat(document.getElementById('primacy').value) || 0,
-                recency: parseFloat(document.getElementById('recency').value) || 0,
-                learningSlope: parseFloat(document.getElementById('learningSlope').value) || 0
-            };
-
-            const warnings = generateValidationWarnings(data);
-            const overallRange = getStandardRangeWithHeaton(data.trials15Total);
-            const hasUnusualFeatures = data.intrusions > 10 || data.falsePos > 10 || data.recency > 90 || data.clustering < 10;
-
-            let text = `${getGenderPronoun('His')} overall performance on a test of verbal list learning (CVLT-3) was within the ${overallRange} range`;
-
-            if (hasUnusualFeatures) {
-                text += ", although with some unusual features";
-            }
-            text += ". ";
-
-            const trial1Percentile = getPercentileFromRaw(data.trial1, 'trial1');
-            const trial1Range = getRangeFromPercentile(trial1Percentile);
-            text += `${getGenderPronoun('He')} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${trial1Range} range. `;
-
-            const slopeDescription = describeLearningSlope(data.trial1, data.trial5, data.learningSlope);
-            if (slopeDescription.includes("flat")) {
-                text += `${getGenderPronoun('He')} showed a ${slopeDescription}. `;
-            } else {
-                text += `${getGenderPronoun('He')} showed a ${slopeDescription} learning slope, improving to ${data.trial5} items by the fifth trial. `;
-            }
-
-            const recallPattern = describeRecallPattern(data.primacy, data.recency);
-            if (recallPattern) {
-                text += recallPattern + " ";
-            }
-
-            if (data.listB < data.trial1) {
-                text += `${getGenderPronoun('He')} showed proactive interference, with learning of one list interfering with the learning of a second, later list. `;
-            }
-
-            const shortDelayPercentile = getPercentileFromRaw(data.shortFree, 'delayed');
-            const longDelayPercentile = getPercentileFromRaw(data.longFree, 'delayed');
-            const shortDelayRange = getRangeFromPercentile(shortDelayPercentile);
-            const longDelayRange = getRangeFromPercentile(longDelayPercentile);
-
-            text += `${getGenderPronoun('He')} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange} range), and ${data.longFree} after a longer delay (${longDelayRange} range). `;
-
-            text += describeCuingEffect(data.shortFree, data.shortCued, data.longFree, data.longCued) + " ";
-            text += describeClustering(data.clustering) + " ";
-            text += describeRecognition(data.recogHits, data.falsePos, data.forcedChoice, data);
-
-            // Store for completion
-            currentNarrative = text;
-
-            // Generate score table
-            currentScoreTable = `
-                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
-                    <tr style="background-color: #f5f5f5;">
-                        <th style="padding: 8px; text-align: left;">CVLT-3 Measure</th>
-                        <th style="padding: 8px; text-align: center;">Raw Score</th>
-                        <th style="padding: 8px; text-align: center;">Standard Score</th>
-                        <th style="padding: 8px; text-align: center;">Range</th>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">Trials 1-5 Total</td>
-                        <td style="padding: 8px; text-align: center;">${data.trial1 + data.trial2 + data.trial3 + data.trial4 + data.trial5}</td>
-                        <td style="padding: 8px; text-align: center;">${data.trials15Total}</td>
-                        <td style="padding: 8px; text-align: center;">${getStandardRange(data.trials15Total)}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">Short Delay Free Recall</td>
-                        <td style="padding: 8px; text-align: center;">${data.shortFree}</td>
-                        <td style="padding: 8px; text-align: center;">--</td>
-                        <td style="padding: 8px; text-align: center;">${getRangeFromPercentile(getPercentileFromRaw(data.shortFree, 'delayed')).split(',')[0]}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">Long Delay Free Recall</td>
-                        <td style="padding: 8px; text-align: center;">${data.longFree}</td>
-                        <td style="padding: 8px; text-align: center;">--</td>
-                        <td style="padding: 8px; text-align: center;">${getRangeFromPercentile(getPercentileFromRaw(data.longFree, 'delayed')).split(',')[0]}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">Recognition Hits</td>
-                        <td style="padding: 8px; text-align: center;">${data.recogHits}/16</td>
-                        <td style="padding: 8px; text-align: center;">--</td>
-                        <td style="padding: 8px; text-align: center;">${data.recogHits >= 15 ? 'Normal' : data.recogHits >= 12 ? 'Borderline' : 'Impaired'}</td>
-                    </tr>
-                </table>
-            `;
-
-            document.getElementById('output').innerHTML = `<h3><b>Learning and Memory</b></h3><p>${text}</p>`;
-
-            if (warnings.length > 0) {
-                document.getElementById('output').innerHTML += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
-                document.getElementById('output').innerHTML += `<h4><b>⚠️ Validation Alerts</b></h4>`;
-                warnings.forEach(warning => {
-                    document.getElementById('output').innerHTML += `<p style="margin: 5px 0;">${warning}</p>`;
-                });
-                document.getElementById('output').innerHTML += `</div>`;
-            }
-
-            document.getElementById('output').style.display = 'block';
         }
 
         function completeTest() {
@@ -611,11 +698,17 @@
                 completedAt: new Date().toISOString()
             };
 
-            window.parent.postMessage({
-                type: 'testComplete',
-                testName: 'cvlt-3',
-                results: results
-            }, '*');
+            try {
+                window.parent.postMessage({
+                    type: 'testComplete',
+                    testName: 'cvlt-3',
+                    results: results
+                }, '*');
+                alert('CVLT-3 test completed successfully!');
+            } catch (e) {
+                console.log('Could not communicate with parent window:', e);
+                alert('Test completed locally!');
+            }
         }
 
         // Listen for client info from parent
@@ -630,6 +723,16 @@
                 if (clientInfo.readingLevel) {
                     document.getElementById('readingLevel').value = clientInfo.readingLevel;
                 }
+            }
+        });
+
+        // Console logging for debugging
+        window.addEventListener('load', function() {
+            console.log('CVLT-3 loaded. Checking database...');
+            if (window.NeuroscriptDB) {
+                console.log('Database loaded successfully');
+            } else {
+                console.log('Database NOT loaded. Check neuroscript-norms.js file location and loading.');
             }
         });
     </script>
