@@ -423,8 +423,74 @@
                 const minIndex = indexScores.length > 0 ? Math.min(...indexScores) : 0;
                 const indexVariability = maxIndex - minIndex;
 
-                // Generate comprehensive narrative with proper structure (based on clinical example)
-                let report = `<h3><b>General Intellectual Functioning</b></h3>\n`;
+                // Generate professional report structure like clinical example
+                let report = `
+                    <style>
+                        .neuroscript-report {
+                            font-family: Arial, sans-serif;
+                            font-size: 12pt;
+                            line-height: 1.4;
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        .neuroscript-report h1 {
+                            font-size: 12pt;
+                            font-weight: bold;
+                            margin: 20px 0 10px 0;
+                            border-bottom: none;
+                        }
+                        .neuroscript-report h3 {
+                            font-size: 12pt;
+                            font-weight: bold;
+                            margin: 15px 0 10px 0;
+                        }
+                        .neuroscript-report p {
+                            margin: 8px 0;
+                            text-align: justify;
+                        }
+                        .wais-score-table {
+                            font-family: Arial, sans-serif;
+                            font-size: 12pt;
+                            border-collapse: collapse;
+                            margin: 15px 0;
+                            width: 100%;
+                        }
+                        .wais-score-table th, .wais-score-table td {
+                            border: 1px solid black;
+                            padding: 6px 8px;
+                            text-align: left;
+                        }
+                        .wais-score-table th {
+                            background-color: #f3f3f3;
+                            font-weight: bold;
+                        }
+                        .score-summary {
+                            margin-top: 30px;
+                            padding-top: 20px;
+                            border-top: 2px solid #333;
+                        }
+                        .summary-table {
+                            font-family: Arial, sans-serif;
+                            font-size: 11pt;
+                            border-collapse: collapse;
+                            width: 100%;
+                            margin: 10px 0;
+                        }
+                        .summary-table th, .summary-table td {
+                            border: 1px solid black;
+                            padding: 4px 6px;
+                            text-align: left;
+                        }
+                        .summary-table th {
+                            background-color: #f3f3f3;
+                            font-weight: bold;
+                        }
+                    </style>
+                    <div class="neuroscript-report">
+                `;
+
+                // General Intellectual Functioning Section
+                report += `<h1><b>General Intellectual Functioning</b></h1>\n`;
 
                 if (indexVariability > 23 && data.gai > 0) {
                     report += `<p>Because of the high degree of variability in ${pronounLower} scores across various areas of cognitive functioning, a WAIS-IV Full Scale IQ score cannot be considered to be a meaningful measure of ${pronounLower} overall cognitive abilities, and so is not presented here. The best measure of the examinee's overall cognitive ability is the WAIS-IV General Ability Index (GAI), a well-validated measure appropriate for use when an individual's performance is affected by deficits in attention or processing speed; ${pronounLower} GAI score was in the ${window.NeuroscriptDB.getRange(data.gai)} range, at an IQ equivalent of ${data.gai}.</p>\n\n`;
@@ -435,7 +501,7 @@
                 if (indexScores.length > 0) {
                     report += `<p>The WAIS-IV also permits calculation of Index scores that reflect ability in more specific areas, these are given in the table below:</p>\n`;
 
-                    report += `<table class="wais-table">\n`;
+                    report += `<table class="wais-score-table">\n`;
                     report += `<tr><th>WAIS-IV INDEX</th><th>PERCENTILE</th><th>RANGE</th></tr>\n`;
                     
                     if (data.vci > 0) {
@@ -453,7 +519,7 @@
                     
                     report += `</table>\n\n`;
 
-                    // Index interpretations (like clinical example)
+                    // Index interpretations
                     if (data.vci > 0) {
                         const vciInterpretation = window.NeuroscriptDB.getDetailedInterpretation(data.vci, false);
                         report += `<p>${pronoun} score fell within the ${vciInterpretation} on the Verbal Comprehension Index, a measure of acquired verbal knowledge and verbal reasoning.</p>\n`;
@@ -473,74 +539,135 @@
                         const psiInterpretation = window.NeuroscriptDB.getDetailedInterpretation(data.psi, false);
                         report += `<p>${pronoun} score fell within the ${psiInterpretation} on the Processing Speed Index, a measure of ability to process visual information and act on it quickly, and to perform clerical tasks quickly and accurately.</p>\n`;
                     }
-
-                    // Strengths and weaknesses analysis (like clinical example)
-                    const subtestScores = [
-                        {name: 'Similarities', score: data.similarities, description: 'a verbal test of abstract reasoning'},
-                        {name: 'Vocabulary', score: data.vocabulary, description: 'a test requiring him to provide word definitions'},
-                        {name: 'Information', score: data.information, description: 'a verbal test of remote factual memory and general academic knowledge'},
-                        {name: 'Comprehension', score: data.comprehension, description: 'a test of practical judgment and common sense reasoning'},
-                        {name: 'Block Design', score: data.blockdesign, description: 'a test requiring him to reproduce set designs from colored blocks'},
-                        {name: 'Matrix Reasoning', score: data.matrixreasoning, description: 'a visual test of fluid intelligence and perceptual organization'},
-                        {name: 'Visual Puzzles', score: data.visualpuzzles, description: 'a test requiring mental reconstruction of visual images'},
-                        {name: 'Picture Completion', score: data.picturecompletion, description: 'a test requiring identification of missing elements in pictures'},
-                        {name: 'Figure Weights', score: data.figureweights, description: 'a test of quantitative and analogical reasoning'},
-                        {name: 'Digit Span', score: data.digitspan, description: 'a test requiring him to recall strings of numbers read aloud'},
-                        {name: 'Arithmetic', score: data.arithmetic, description: 'a test of mental arithmetic'},
-                        {name: 'Letter-Number Sequencing', score: data.letternumber, description: 'a test requiring reordering of intermixed letters and numbers'},
-                        {name: 'Symbol Search', score: data.symbolsearch, description: 'a test of visual search speed requiring minimal graphomotor dexterity'},
-                        {name: 'Coding', score: data.coding, description: 'a test requiring him to write symbols arbitrarily paired with specific digits'},
-                        {name: 'Cancellation', score: data.cancellation, description: 'a visual attention and response inhibition task'}
-                    ].filter(subtest => subtest.score > 0);
-
-                    if (subtestScores.length > 0) {
-                        const avgSubtest = subtestScores.reduce((sum, s) => sum + s.score, 0) / subtestScores.length;
-                        const strengths = subtestScores.filter(s => s.score >= avgSubtest + 3);
-                        const weaknesses = subtestScores.filter(s => s.score <= avgSubtest - 3);
-
-                        if (strengths.length > 0 || weaknesses.length > 0) {
-                            report += `\n<p>Among the WAIS-IV specific subtests, `;
-                            
-                            if (strengths.length > 0) {
-                                const strengthDescriptions = strengths.map(s => `${s.name}, ${s.description}`);
-                                report += `he showed significant relative strength on ${strengthDescriptions.join('; and on ')}`;
-                                
-                                if (weaknesses.length > 0) {
-                                    report += `. He showed significant relative weakness on `;
-                                    const weaknessDescriptions = weaknesses.map(s => `${s.name}, ${s.description}`);
-                                    report += `${weaknessDescriptions.join('; and on ')}`;
-                                }
-                            } else if (weaknesses.length > 0) {
-                                const weaknessDescriptions = weaknesses.map(s => `${s.name}, ${s.description}`);
-                                report += `he showed significant relative weakness on ${weaknessDescriptions.join('; and on ')}`;
-                            }
-                            
-                            report += `.</p>\n`;
-                        }
-                    }
                 }
 
-                // Store for completion
+                // Language Section
+                let languageTests = [];
+                if (data.similarities > 0) languageTests.push({name: 'Similarities', score: data.similarities, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.similarities, true), description: 'a verbal test of abstract reasoning'});
+                if (data.vocabulary > 0) languageTests.push({name: 'Vocabulary', score: data.vocabulary, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.vocabulary, true), description: 'a test requiring him to provide word definitions'});
+                if (data.information > 0) languageTests.push({name: 'Information', score: data.information, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.information, true), description: 'a verbal test of remote factual memory and general academic knowledge'});
+                if (data.comprehension) languageTests.push({name: 'Comprehension', score: data.comprehension, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.comprehension, true), description: 'a test of practical judgment and common sense reasoning'});
+
+                if (languageTests.length > 0) {
+                    report += `\n<h1><b>Language</b></h1>\n`;
+                    languageTests.forEach(test => {
+                        report += `<p>${pronoun} performance on ${test.description} (WAIS-IV ${test.name}) was in the ${test.interpretation}.</p>\n`;
+                    });
+                }
+
+                // Attention Section  
+                let attentionTests = [];
+                if (data.digitspan > 0) attentionTests.push({name: 'Digit Span', score: data.digitspan, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.digitspan, true), description: 'a test requiring him to recall strings of numbers read aloud'});
+                if (data.arithmetic > 0) attentionTests.push({name: 'Arithmetic', score: data.arithmetic, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.arithmetic, true), description: 'a test of mental arithmetic'});
+                if (data.letternumber) attentionTests.push({name: 'Letter-Number Sequencing', score: data.letternumber, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.letternumber, true), description: 'a test requiring reordering of intermixed letters and numbers'});
+                if (data.symbolsearch > 0) attentionTests.push({name: 'Symbol Search', score: data.symbolsearch, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.symbolsearch, true), description: 'a test of visual search speed requiring minimal graphomotor dexterity'});
+                if (data.coding > 0) attentionTests.push({name: 'Coding', score: data.coding, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.coding, true), description: 'a test requiring him to write symbols arbitrarily paired with specific digits'});
+                if (data.cancellation) attentionTests.push({name: 'Cancellation', score: data.cancellation, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.cancellation, true), description: 'a visual attention and response inhibition task'});
+
+                if (attentionTests.length > 0) {
+                    report += `\n<h1><b>Attention</b></h1>\n`;
+                    attentionTests.forEach(test => {
+                        report += `<p>On ${test.description} (WAIS-IV ${test.name}), ${pronounLower} score fell within the ${test.interpretation}.</p>\n`;
+                    });
+                }
+
+                // Visuospatial / Visuoconstructional Section
+                let visuospatialTests = [];
+                if (data.blockdesign > 0) visuospatialTests.push({name: 'Block Design', score: data.blockdesign, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.blockdesign, true), description: 'ability to reproduce set designs from colored blocks'});
+                if (data.visualpuzzles > 0) visuospatialTests.push({name: 'Visual Puzzles', score: data.visualpuzzles, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.visualpuzzles, true), description: 'test requiring mental reconstruction of visual images'});
+                if (data.picturecompletion) visuospatialTests.push({name: 'Picture Completion', score: data.picturecompletion, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.picturecompletion, true), description: 'test requiring identification of missing elements in pictures'});
+
+                if (visuospatialTests.length > 0) {
+                    report += `\n<h1><b>Visuospatial / Visuoconstructional</b></h1>\n`;
+                    visuospatialTests.forEach(test => {
+                        report += `<p>${pronoun} ${test.description} (WAIS-IV ${test.name}) was within the ${test.interpretation}.</p>\n`;
+                    });
+                }
+
+                // Executive Functioning / Problem Solving Section
+                let executiveTests = [];
+                if (data.matrixreasoning > 0) executiveTests.push({name: 'Matrix Reasoning', score: data.matrixreasoning, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.matrixreasoning, true), description: 'He scored within the {range} range on a visual test of fluid intelligence and perceptual organization'});
+                if (data.figureweights) executiveTests.push({name: 'Figure Weights', score: data.figureweights, interpretation: window.NeuroscriptDB.getDetailedInterpretation(data.figureweights, true), description: 'test of quantitative and analogical reasoning'});
+
+                if (executiveTests.length > 0) {
+                    report += `\n<h1><b>Executive Functioning / Problem Solving</b></h1>\n`;
+                    executiveTests.forEach(test => {
+                        if (test.name === 'Matrix Reasoning') {
+                            report += `<p>${test.description.replace('{range}', test.interpretation)} (WAIS-IV ${test.name}).</p>\n`;
+                        } else {
+                            report += `<p>${pronoun} performance on ${test.description} (WAIS-IV ${test.name}) was in the ${test.interpretation}.</p>\n`;
+                        }
+                    });
+                }
+
+                // Generate Score Summary Appendix (like clinical example)
+                report += `\n<div class="score-summary">`;
+                report += `<h3><b>SCORE SUMMARY</b></h3>\n`;
+                report += `<h1><b>WAIS-IV</b>&nbsp;&nbsp;Norms Used: North American</h1>\n`;
+
+                // Index scores table (like sample)
+                if (indexScores.length > 0) {
+                    report += `<table style="width: 50%; font-family: Arial, sans-serif; font-size: 12pt; margin: 10px 0;">`;
+                    report += `<tr><td style="vertical-align: top;">`;
+                    report += `<table style="width: 100%;">`;
+                    if (data.fsiq > 0) report += `<tr><td>FSIQ</td><td style="text-align: right;">${data.fsiq}</td></tr>`;
+                    if (data.gai > 0) report += `<tr><td>GAI</td><td style="text-align: right;">${data.gai}</td></tr>`;
+                    report += `</table></td>`;
+                    report += `<td style="vertical-align: top;">`;
+                    report += `<table style="width: 100%;">`;
+                    if (data.vci > 0) report += `<tr><td>VCI</td><td style="text-align: right;">${data.vci}</td></tr>`;
+                    if (data.pri > 0) report += `<tr><td>PRI</td><td style="text-align: right;">${data.pri}</td></tr>`;
+                    if (data.wmi > 0) report += `<tr><td>WMI</td><td style="text-align: right;">${data.wmi}</td></tr>`;
+                    if (data.psi > 0) report += `<tr><td>PSI</td><td style="text-align: right;">${data.psi}</td></tr>`;
+                    report += `</table></td></tr></table>`;
+                }
+
+                // Subtest scores table (like sample)
+                const adminTests = [];
+                if (data.similarities > 0) adminTests.push(['Similarities', data.similarities]);
+                if (data.vocabulary > 0) adminTests.push(['Vocabulary', data.vocabulary]);
+                if (data.information > 0) adminTests.push(['Information', data.information]);
+                if (data.comprehension) adminTests.push(['Comprehension', data.comprehension]);
+                if (data.blockdesign > 0) adminTests.push(['Block Design', data.blockdesign]);
+                if (data.matrixreasoning > 0) adminTests.push(['Matrix Reasoning', data.matrixreasoning]);
+                if (data.visualpuzzles > 0) adminTests.push(['Visual Puzzles', data.visualpuzzles]);
+                if (data.picturecompletion) adminTests.push(['Picture Completion', data.picturecompletion]);
+                if (data.figureweights) adminTests.push(['Figure Weights', data.figureweights]);
+                if (data.digitspan > 0) adminTests.push(['Digit Span', data.digitspan]);
+                if (data.arithmetic > 0) adminTests.push(['Arithmetic', data.arithmetic]);
+                if (data.letternumber) adminTests.push(['Letter-Number Sequencing', data.letternumber]);
+                if (data.symbolsearch > 0) adminTests.push(['Symbol Search', data.symbolsearch]);
+                if (data.coding > 0) adminTests.push(['Coding', data.coding]);
+                if (data.cancellation) adminTests.push(['Cancellation', data.cancellation]);
+
+                if (adminTests.length > 0) {
+                    // Split subtests into two columns like the sample
+                    const midpoint = Math.ceil(adminTests.length / 2);
+                    const leftTests = adminTests.slice(0, midpoint);
+                    const rightTests = adminTests.slice(midpoint);
+
+                    report += `<table style="width: 100%; font-family: Arial, sans-serif; font-size: 12pt; margin: 15px 0;">`;
+                    report += `<tr><td style="vertical-align: top; width: 50%;">`;
+                    report += `<table style="width: 100%;">`;
+                    leftTests.forEach(test => {
+                        report += `<tr><td>${test[0]}</td><td style="text-align: right;">${test[1]}</td></tr>`;
+                    });
+                    report += `</table></td>`;
+                    report += `<td style="vertical-align: top; width: 50%;">`;
+                    report += `<table style="width: 100%;">`;
+                    rightTests.forEach(test => {
+                        report += `<tr><td>${test[0]}</td><td style="text-align: right;">${test[1]}</td></tr>`;
+                    });
+                    report += `</table></td></tr></table>`;
+                }
+
+                report += `</div>`;
+                report += `</div>`; // Close neuroscript-report div
+
+                // Store for completion (plain text for parent communication)
                 currentNarrative = report.replace(/<[^>]*>/g, '').trim();
 
-                // Generate score table
-                const adminTests = [];
-                if (data.similarities > 0) adminTests.push(['Similarities', data.similarities, window.NeuroscriptDB.getRange(data.similarities, 'wechsler')]);
-                if (data.vocabulary > 0) adminTests.push(['Vocabulary', data.vocabulary, window.NeuroscriptDB.getRange(data.vocabulary, 'wechsler')]);
-                if (data.information > 0) adminTests.push(['Information', data.information, window.NeuroscriptDB.getRange(data.information, 'wechsler')]);
-                if (data.comprehension) adminTests.push(['Comprehension', data.comprehension, window.NeuroscriptDB.getRange(data.comprehension, 'wechsler')]);
-                if (data.blockdesign > 0) adminTests.push(['Block Design', data.blockdesign, window.NeuroscriptDB.getRange(data.blockdesign, 'wechsler')]);
-                if (data.matrixreasoning > 0) adminTests.push(['Matrix Reasoning', data.matrixreasoning, window.NeuroscriptDB.getRange(data.matrixreasoning, 'wechsler')]);
-                if (data.visualpuzzles > 0) adminTests.push(['Visual Puzzles', data.visualpuzzles, window.NeuroscriptDB.getRange(data.visualpuzzles, 'wechsler')]);
-                if (data.picturecompletion) adminTests.push(['Picture Completion', data.picturecompletion, window.NeuroscriptDB.getRange(data.picturecompletion, 'wechsler')]);
-                if (data.figureweights) adminTests.push(['Figure Weights', data.figureweights, window.NeuroscriptDB.getRange(data.figureweights, 'wechsler')]);
-                if (data.digitspan > 0) adminTests.push(['Digit Span', data.digitspan, window.NeuroscriptDB.getRange(data.digitspan, 'wechsler')]);
-                if (data.arithmetic > 0) adminTests.push(['Arithmetic', data.arithmetic, window.NeuroscriptDB.getRange(data.arithmetic, 'wechsler')]);
-                if (data.letternumber) adminTests.push(['Letter-Number Sequencing', data.letternumber, window.NeuroscriptDB.getRange(data.letternumber, 'wechsler')]);
-                if (data.symbolsearch > 0) adminTests.push(['Symbol Search', data.symbolsearch, window.NeuroscriptDB.getRange(data.symbolsearch, 'wechsler')]);
-                if (data.coding > 0) adminTests.push(['Coding', data.coding, window.NeuroscriptDB.getRange(data.coding, 'wechsler')]);
-                if (data.cancellation) adminTests.push(['Cancellation', data.cancellation, window.NeuroscriptDB.getRange(data.cancellation, 'wechsler')]);
-
+                // Store the formatted score table for completion
                 currentScoreTable = `
                     <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
                         <tr style="background-color: #f5f5f5;">
@@ -552,7 +679,7 @@
                             <tr>
                                 <td style="padding: 8px;">${test[0]}</td>
                                 <td style="padding: 8px; text-align: center;">${test[1]}</td>
-                                <td style="padding: 8px; text-align: center;">${test[2]}</td>
+                                <td style="padding: 8px; text-align: center;">${window.NeuroscriptDB.getRange(test[1], 'wechsler')}</td>
                             </tr>
                         `).join('')}
                     </table>
