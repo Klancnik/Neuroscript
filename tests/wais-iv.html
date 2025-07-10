@@ -404,6 +404,12 @@
         }
 
         function generateReport() {
+            console.log('generateReport function called');
+            
+            // Test the functions
+            console.log('Test getCorrectRange(5, true):', getCorrectRange(5, true));
+            console.log('Test getCorrectDetailedInterpretation(5, true):', getCorrectDetailedInterpretation(5, true));
+            
             try {
                 // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
