@@ -1,31 +1,74 @@
 <div class="section-header">📋 Core Score Summary (From CVLT Printout Page 2)</div>
             
             <h4 style="margin: 15px 0 10px 0; color: #495057;">Immediate Recall</h4>
-            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px;">
-                <div>
-                    <label>Trial 1 Correct:</label>
-                    <input type="number" id="trial1" value="" min="0" max="16" placeholder="Raw">
-                    <input type="number" id="trial1Scaled" value="" min="1" max="19" placeholder="Scaled" style="margin-top: 5px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 200px); gap: 15px; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <label style="font-size: 12px;">Trial 1 Correct</label>
+                        <input type="number" id="trial1" value="" min="0" max="16" placeholder="Raw" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Raw score</span>
+                    </div>
+                    <div>
+                        <input type="number" id="trial1Scaled" value="" min="1" max="19" placeholder="Scaled" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Scaled score</span>
+                    </div>
                 </div>
-                <div>
-                    <label>Trial 2 Correct:</label>
-                    <input type="number" id="trial2" value="" min="0" max="16" placeholder="Raw">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <label style="font-size: 12px;">Trial 2 Correct</label>
+                        <input type="number" id="trial2" value="" min="0" max="16" placeholder="Raw" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Raw score</span>
+                    </div>
+                    <div>
+                        <input type="number" id="trial2Scaled" value="" min="1" max="19" placeholder="Scaled" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Scaled score</span>
+                    </div>
                 </div>
-                <div>
-                    <label>Trial 3 Correct:</label>
-                    <input type="number" id="trial3" value="" min="0" max="16" placeholder="Raw">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <label style="font-size: 12px;">Trial 3 Correct</label>
+                        <input type="number" id="trial3" value="" min="0" max="16" placeholder="Raw" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Raw score</span>
+                    </div>
+                    <div>
+                        <input type="number" id="trial3Scaled" value="" min="1" max="19" placeholder="Scaled" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Scaled score</span>
+                    </div>
                 </div>
-                <div>
-                    <label>Trial 4 Correct:</label>
-                    <input type="number" id="trial4" value="" min="0" max="16" placeholder="Raw">
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 200px); gap: 15px; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <label style="font-size: 12px;">Trial 4 Correct</label>
+                        <input type="number" id="trial4" value="" min="0" max="16" placeholder="Raw" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Raw score</span>
+                    </div>
+                    <div>
+                        <input type="number" id="trial4Scaled" value="" min="1" max="19" placeholder="Scaled" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Scaled score</span>
+                    </div>
                 </div>
-                <div>
-                    <label>Trial 5 Correct:</label>
-                    <input type="number" id="trial5" value="" min="0" max="16" placeholder="Raw">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <label style="font-size: 12px;">Trial 5 Correct</label>
+                        <input type="number" id="trial5" value="" min="0" max="16" placeholder="Raw" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Raw score</span>
+                    </div>
+                    <div>
+                        <input type="number" id="trial5Scaled" value="" min="1" max="19" placeholder="Scaled" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Scaled score</span>
+                    </div>
                 </div>
-                <div>
-                    <label>List B Correct:</label>
-                    <input type="number" id="listB" value="" min="0" max="16" placeholder="Raw">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <label style="font-size: 12px;">List B Correct</label>
+                        <input type="number" id="listB" value="" min="0" max="16" placeholder="Raw" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Raw score</span>
+                    </div>
+                    <div>
+                        <input type="number" id="listBScaled" value="" min="1" max="19" placeholder="Scaled" style="width: 60px;">
+                        <span style="font-size: 11px; margin-left: 5px;">Scaled score</span>
+                    </div>
                 </div>
             </div>
 
@@ -108,22 +151,18 @@
                 <div>
                     <label>Semantic Clustering (Scaled):</label>
                     <input type="number" id="clusteringScaled" value="" min="1" max="19" placeholder="1-19">
-                    <input type="number" id="clustering" value="" min="0" max="100" placeholder="%" style="margin-top: 5px;">
                 </div>
                 <div>
                     <label>Primacy Effect (Scaled):</label>
                     <input type="number" id="primacyScaled" value="" min="1" max="19" placeholder="1-19">
-                    <input type="number" id="primacy" value="" min="0" max="100" step="0.1" placeholder="%" style="margin-top: 5px;">
                 </div>
                 <div>
                     <label>Recency Effect (Scaled):</label>
                     <input type="number" id="recencyScaled" value="" min="1" max="19" placeholder="1-19">
-                    <input type="number" id="recency" value="" min="0" max="100" step="0.1" placeholder="%" style="margin-top: 5px;">
                 </div>
                 <div>
-                    <label>Learning Slope (Scaled):</label>
+                    <label>Trials 1-5 Learning Slope (Scaled):</label>
                     <input type="number" id="learningSlopeScaled" value="" min="1" max="19" placeholder="1-19">
-                    <input type="number" id="learningSlope" value="" min="0" max="100" placeholder="%" style="margin-top: 5px;">
                 </div>
             </div>
 
