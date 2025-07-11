@@ -214,7 +214,43 @@
                 </div>
             </div>
 
-            <div class="section-header">Process Scores (Percentiles)</div>
+            <div class="section-header">Scaled Scores (1-19)</div>
+            <div class="score-grid">
+                <div>
+                    <label>Trial 1 (Scaled):</label>
+                    <input type="number" id="trial1Scaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+                <div>
+                    <label>Short Delay Free Recall (Scaled):</label>
+                    <input type="number" id="shortFreeScaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+                <div>
+                    <label>Long Delay Free Recall (Scaled):</label>
+                    <input type="number" id="longFreeScaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+                <div>
+                    <label>Semantic Clustering (Scaled):</label>
+                    <input type="number" id="clusteringScaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+                <div>
+                    <label>Primacy Effect (Scaled):</label>
+                    <input type="number" id="primacyScaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+                <div>
+                    <label>Recency Effect (Scaled):</label>
+                    <input type="number" id="recencyScaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+                <div>
+                    <label>Learning Slope (Scaled):</label>
+                    <input type="number" id="learningSlopeScaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+                <div>
+                    <label>Total Intrusions (Scaled):</label>
+                    <input type="number" id="intrusionsScaled" value="" min="1" max="19" placeholder="1-19">
+                </div>
+            </div>
+
+            <div class="section-header">Process Scores (Percentiles - Optional)</div>
             <div class="score-grid">
                 <div>
                     <label>Semantic Clustering (%):</label>
@@ -273,30 +309,79 @@
             return interpretation;
         }
 
-        function describeLearningSlope(trial1, trial5, percentile) {
-            const improvement = trial5 - trial1;
-            if (percentile >= 25) return "good";
-            if (percentile >= 10) return "average";
+        function getScaledInterpretationFromDB(score) {
+            if (!window.NeuroscriptDB || !score) return "Average range";
+            
+            const range = window.NeuroscriptDB.getRange(score, 'wechsler');
+            const data = window.NeuroscriptDB.getByWechslerScore(score);
+            
+            let interpretation = range + " range (ss=" + score + ")";
+            
+            // Add Heaton impairment levels for low scores based on percentile
+            if (data.percentile <= 16) {
+                if (data.percentile <= 0.5) {
+                    interpretation += ", indicating a severely impaired level of impairment";
+                } else if (data.percentile <= 2) {
+                    interpretation += ", indicating a moderately to severely impaired level of impairment";
+                } else if (data.percentile <= 7) {
+                    interpretation += ", indicating a mildly to moderately impaired level of impairment";
+                } else if (data.percentile <= 16) {
+                    interpretation += ", indicating a mildly impaired level of impairment";
+                }
+            }
+            
+            return interpretation;
+        }
+
+        function describeLearningSlope(trial1Raw, trial5Raw, learningSlopeScaled) {
+            if (learningSlopeScaled) {
+                const range = window.NeuroscriptDB.getRange(learningSlopeScaled, 'wechsler');
+                if (range.includes('Superior') || range.includes('High Average')) return "good";
+                if (range.includes('Average')) return "average";
+                if (range.includes('Below Average') || range.includes('Impaired')) return "poor";
+            }
+            
+            // Fallback to raw score analysis if scaled score not available
+            const improvement = trial5Raw - trial1Raw;
+            if (improvement >= 4) return "good";
+            if (improvement >= 1) return "average";
             if (improvement <= 0) return "flat, showing no improvement";
             return "poor";
         }
 
-        function describeRecallPattern(primacy, recency, gender) {
+        function describeRecallPattern(primacyScaled, recencyScaled, gender) {
             const pronoun = gender === 'Male' ? 'He' : 'She';
-            if (recency >= 75 && primacy <= 25) {
-                return `${pronoun} showed a marked recency effect, being better able to recall words from the end of the list than from the beginning or middle.`;
-            }
-            if (primacy >= 75 && recency <= 25) {
-                return `${pronoun} showed a primacy effect, being better able to recall words from the beginning of the list.`;
+            
+            if (recencyScaled && primacyScaled) {
+                const recencyRange = window.NeuroscriptDB.getRange(recencyScaled, 'wechsler');
+                const primacyRange = window.NeuroscriptDB.getRange(primacyScaled, 'wechsler');
+                
+                if ((recencyRange.includes('Superior') || recencyRange.includes('High Average')) && 
+                    (primacyRange.includes('Below Average') || primacyRange.includes('Impaired'))) {
+                    return `${pronoun} showed a marked recency effect, being better able to recall words from the end of the list than from the beginning or middle.`;
+                }
+                if ((primacyRange.includes('Superior') || primacyRange.includes('High Average')) && 
+                    (recencyRange.includes('Below Average') || recencyRange.includes('Impaired'))) {
+                    return `${pronoun} showed a primacy effect, being better able to recall words from the beginning of the list.`;
+                }
             }
             return "";
         }
 
-        function describeClustering(percentile, gender) {
+        function describeClustering(clusteringScaled, gender) {
             const pronoun = gender === 'Male' ? 'He' : 'She';
-            if (percentile >= 50) return `${pronoun} made good use of a strategy of organizing words by meaning for better learning.`;
-            if (percentile <= 10) return `${pronoun} made little use of semantic clustering strategies for learning.`;
-            return `${pronoun} made some use of organizing words by meaning for learning.`;
+            
+            if (clusteringScaled) {
+                const range = window.NeuroscriptDB.getRange(clusteringScaled, 'wechsler');
+                if (range.includes('Superior') || range.includes('High Average')) {
+                    return `${pronoun} made good use of a strategy of organizing words by meaning for better learning.`;
+                }
+                if (range.includes('Below Average') || range.includes('Impaired')) {
+                    return `${pronoun} made little use of semantic clustering strategies for learning.`;
+                }
+                return `${pronoun} made some use of organizing words by meaning for learning.`;
+            }
+            return "";
         }
 
         function describeCuingEffect(shortFree, shortCued, longFree, longCued) {
@@ -486,7 +571,25 @@
                 }
             });
 
-            // Input validation for process scores (0-100%)
+            // Input validation for scaled scores (1-19)
+            const scaledScores = [
+                {score: data.trial1Scaled, name: 'Trial 1 (Scaled)'},
+                {score: data.shortFreeScaled, name: 'Short Delay Free Recall (Scaled)'},
+                {score: data.longFreeScaled, name: 'Long Delay Free Recall (Scaled)'},
+                {score: data.clusteringScaled, name: 'Semantic Clustering (Scaled)'},
+                {score: data.primacyScaled, name: 'Primacy Effect (Scaled)'},
+                {score: data.recencyScaled, name: 'Recency Effect (Scaled)'},
+                {score: data.learningSlopeScaled, name: 'Learning Slope (Scaled)'},
+                {score: data.intrusionsScaled, name: 'Total Intrusions (Scaled)'}
+            ];
+
+            scaledScores.forEach(item => {
+                if (item.score !== null && item.score !== undefined && item.score !== '' && (item.score < 1 || item.score > 19)) {
+                    warnings.push(`⚠️ ${item.name} score (${item.score}) is outside valid range (1-19) - please check data entry`);
+                }
+            });
+
+            // Input validation for process scores (0-100%) - now optional
             const processScores = [
                 {score: data.clustering, name: 'Semantic Clustering'},
                 {score: data.primacy, name: 'Primacy Effect'},
@@ -560,7 +663,9 @@
                     'recogHits', 'falsePos', 'intrusions', 'forcedChoice',
                     'fcRecalledMissed', 'fcYesNoMissed',
                     'trials15Total', 'delayedIndex', 'totalRecall',
-                    'clustering', 'primacy', 'recency', 'learningSlope'
+                    'trial1Scaled', 'shortFreeScaled', 'longFreeScaled',
+                    'clusteringScaled', 'primacyScaled', 'recencyScaled', 
+                    'learningSlopeScaled', 'intrusionsScaled'
                 ];
 
                 const emptyFields = [];
@@ -598,10 +703,18 @@
                     trials15Total: parseInt(document.getElementById('trials15Total').value) || 0,
                     delayedIndex: parseInt(document.getElementById('delayedIndex').value) || 0,
                     totalRecall: parseInt(document.getElementById('totalRecall').value) || 0,
-                    clustering: parseFloat(document.getElementById('clustering').value) || 0,
-                    primacy: parseFloat(document.getElementById('primacy').value) || 0,
-                    recency: parseFloat(document.getElementById('recency').value) || 0,
-                    learningSlope: parseFloat(document.getElementById('learningSlope').value) || 0
+                    trial1Scaled: parseInt(document.getElementById('trial1Scaled').value) || 0,
+                    shortFreeScaled: parseInt(document.getElementById('shortFreeScaled').value) || 0,
+                    longFreeScaled: parseInt(document.getElementById('longFreeScaled').value) || 0,
+                    clusteringScaled: parseInt(document.getElementById('clusteringScaled').value) || 0,
+                    primacyScaled: parseInt(document.getElementById('primacyScaled').value) || 0,
+                    recencyScaled: parseInt(document.getElementById('recencyScaled').value) || 0,
+                    learningSlopeScaled: parseInt(document.getElementById('learningSlopeScaled').value) || 0,
+                    intrusionsScaled: parseInt(document.getElementById('intrusionsScaled').value) || 0,
+                    clustering: parseFloat(document.getElementById('clustering').value) || null,
+                    primacy: parseFloat(document.getElementById('primacy').value) || null,
+                    recency: parseFloat(document.getElementById('recency').value) || null,
+                    learningSlope: parseFloat(document.getElementById('learningSlope').value) || null
                 };
 
                 const warnings = generateValidationWarnings(data);
@@ -625,13 +738,11 @@
                 }
 
                 if (data.trial1) {
-                    const trial1Percentile = getPercentileFromRaw(data.trial1, 'trial1');
-                    const trial1Range = getRangeFromPercentile(trial1Percentile);
-                    text += `${heShe} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${trial1Range}. `;
+                    text += `${heShe} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${getScaledInterpretationFromDB(data.trial1Scaled)}. `;
                 }
 
                 if (data.trial1 && data.trial5) {
-                    const slopeDescription = describeLearningSlope(data.trial1, data.trial5, data.learningSlope);
+                    const slopeDescription = describeLearningSlope(data.trial1, data.trial5, data.learningSlopeScaled);
                     if (slopeDescription.includes("flat")) {
                         text += `${heShe} showed a ${slopeDescription}. `;
                     } else {
@@ -639,7 +750,7 @@
                     }
                 }
 
-                const recallPattern = describeRecallPattern(data.primacy, data.recency, data.gender);
+                const recallPattern = describeRecallPattern(data.primacyScaled, data.recencyScaled, data.gender);
                 if (recallPattern) {
                     text += recallPattern + " ";
                 }
@@ -650,19 +761,11 @@
 
                 if (data.shortFree || data.longFree) {
                     if (data.shortFree && data.longFree) {
-                        const shortDelayPercentile = getPercentileFromRaw(data.shortFree, 'delayed');
-                        const longDelayPercentile = getPercentileFromRaw(data.longFree, 'delayed');
-                        const shortDelayRange = getRangeFromPercentile(shortDelayPercentile);
-                        const longDelayRange = getRangeFromPercentile(longDelayPercentile);
-                        text += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}), and ${data.longFree} after a longer delay (${longDelayRange}). `;
+                        text += `${heShe} was able to retain ${data.shortFree} items after a short delay (${getScaledInterpretationFromDB(data.shortFreeScaled)}), and ${data.longFree} after a longer delay (${getScaledInterpretationFromDB(data.longFreeScaled)}). `;
                     } else if (data.shortFree) {
-                        const shortDelayPercentile = getPercentileFromRaw(data.shortFree, 'delayed');
-                        const shortDelayRange = getRangeFromPercentile(shortDelayPercentile);
-                        text += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}). `;
+                        text += `${heShe} was able to retain ${data.shortFree} items after a short delay (${getScaledInterpretationFromDB(data.shortFreeScaled)}). `;
                     } else if (data.longFree) {
-                        const longDelayPercentile = getPercentileFromRaw(data.longFree, 'delayed');
-                        const longDelayRange = getRangeFromPercentile(longDelayPercentile);
-                        text += `${heShe} was able to retain ${data.longFree} items after a longer delay (${longDelayRange}). `;
+                        text += `${heShe} was able to retain ${data.longFree} items after a longer delay (${getScaledInterpretationFromDB(data.longFreeScaled)}). `;
                     }
                 }
 
@@ -670,8 +773,8 @@
                     text += describeCuingEffect(data.shortFree, data.shortCued, data.longFree, data.longCued) + " ";
                 }
 
-                if (data.clustering) {
-                    text += describeClustering(data.clustering, data.gender) + " ";
+                if (data.clusteringScaled) {
+                    text += describeClustering(data.clusteringScaled, data.gender) + " ";
                 }
 
                 if (data.recogHits || data.falsePos || data.forcedChoice) {
@@ -683,14 +786,18 @@
                 // Store for completion
                 currentNarrative = text.replace(/<[^>]*>/g, '').trim();
 
-                // Generate score table using database
+                // Generate score table using database for scaled scores
                 const adminTests = [];
                 if (data.trials15Total) adminTests.push(['Trials 1-5 Total', data.trial1 + data.trial2 + data.trial3 + data.trial4 + data.trial5, data.trials15Total, window.NeuroscriptDB.getRange(data.trials15Total)]);
-                if (data.shortFree) adminTests.push(['Short Delay Free Recall', data.shortFree, '--', getRangeFromPercentile(getPercentileFromRaw(data.shortFree, 'delayed')).split(',')[0]]);
-                if (data.longFree) adminTests.push(['Long Delay Free Recall', data.longFree, '--', getRangeFromPercentile(getPercentileFromRaw(data.longFree, 'delayed')).split(',')[0]]);
+                if (data.trial1Scaled) adminTests.push(['Trial 1', data.trial1, data.trial1Scaled + ' (ss)', window.NeuroscriptDB.getRange(data.trial1Scaled, 'wechsler')]);
+                if (data.shortFreeScaled) adminTests.push(['Short Delay Free Recall', data.shortFree, data.shortFreeScaled + ' (ss)', window.NeuroscriptDB.getRange(data.shortFreeScaled, 'wechsler')]);
+                if (data.longFreeScaled) adminTests.push(['Long Delay Free Recall', data.longFree, data.longFreeScaled + ' (ss)', window.NeuroscriptDB.getRange(data.longFreeScaled, 'wechsler')]);
                 if (data.recogHits) adminTests.push(['Recognition Hits', data.recogHits + '/16', '--', data.recogHits >= 15 ? 'Normal' : data.recogHits >= 12 ? 'Borderline' : 'Impaired']);
                 if (data.delayedIndex) adminTests.push(['Delayed Recall Index', '--', data.delayedIndex, window.NeuroscriptDB.getRange(data.delayedIndex)]);
                 if (data.totalRecall) adminTests.push(['Total Recall Index', '--', data.totalRecall, window.NeuroscriptDB.getRange(data.totalRecall)]);
+                if (data.clusteringScaled) adminTests.push(['Semantic Clustering', '--', data.clusteringScaled + ' (ss)', window.NeuroscriptDB.getRange(data.clusteringScaled, 'wechsler')]);
+                if (data.learningSlopeScaled) adminTests.push(['Learning Slope', '--', data.learningSlopeScaled + ' (ss)', window.NeuroscriptDB.getRange(data.learningSlopeScaled, 'wechsler')]);
+                if (data.intrusionsScaled) adminTests.push(['Total Intrusions', data.intrusions, data.intrusionsScaled + ' (ss)', window.NeuroscriptDB.getRange(data.intrusionsScaled, 'wechsler')]);
 
                 currentScoreTable = `
                     <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
