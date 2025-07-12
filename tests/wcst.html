@@ -231,7 +231,7 @@
                         <!-- Raw scores only -->
                         <tr>
                             <td>Trials Administered</td>
-                            <td><input type="number" id="trialsAdministered" min="64" max="128" placeholder="128"></td>
+                            <td><input type="number" id="trialsAdministered" min="60" max="128" placeholder=""></td>
                             <td class="na-cell">--</td>
                         </tr>
                         <tr>
@@ -512,7 +512,7 @@
             let errorMessages = [];
             
             // Trials administered
-            const trialsResult = validateInput('trialsAdministered', 64, 128);
+            const trialsResult = validateInput('trialsAdministered', 60, 128);
             if (!trialsResult.valid) errorMessages.push(trialsResult.message);
             allValid &= trialsResult.valid;
             
