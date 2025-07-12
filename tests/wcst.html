@@ -1,37 +1,4 @@
-<tr>
-                            <td>% Errors</td>
-                            <td><input type="number" id="percentErrors" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
-                            <td><input type="number" id="percentErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>Perseverative Responses</td>
-                            <td><input type="number" id="perseverativeResponses" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="perseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>% Perseverative Responses</td>
-                            <td><input type="number" id="percentPerseverativeResponses" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
-                            <td><input type="number" id="percentPerseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>Perseverative Errors</td>
-                            <td><input type="number" id="perseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="perseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>% Perseverative Errors</td>
-                            <td><input type="number" id="percentPerseverativeErrors" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
-                            <td><input type="number" id="percentPerseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>Non-Perseverative Errors</td>
-                            <td><input type="number" id="nonperseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="nonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>% Non-Perseverative Errors</td>
-                            <td><input type="number" id="percentNonperseverativeErrors" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
-                            <td><input type="number" id="percentNonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,33 +32,6 @@
             padding: 20px;
             border-radius: 5px;
             margin-bottom: 20px;
-        }
-        .input-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-        .input-group {
-            flex: 1;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            color: #34495e;
-            margin-bottom: 5px;
-        }
-        input[type="number"], select {
-            width: 100%;
-            padding: 8px;
-            border: 2px solid #bdc3c7;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        input[type="number"]:focus, select:focus {
-            outline: none;
-            border-color: #3498db;
         }
         .data-entry-table {
             width: 100%;
@@ -161,6 +101,14 @@
         .na-cell {
             color: #6c757d;
             font-style: italic;
+        }
+        .calculated-cell {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: bold;
+            font-style: italic;
+            text-align: center;
+            padding: 8px;
         }
         .section-divider {
             background-color: #e9ecef;
@@ -303,7 +251,7 @@
                         </tr>
                         <tr>
                             <td>% Errors</td>
-                            <td><input type="number" id="percentErrors" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td class="calculated-cell" id="percentErrorsDisplay">--</td>
                             <td><input type="number" id="percentErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
@@ -313,7 +261,7 @@
                         </tr>
                         <tr>
                             <td>% Perseverative Responses</td>
-                            <td><input type="number" id="percentPerseverativeResponses" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td class="calculated-cell" id="percentPerseverativeResponsesDisplay">--</td>
                             <td><input type="number" id="percentPerseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
@@ -323,7 +271,7 @@
                         </tr>
                         <tr>
                             <td>% Perseverative Errors</td>
-                            <td><input type="number" id="percentPerseverativeErrors" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td class="calculated-cell" id="percentPerseverativeErrorsDisplay">--</td>
                             <td><input type="number" id="percentPerseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
@@ -333,7 +281,7 @@
                         </tr>
                         <tr>
                             <td>% Non-Perseverative Errors</td>
-                            <td><input type="number" id="percentNonperseverativeErrors" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td class="calculated-cell" id="percentNonperseverativeErrorsDisplay">--</td>
                             <td><input type="number" id="percentNonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
@@ -343,7 +291,7 @@
                         </tr>
                         <tr>
                             <td>% Conceptual Level Responses</td>
-                            <td><input type="number" id="percentConceptualLevelResponses" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td class="calculated-cell" id="percentConceptualLevelResponsesDisplay">--</td>
                             <td><input type="number" id="percentConceptualLevelResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         
@@ -430,6 +378,17 @@
         let currentNarrative = '';
         let currentScoreTable = '';
 
+        // Hidden client info inputs for message listener compatibility
+        const hiddenClientInputs = document.createElement('div');
+        hiddenClientInputs.style.display = 'none';
+        hiddenClientInputs.innerHTML = `
+            <input type="number" id="clientAge" value="25">
+            <select id="clientGender"><option value="male" selected>Male</option></select>
+            <input type="number" id="clientEducation" value="12">
+            <select id="readingLevel"><option value="12" selected>12</option></select>
+        `;
+        document.body.appendChild(hiddenClientInputs);
+
         // Database availability check
         function checkDatabaseAvailability() {
             const debug = document.getElementById('debugInfo');
@@ -474,82 +433,6 @@
             }
         }
 
-        // Enhanced T-score normative conversion using database
-        function getTScoreFromPercentile(percentile) {
-            if (!window.NeuroscriptDB) return 50; // Default if database unavailable
-            
-            // Find closest percentile match in database
-            const closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
-                Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
-            );
-            return closest.t;
-        }
-
-        // WCST Normative data - using Heaton et al. (1993) norms
-        function getWCSTTScore(rawScore, measure, age, education) {
-            // Simplified normative calculations for demonstration
-            // In practice, you would use complete normative tables
-            const ageFactor = age < 50 ? 0 : (age - 50) * 0.2;
-            const educationFactor = education < 12 ? (12 - education) * 0.5 : 0;
-            
-            let tScore = 50;
-            
-            switch(measure) {
-                case 'categoriesCompleted':
-                    tScore = 50 + (rawScore - 3) * 5 - ageFactor - educationFactor;
-                    break;
-                case 'perseverativeErrors':
-                    tScore = 50 - (rawScore - 15) * 0.8 + ageFactor + educationFactor;
-                    break;
-                case 'perseverativeErrorsPercent':
-                    tScore = 50 - (rawScore - 12) * 1.2 + ageFactor + educationFactor;
-                    break;
-                case 'nonperseverativeErrors':
-                    tScore = 50 - (rawScore - 8) * 0.6 + ageFactor + educationFactor;
-                    break;
-                case 'conceptualLevelResponses':
-                    tScore = 50 + (rawScore - 60) * 0.3 - ageFactor - educationFactor;
-                    break;
-                case 'conceptualLevelResponsesPercent':
-                    tScore = 50 + (rawScore - 65) * 0.4 - ageFactor - educationFactor;
-                    break;
-                case 'trialsToFirstCategory':
-                    tScore = 50 - (rawScore - 20) * 0.4 + ageFactor + educationFactor;
-                    break;
-                case 'failureToMaintainSet':
-                    tScore = 50 - (rawScore - 1) * 3 + ageFactor + educationFactor;
-                    break;
-            }
-            
-            // Constrain to reasonable bounds
-            return Math.max(20, Math.min(80, tScore));
-        }
-
-        // Auto-calculate and display T-scores as user enters data
-        function updateTScores() {
-            const age = parseInt(document.getElementById('clientAge').value) || 25;
-            const education = parseInt(document.getElementById('clientEducation').value) || 12;
-
-            const measures = [
-                { id: 'categoriesCompleted', measure: 'categoriesCompleted' },
-                { id: 'perseverativeErrors', measure: 'perseverativeErrors' },
-                { id: 'nonperseverativeErrors', measure: 'nonperseverativeErrors' },
-                { id: 'conceptualLevelResponses', measure: 'conceptualLevelResponses' },
-                { id: 'trialsToFirstCategory', measure: 'trialsToFirstCategory' },
-                { id: 'failureToMaintainSet', measure: 'failureToMaintainSet' }
-            ];
-
-            measures.forEach(item => {
-                const value = parseInt(document.getElementById(item.id).value);
-                if (!isNaN(value)) {
-                    const tScore = Math.round(getWCSTTScore(value, item.measure, age, education));
-                    document.getElementById(item.id + 'T').textContent = tScore;
-                } else {
-                    document.getElementById(item.id + 'T').textContent = '--';
-                }
-            });
-        }
-
         // Auto-calculate percentages and update display
         function updateCalculatedValues() {
             const trialsAdmin = parseInt(document.getElementById('trialsAdministered').value) || 0;
@@ -592,6 +475,8 @@
         // Enhanced validation with new field structure
         function validateInput(elementId, min, max, customValidation = null) {
             const element = document.getElementById(elementId);
+            if (!element) return { valid: true, message: '' };
+            
             const value = parseFloat(element.value);
             
             let isValid = true;
@@ -647,63 +532,6 @@
             });
             if (!errorsResult.valid) errorMessages.push(errorsResult.message);
             allValid &= errorsResult.valid;
-            
-            const totalErrors = parseInt(document.getElementById('totalErrors').value) || 0;
-            
-            // Perseverative responses
-            const persevRespResult = validateInput('perseverativeResponses', 0, trialsAdmin, (value) => {
-                return value <= totalErrors ? {valid: true} : {valid: false, message: 'Perseverative responses cannot exceed total errors'};
-            });
-            if (!persevRespResult.valid) errorMessages.push(persevRespResult.message);
-            allValid &= persevRespResult.valid;
-            
-            const persevResponses = parseInt(document.getElementById('perseverativeResponses').value) || 0;
-            
-            // Perseverative errors
-            const persevErrResult = validateInput('perseverativeErrors', 0, persevResponses, (value) => {
-                return value <= persevResponses ? {valid: true} : {valid: false, message: 'Perseverative errors cannot exceed perseverative responses'};
-            });
-            if (!persevErrResult.valid) errorMessages.push(persevErrResult.message);
-            allValid &= persevErrResult.valid;
-            
-            const persevErrors = parseInt(document.getElementById('perseverativeErrors').value) || 0;
-            
-            // Non-perseverative errors
-            const nonPersevResult = validateInput('nonperseverativeErrors', 0, totalErrors, (value) => {
-                const expectedNonPersev = totalErrors - persevErrors;
-                return Math.abs(value - expectedNonPersev) <= 1 ? {valid: true} : {valid: false, message: `Non-perseverative errors should be approximately ${expectedNonPersev} (total errors - perseverative errors)`};
-            });
-            if (!nonPersevResult.valid) errorMessages.push(nonPersevResult.message);
-            allValid &= nonPersevResult.valid;
-            
-            // Categories completed
-            const catResult = validateInput('categoriesCompleted', 0, 6);
-            if (!catResult.valid) errorMessages.push(catResult.message);
-            allValid &= catResult.valid;
-            
-            // Trials to first category
-            const trialsResult_first = validateInput('trialsToFirstCategory', 0, trialsAdmin, (value) => {
-                return value <= trialsAdmin ? {valid: true} : {valid: false, message: 'Trials to first category cannot exceed trials administered'};
-            });
-            if (!trialsResult_first.valid) errorMessages.push(trialsResult_first.message);
-            allValid &= trialsResult_first.valid;
-            
-            // Failure to maintain set
-            const failureResult = validateInput('failureToMaintainSet', 0, 6);
-            if (!failureResult.valid) errorMessages.push(failureResult.message);
-            allValid &= failureResult.valid;
-            
-            // Conceptual level responses
-            const conceptualResult = validateInput('conceptualLevelResponses', 0, trialsAdmin, (value) => {
-                return value <= trialsAdmin ? {valid: true} : {valid: false, message: 'Conceptual level responses cannot exceed trials administered'};
-            });
-            if (!conceptualResult.valid) errorMessages.push(conceptualResult.message);
-            allValid &= conceptualResult.valid;
-            
-            // Learning to learn
-            const learningResult = validateInput('learningToLearn', -5, 15);
-            if (!learningResult.valid) errorMessages.push(learningResult.message);
-            allValid &= learningResult.valid;
             
             // Display validation messages
             const validationDiv = document.getElementById('validationMessages');
@@ -806,72 +634,18 @@
                 }
             }
 
-            // Client demographics (from parent page or defaults)
-            data.age = 25; // Will be overridden by parent message
-            data.gender = 'male'; // Will be overridden by parent message
-            data.education = 12; // Will be overridden by parent message
-            data.readingLevel = '12'; // Will be overridden by parent message
-
-            // Add calculated percentages to data
-            data.percentErrors = parseFloat(document.getElementById('percentErrorsDisplay').textContent.replace('%', ''));
-            data.percentPerseverativeResponses = parseFloat(document.getElementById('percentPerseverativeResponsesDisplay').textContent.replace('%', ''));
-            data.percentPerseverativeErrors = parseFloat(document.getElementById('percentPerseverativeErrorsDisplay').textContent.replace('%', ''));
-            data.percentNonperseverativeErrors = parseFloat(document.getElementById('percentNonperseverativeErrorsDisplay').textContent.replace('%', ''));
-            data.percentConceptualLevelResponses = parseFloat(document.getElementById('percentConceptualLevelResponsesDisplay').textContent.replace('%', ''));
-
-            return data;
-        }'percentPerseverativeErrorsT', 'nonperseverativeErrorsT', 
-                'percentNonperseverativeErrorsT', 'percentConceptualLevelResponsesT'
-            ];
-
-            const percentileFields = [
-                'categoriesCompletedPercentile', 'trialsToFirstCategoryPercentile', 
-                'failureToMaintainSetPercentile', 'learningToLearnPercentile'
-            ];
-
-            const data = {};
-            
-            // Collect raw scores
-            for (const field of requiredRawFields) {
-                const value = parseFloat(document.getElementById(field).value);
-                if (isNaN(value)) {
-                    alert(`Please enter a value for ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
-                    return null;
-                }
-                data[field] = value;
-            }
-
-            // Collect T-scores (only for measures that have them)
-            for (const field of tScoreFields) {
-                const element = document.getElementById(field);
-                if (element) {
-                    const value = parseFloat(element.value);
-                    if (isNaN(value)) {
-                        alert(`Please enter the T-score for ${field.replace(/([A-Z])/g, ' $1').replace('T', '').toLowerCase()}`);
-                        return null;
-                    }
-                    data[field] = value;
-                }
-            }
-
-            // Collect percentile ranges (for measures that have them)
-            for (const field of percentileFields) {
-                const element = document.getElementById(field);
-                if (element) {
-                    const value = element.value;
-                    if (!value) {
-                        alert(`Please select the percentile range for ${field.replace(/([A-Z])/g, ' $1').replace('Percentile', '').toLowerCase()}`);
-                        return null;
-                    }
-                    data[field] = value;
-                }
-            }
-
-            // Client demographics (from parent page)
+            // Client demographics (from hidden inputs)
             data.age = parseInt(document.getElementById('clientAge').value) || 25;
             data.gender = document.getElementById('clientGender').value || 'male';
             data.education = parseInt(document.getElementById('clientEducation').value) || 12;
             data.readingLevel = document.getElementById('readingLevel').value || '12';
+
+            // Add calculated percentages to data
+            data.percentErrors = parseFloat(document.getElementById('percentErrorsDisplay').textContent.replace('%', '')) || 0;
+            data.percentPerseverativeResponses = parseFloat(document.getElementById('percentPerseverativeResponsesDisplay').textContent.replace('%', '')) || 0;
+            data.percentPerseverativeErrors = parseFloat(document.getElementById('percentPerseverativeErrorsDisplay').textContent.replace('%', '')) || 0;
+            data.percentNonperseverativeErrors = parseFloat(document.getElementById('percentNonperseverativeErrorsDisplay').textContent.replace('%', '')) || 0;
+            data.percentConceptualLevelResponses = parseFloat(document.getElementById('percentConceptualLevelResponsesDisplay').textContent.replace('%', '')) || 0;
 
             return data;
         }
@@ -882,56 +656,31 @@
                 {
                     measure: 'Categories Completed',
                     raw: data.categoriesCompleted,
-                    tScore: data.categoriesCompletedT,
+                    tScore: null,
+                    percentileRange: data.categoriesCompletedPercentile,
+                    interpretation: data.categoriesCompletedPercentile
+                },
+                {
+                    measure: 'Total Errors',
+                    raw: data.totalErrors,
+                    tScore: data.totalErrorsT,
+                    percentileRange: null,
                     interpretation: ''
                 },
                 {
                     measure: 'Perseverative Errors',
                     raw: data.perseverativeErrors,
                     tScore: data.perseverativeErrorsT,
-                    interpretation: ''
-                },
-                {
-                    measure: 'Perseverative Errors (%)',
-                    raw: data.perseverativeErrorsPercent + '%',
-                    tScore: data.perseverativeErrorsT, // Use same T-score as perseverative errors
-                    interpretation: ''
-                },
-                {
-                    measure: 'Non-Perseverative Errors',
-                    raw: data.nonperseverativeErrors,
-                    tScore: data.nonperseverativeErrorsT,
-                    interpretation: ''
-                },
-                {
-                    measure: 'Conceptual Level Responses',
-                    raw: data.conceptualLevelResponses,
-                    tScore: data.conceptualLevelResponsesT,
-                    interpretation: ''
-                },
-                {
-                    measure: 'Conceptual Level Responses (%)',
-                    raw: data.conceptualLevelResponsesPercent + '%',
-                    tScore: data.conceptualLevelResponsesT, // Use same T-score as conceptual level responses
-                    interpretation: ''
-                },
-                {
-                    measure: 'Trials to First Category',
-                    raw: data.trialsToFirstCategory,
-                    tScore: data.trialsToFirstCategoryT,
-                    interpretation: ''
-                },
-                {
-                    measure: 'Failure to Maintain Set',
-                    raw: data.failureToMaintainSet,
-                    tScore: data.failureToMaintainSetT,
+                    percentileRange: null,
                     interpretation: ''
                 }
             ];
 
-            // Add interpretations using database
+            // Add interpretations using database for T-scores
             scores.forEach(score => {
-                score.interpretation = getClinicalInterpretationFromDB(score.tScore);
+                if (score.tScore) {
+                    score.interpretation = getClinicalInterpretationFromDB(score.tScore);
+                }
             });
 
             let table = `
@@ -941,6 +690,7 @@
                             <th>Measure</th>
                             <th>Raw Score</th>
                             <th>T-Score</th>
+                            <th>Percentile Range</th>
                             <th>Clinical Range</th>
                         </tr>
                     </thead>
@@ -952,7 +702,8 @@
                     <tr>
                         <td>${score.measure}</td>
                         <td>${score.raw}</td>
-                        <td>${score.tScore}</td>
+                        <td>${score.tScore || '--'}</td>
+                        <td>${score.percentileRange || '--'}</td>
                         <td>${score.interpretation}</td>
                     </tr>
                 `;
@@ -972,67 +723,33 @@
             const pronoun_cap = data.gender === 'female' ? 'She' : 'He';
 
             // Use T-scores from the printout (not calculated)
-            const catCompletedT = data.categoriesCompletedT;
-            const persevErrorsT = data.perseverativeErrorsT;
-            const conceptualRespT = data.conceptualLevelResponsesT;
-            const trialsFirstCatT = data.trialsToFirstCategoryT;
+            const totalErrorsT = data.totalErrorsT || 50;
+            const persevErrorsT = data.perseverativeErrorsT || 50;
 
             // Get clinical interpretations using database
-            const catCompletedRange = getClinicalInterpretationFromDB(catCompletedT);
+            const totalErrorsRange = getClinicalInterpretationFromDB(totalErrorsT);
             const persevErrorsRange = getClinicalInterpretationFromDB(persevErrorsT);
-            const conceptualRespRange = getClinicalInterpretationFromDB(conceptualRespT);
 
             let narrative = `
                 <div class="interpretation">
                     <h4>Wisconsin Card Sorting Test (WCST) Results</h4>
                     
                     <p><strong>Executive Function and Cognitive Flexibility:</strong></p>
-                    <p>The client completed ${data.categoriesCompleted} out of 6 possible categories (T=${catCompletedT}), which falls in the ${catCompletedRange} range. This indicates ${possessive} level of conceptual reasoning and ability to identify abstract sorting principles.</p>
+                    <p>The client completed ${data.categoriesCompleted} out of 6 possible categories (${data.categoriesCompletedPercentile} percentile range), indicating ${possessive} level of conceptual reasoning and ability to identify abstract sorting principles.</p>
                     
-                    <p><strong>Perseverative Responding:</strong></p>
-                    <p>${pronoun_cap} made ${data.perseverativeErrors} perseverative errors (T=${persevErrorsT}), representing ${data.perseverativeErrorsPercent}% of total responses. This performance falls in the ${persevErrorsRange} range, suggesting ${persevErrorsT < 40 ? 'elevated' : persevErrorsT > 60 ? 'reduced' : 'typical'} perseverative tendencies.</p>
-                    
-                    <p><strong>Conceptual Responding:</strong></p>
-                    <p>${pronoun_cap} achieved ${data.conceptualLevelResponses} conceptual level responses (${data.conceptualLevelResponsesPercent}% of total responses, T=${conceptualRespT}), which is in the ${conceptualRespRange} range. This reflects ${possessive} ability to maintain abstract concepts once identified.</p>
-                    
-                    <p><strong>Set-Formation Efficiency:</strong></p>
-                    <p>The client required ${data.trialsToFirstCategory} trials to complete the first category (T=${trialsFirstCatT}), indicating ${trialsFirstCatT < 40 ? 'difficulty with' : trialsFirstCatT > 60 ? 'efficient' : 'typical performance in'} initial concept formation.</p>
-                    
-                    ${data.failureToMaintainSet > 0 ? `<p><strong>Set Maintenance:</strong> ${pronoun_cap} demonstrated ${data.failureToMaintainSet} failure(s) to maintain set, suggesting ${data.failureToMaintainSet > 2 ? 'significant difficulty' : 'some difficulty'} maintaining cognitive control once a category was established.</p>` : ''}
+                    <p><strong>Error Analysis:</strong></p>
+                    <p>${pronoun_cap} made ${data.totalErrors} total errors (T=${totalErrorsT}), which falls in the ${totalErrorsRange} range. ${pronoun_cap} made ${data.perseverativeErrors} perseverative errors (T=${persevErrorsT}), representing ${data.percentPerseverativeErrors}% of total responses, which is in the ${persevErrorsRange} range.</p>
                     
                     <p><strong>Clinical Summary:</strong></p>
                     <p>Overall, these results suggest ${
-                        catCompletedT >= 50 && persevErrorsT >= 45 && conceptualRespT >= 50 ? 
-                        'intact executive functioning with good cognitive flexibility and concept formation abilities' :
-                        catCompletedT < 40 || persevErrorsT < 35 || conceptualRespT < 40 ?
-                        'evidence of executive dysfunction, with particular difficulties in cognitive flexibility and/or concept formation' :
-                        'mixed executive functioning, with some areas of strength and some areas of relative weakness'
+                        data.categoriesCompleted >= 4 && totalErrorsT >= 45 ? 
+                        'adequate executive functioning with good cognitive flexibility' :
+                        data.categoriesCompleted <= 2 || totalErrorsT < 35 ?
+                        'evidence of executive dysfunction with difficulties in cognitive flexibility' :
+                        'mixed executive functioning with some areas of relative difficulty'
                     }.</p>
                 </div>
             `;
-
-            // Add warnings for extreme scores or unusual patterns
-            let warnings = [];
-            
-            if (data.categoriesCompleted === 0) {
-                warnings.push("No categories completed - consider potential motivational, attentional, or severe executive dysfunction.");
-            }
-            
-            if (data.perseverativeErrorsPercent > 30) {
-                warnings.push("Extremely high perseverative error rate - consider frontal lobe dysfunction.");
-            }
-            
-            if (data.trialsToFirstCategory > 50) {
-                warnings.push("Unusually high trials to first category - may indicate significant concept formation difficulties.");
-            }
-
-            if (warnings.length > 0) {
-                narrative += '<div class="warning"><h4>Clinical Warnings:</h4><ul>';
-                warnings.forEach(warning => {
-                    narrative += `<li>${warning}</li>`;
-                });
-                narrative += '</ul></div>';
-            }
 
             return narrative;
         }
@@ -1080,17 +797,17 @@
             }
         });
 
-        // Auto-validate and update T-scores on input changes
+        // Auto-validate and update calculations on input changes
         document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input[type="number"]');
+            const inputs = document.querySelectorAll('input[type="number"], select');
             inputs.forEach(input => {
                 input.addEventListener('input', function() {
+                    updateCalculatedValues();
                     validateAllInputs();
-                    updateTScores();
                 });
                 input.addEventListener('change', function() {
+                    updateCalculatedValues();
                     validateAllInputs();
-                    updateTScores();
                 });
             });
             
