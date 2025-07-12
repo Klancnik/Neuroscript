@@ -565,26 +565,29 @@
         // Load demographics from parent window (master dashboard)
         function loadDemographicsFromParent() {
             try {
+                // First try to get data from parent window's localStorage or sessionStorage
                 if (window.parent && window.parent !== window) {
-                    // Try to get demographics from parent
-                    window.parent.postMessage({
-                        type: 'getDemographics'
-                    }, '*');
+                    // Method 1: Try accessing parent's stored data directly
+                    const parentDoc = window.parent.document;
+                    const ageField = parentDoc.getElementById('clientAge');
+                    const genderField = parentDoc.getElementById('clientGender');
+                    const educationField = parentDoc.getElementById('clientEducation');
+                    const readingField = parentDoc.getElementById('clientReading');
+                    
+                    if (ageField && ageField.value) document.getElementById('age').value = ageField.value;
+                    if (genderField && genderField.value) document.getElementById('gender').value = genderField.value;
+                    if (educationField && educationField.value) document.getElementById('education').value = educationField.value;
+                    if (readingField && readingField.value) document.getElementById('readingLevel').value = readingField.value;
                 }
-                
-                // Listen for demographics response
-                window.addEventListener('message', function(event) {
-                    if (event.data.type === 'demographicsData') {
-                        const demo = event.data.data;
-                        if (demo.age) document.getElementById('age').value = demo.age;
-                        if (demo.gender) document.getElementById('gender').value = demo.gender;
-                        if (demo.education) document.getElementById('education').value = demo.education;
-                        if (demo.readingLevel) document.getElementById('readingLevel').value = demo.readingLevel;
-                    }
-                });
             } catch (error) {
-                // Silently fail if no parent or communication error
-                console.log('No demographics available from parent window');
+                // Method 2: Try URL parameters (if passed from parent)
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('age')) document.getElementById('age').value = urlParams.get('age');
+                if (urlParams.get('gender')) document.getElementById('gender').value = urlParams.get('gender');
+                if (urlParams.get('education')) document.getElementById('education').value = urlParams.get('education');
+                if (urlParams.get('reading')) document.getElementById('readingLevel').value = urlParams.get('reading');
+                
+                console.log('Demographics auto-population attempted');
             }
         }
     </script>
