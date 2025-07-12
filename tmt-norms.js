@@ -128,17 +128,19 @@ window.TMTNorms = {
         // Use the existing neuroscript-norms database for consistency
         if (window.NeuroscriptDB) {
             const data = window.NeuroscriptDB.getByTScore(tScore);
-            return data.aacn;
+            // Ensure "range" is added if not already present
+            const baseRange = data.aacn;
+            return baseRange.includes("range") ? baseRange : baseRange + " range";
         }
         
         // Fallback if neuroscript-norms not available
-        if (tScore >= 70) return "Exceptionally High";
-        if (tScore >= 65) return "High";
-        if (tScore >= 55) return "High Average";
-        if (tScore >= 45) return "Average";
-        if (tScore >= 35) return "Below Average";
-        if (tScore >= 30) return "Low";
-        return "Exceptionally Low";
+        if (tScore >= 70) return "Exceptionally High range";
+        if (tScore >= 65) return "High range";
+        if (tScore >= 55) return "High Average range";
+        if (tScore >= 45) return "Average range";
+        if (tScore >= 35) return "Below Average range";
+        if (tScore >= 30) return "Low range";
+        return "Exceptionally Low range";
     },
     
     // Get detailed interpretation including Heaton impairment levels
@@ -147,17 +149,17 @@ window.TMTNorms = {
         const percentile = this.getTScoreToPercentile(tScore);
         const range = this.getTScoreRange(tScore);
         
-        let interpretation = range;
+        let interpretation = range; // Already includes "range" suffix
         
         // Add Heaton impairment levels for T ≤ 40
         if (tScore <= 40) {
             let impairmentLevel;
-            if (tScore <= 25) impairmentLevel = "severely impaired";
-            else if (tScore <= 30) impairmentLevel = "moderately to severely impaired";
-            else if (tScore <= 35) impairmentLevel = "moderately impaired";
-            else impairmentLevel = "mildly to moderately impaired";
+            if (tScore <= 25) impairmentLevel = "severe level of impairment";
+            else if (tScore <= 30) impairmentLevel = "moderate to severe level of impairment";
+            else if (tScore <= 35) impairmentLevel = "moderate level of impairment";
+            else impairmentLevel = "mild to moderate level of impairment";
             
-            interpretation += ` (T=${tScore}), indicating a ${impairmentLevel} level`;
+            interpretation += ` (T=${tScore}), indicating a ${impairmentLevel}`;
         }
         
         return {
