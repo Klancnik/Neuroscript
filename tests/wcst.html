@@ -308,8 +308,8 @@
                                     <option value="<=1%">≤1%</option>
                                     <option value="2-5%">2-5%</option>
                                     <option value="6-10%">6-10%</option>
-                                    <option value="11-15%">11-15%</option>
-                                    <option value=">=16%">≥16%</option>
+                                    <option value="11-16%">11-16%</option>
+                                    <option value=">16%">>16%</option>
                                 </select>
                             </td>
                         </tr>
@@ -322,8 +322,8 @@
                                     <option value="<=1%">≤1%</option>
                                     <option value="2-5%">2-5%</option>
                                     <option value="6-10%">6-10%</option>
-                                    <option value="11-15%">11-15%</option>
-                                    <option value=">=16%">≥16%</option>
+                                    <option value="11-16%">11-16%</option>
+                                    <option value=">16%">>16%</option>
                                 </select>
                             </td>
                         </tr>
@@ -336,8 +336,8 @@
                                     <option value="<=1%">≤1%</option>
                                     <option value="2-5%">2-5%</option>
                                     <option value="6-10%">6-10%</option>
-                                    <option value="11-15%">11-15%</option>
-                                    <option value=">=16%">≥16%</option>
+                                    <option value="11-16%">11-16%</option>
+                                    <option value=">16%">>16%</option>
                                 </select>
                             </td>
                         </tr>
@@ -350,8 +350,8 @@
                                     <option value="<=1%">≤1%</option>
                                     <option value="2-5%">2-5%</option>
                                     <option value="6-10%">6-10%</option>
-                                    <option value="11-15%">11-15%</option>
-                                    <option value=">=16%">≥16%</option>
+                                    <option value="11-16%">11-16%</option>
+                                    <option value=">16%">>16%</option>
                                 </select>
                             </td>
                         </tr>
@@ -418,12 +418,14 @@
                 // Add Heaton impairment level for T<40
                 if (tScore < 40) {
                     if (data.percentile <= 2) {
-                        interpretation += `, indicating a moderately to severely impaired level`;
+                        interpretation += ` range, indicating a moderately to severely impaired level of impairment`;
                     } else if (data.percentile <= 9) {
-                        interpretation += `, indicating a mildly to moderately impaired level`;
+                        interpretation += ` range, indicating a mild to moderately impaired level of impairment`;
                     } else if (data.percentile <= 16) {
-                        interpretation += `, indicating a mildly impaired level`;
+                        interpretation += ` range, indicating a mildly impaired level of impairment`;
                     }
+                } else {
+                    interpretation += ' range';
                 }
                 
                 return interpretation;
@@ -734,14 +736,7 @@
                 <div class="interpretation">
                     <h4>Wisconsin Card Sorting Test (WCST) Results</h4>
                     
-                    <p><strong>Executive Function and Cognitive Flexibility:</strong></p>
-                    <p>The client completed ${data.categoriesCompleted} out of 6 possible categories (${data.categoriesCompletedPercentile} percentile range), indicating ${possessive} level of conceptual reasoning and ability to identify abstract sorting principles.</p>
-                    
-                    <p><strong>Error Analysis:</strong></p>
-                    <p>${pronoun_cap} made ${data.totalErrors} total errors (T=${totalErrorsT}), which falls in the ${totalErrorsRange} range. ${pronoun_cap} made ${data.perseverativeErrors} perseverative errors (T=${persevErrorsT}), representing ${data.percentPerseverativeErrors}% of total responses, which is in the ${persevErrorsRange} range.</p>
-                    
-                    <p><strong>Clinical Summary:</strong></p>
-                    <p>Overall, these results suggest ${
+                    <p>The client completed ${data.categoriesCompleted} out of 6 possible categories (${data.categoriesCompletedPercentile} percentile range), indicating ${possessive} level of conceptual reasoning and ability to identify abstract sorting principles. ${pronoun_cap} made ${data.totalErrors} total errors (T=${totalErrorsT}), which falls in the ${totalErrorsRange}. ${pronoun_cap} made ${data.perseverativeErrors} perseverative errors (T=${persevErrorsT}), representing ${data.percentPerseverativeErrors}% of total responses, which is in the ${persevErrorsRange}. Overall, these results suggest ${
                         data.categoriesCompleted >= 4 && totalErrorsT >= 45 ? 
                         'adequate executive functioning with good cognitive flexibility' :
                         data.categoriesCompleted <= 2 || totalErrorsT < 35 ?
