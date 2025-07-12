@@ -109,9 +109,33 @@
             width: 30%;
             text-align: center;
         }
-        .data-entry-table td:nth-child(3) input {
-            background-color: #f8f9fa;
+        .t-score-input {
+            background-color: #e8f4fd;
             border-color: #6c757d;
+        }
+        .percentile-select {
+            width: 120px;
+            padding: 6px;
+            border: 2px solid #6c757d;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff3e0;
+        }
+        .percentile-select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .na-cell {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .section-divider {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        .section-divider td {
+            padding: 10px 8px;
+            border-top: 2px solid #dee2e6;
         }
         .validation-messages {
             margin-top: 15px;
@@ -260,64 +284,136 @@
                         <tr>
                             <th>Measure</th>
                             <th>Raw Score</th>
-                            <th>T-Score</th>
+                            <th>T-Score / Percentile Range</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Raw scores only -->
                         <tr>
                             <td>Trials Administered</td>
-                            <td><input type="number" id="cardsAdministered" min="64" max="128" placeholder="128"></td>
-                            <td><input type="number" id="cardsAdministeredT" min="20" max="80" placeholder="--"></td>
+                            <td><input type="number" id="trialsAdministered" min="64" max="128" placeholder="128"></td>
+                            <td class="na-cell">--</td>
                         </tr>
                         <tr>
                             <td>Total Correct</td>
                             <td><input type="number" id="totalCorrect" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="totalCorrectT" min="20" max="80" placeholder="--"></td>
+                            <td class="na-cell">--</td>
+                        </tr>
+                        
+                        <!-- Raw scores + T-scores -->
+                        <tr class="section-divider">
+                            <td colspan="3"><strong>Measures with T-Scores</strong></td>
                         </tr>
                         <tr>
                             <td>Total Errors</td>
                             <td><input type="number" id="totalErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="totalErrorsT" min="20" max="80" placeholder="--"></td>
+                            <td><input type="number" id="totalErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>% Errors</td>
+                            <td><input type="number" id="percentErrors" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td><input type="number" id="percentErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
                             <td>Perseverative Responses</td>
                             <td><input type="number" id="perseverativeResponses" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="perseverativeResponsesT" min="20" max="80" placeholder="--"></td>
+                            <td><input type="number" id="perseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>% Perseverative Responses</td>
+                            <td><input type="number" id="percentPerseverativeResponses" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td><input type="number" id="percentPerseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
                             <td>Perseverative Errors</td>
                             <td><input type="number" id="perseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="perseverativeErrorsT" min="20" max="80" placeholder="--"></td>
+                            <td><input type="number" id="perseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>% Perseverative Errors</td>
+                            <td><input type="number" id="percentPerseverativeErrors" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td><input type="number" id="percentPerseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
                             <td>Non-Perseverative Errors</td>
                             <td><input type="number" id="nonperseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="nonperseverativeErrorsT" min="20" max="80" placeholder="--"></td>
+                            <td><input type="number" id="nonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
-                            <td>Unique Errors</td>
-                            <td><input type="number" id="uniqueErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="uniqueErrorsT" min="20" max="80" placeholder="--"></td>
-                        </tr>
-                        <tr>
-                            <td>Categories Completed</td>
-                            <td><input type="number" id="categoriesCompleted" min="0" max="6" placeholder=""></td>
-                            <td><input type="number" id="categoriesCompletedT" min="20" max="80" placeholder="--"></td>
-                        </tr>
-                        <tr>
-                            <td>Trials to First Category</td>
-                            <td><input type="number" id="trialsToFirstCategory" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="trialsToFirstCategoryT" min="20" max="80" placeholder="--"></td>
-                        </tr>
-                        <tr>
-                            <td>Failure to Maintain Set</td>
-                            <td><input type="number" id="failureToMaintainSet" min="0" max="6" placeholder=""></td>
-                            <td><input type="number" id="failureToMaintainSetT" min="20" max="80" placeholder="--"></td>
+                            <td>% Non-Perseverative Errors</td>
+                            <td><input type="number" id="percentNonperseverativeErrors" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td><input type="number" id="percentNonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
                         </tr>
                         <tr>
                             <td>Conceptual Level Responses</td>
                             <td><input type="number" id="conceptualLevelResponses" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="conceptualLevelResponsesT" min="20" max="80" placeholder="--"></td>
+                            <td class="na-cell">--</td>
+                        </tr>
+                        <tr>
+                            <td>% Conceptual Level Responses</td>
+                            <td><input type="number" id="percentConceptualLevelResponses" min="0" max="100" step="0.1" placeholder="" readonly></td>
+                            <td><input type="number" id="percentConceptualLevelResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        
+                        <!-- Raw scores + Percentile ranges -->
+                        <tr class="section-divider">
+                            <td colspan="3"><strong>Measures with Percentile Ranges</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Categories Completed</td>
+                            <td><input type="number" id="categoriesCompleted" min="0" max="6" placeholder=""></td>
+                            <td>
+                                <select id="categoriesCompletedPercentile" class="percentile-select">
+                                    <option value="">Select range...</option>
+                                    <option value="<=1%">≤1%</option>
+                                    <option value="2-5%">2-5%</option>
+                                    <option value="6-10%">6-10%</option>
+                                    <option value="11-15%">11-15%</option>
+                                    <option value=">=16%">≥16%</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Trials to Complete First Category</td>
+                            <td><input type="number" id="trialsToFirstCategory" min="0" max="128" placeholder=""></td>
+                            <td>
+                                <select id="trialsToFirstCategoryPercentile" class="percentile-select">
+                                    <option value="">Select range...</option>
+                                    <option value="<=1%">≤1%</option>
+                                    <option value="2-5%">2-5%</option>
+                                    <option value="6-10%">6-10%</option>
+                                    <option value="11-15%">11-15%</option>
+                                    <option value=">=16%">≥16%</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Failure to Maintain Set</td>
+                            <td><input type="number" id="failureToMaintainSet" min="0" max="6" placeholder=""></td>
+                            <td>
+                                <select id="failureToMaintainSetPercentile" class="percentile-select">
+                                    <option value="">Select range...</option>
+                                    <option value="<=1%">≤1%</option>
+                                    <option value="2-5%">2-5%</option>
+                                    <option value="6-10%">6-10%</option>
+                                    <option value="11-15%">11-15%</option>
+                                    <option value=">=16%">≥16%</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Learning to Learn</td>
+                            <td><input type="number" id="learningToLearn" min="-5" max="15" step="0.01" placeholder=""></td>
+                            <td>
+                                <select id="learningToLearnPercentile" class="percentile-select">
+                                    <option value="">Select range...</option>
+                                    <option value="<=1%">≤1%</option>
+                                    <option value="2-5%">2-5%</option>
+                                    <option value="6-10%">6-10%</option>
+                                    <option value="11-15%">11-15%</option>
+                                    <option value=">=16%">≥16%</option>
+                                </select>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -462,10 +558,42 @@
             });
         }
 
-        // Enhanced validation with consolidated error display
+        // Auto-calculate percentages and update display
+        function updateCalculatedValues() {
+            const trialsAdmin = parseInt(document.getElementById('trialsAdministered').value) || 0;
+            
+            if (trialsAdmin > 0) {
+                // Calculate % Errors
+                const totalErrors = parseInt(document.getElementById('totalErrors').value) || 0;
+                const percentErrors = ((totalErrors / trialsAdmin) * 100).toFixed(1);
+                document.getElementById('percentErrors').value = percentErrors;
+                
+                // Calculate % Perseverative Responses
+                const persevResponses = parseInt(document.getElementById('perseverativeResponses').value) || 0;
+                const percentPersevResponses = ((persevResponses / trialsAdmin) * 100).toFixed(1);
+                document.getElementById('percentPerseverativeResponses').value = percentPersevResponses;
+                
+                // Calculate % Perseverative Errors
+                const persevErrors = parseInt(document.getElementById('perseverativeErrors').value) || 0;
+                const percentPersevErrors = ((persevErrors / trialsAdmin) * 100).toFixed(1);
+                document.getElementById('percentPerseverativeErrors').value = percentPersevErrors;
+                
+                // Calculate % Non-Perseverative Errors
+                const nonPersevErrors = parseInt(document.getElementById('nonperseverativeErrors').value) || 0;
+                const percentNonPersevErrors = ((nonPersevErrors / trialsAdmin) * 100).toFixed(1);
+                document.getElementById('percentNonperseverativeErrors').value = percentNonPersevErrors;
+                
+                // Calculate % Conceptual Level Responses
+                const conceptualResponses = parseInt(document.getElementById('conceptualLevelResponses').value) || 0;
+                const percentConceptual = ((conceptualResponses / trialsAdmin) * 100).toFixed(1);
+                document.getElementById('percentConceptualLevelResponses').value = percentConceptual;
+            }
+        }
+
+        // Enhanced validation with new field structure
         function validateInput(elementId, min, max, customValidation = null) {
             const element = document.getElementById(elementId);
-            const value = parseInt(element.value);
+            const value = parseFloat(element.value);
             
             let isValid = true;
             let errorMessage = '';
@@ -499,24 +627,24 @@
             let allValid = true;
             let errorMessages = [];
             
-            // Cards administered
-            const cardsResult = validateInput('cardsAdministered', 64, 128);
-            if (!cardsResult.valid) errorMessages.push(cardsResult.message);
-            allValid &= cardsResult.valid;
+            // Trials administered
+            const trialsResult = validateInput('trialsAdministered', 64, 128);
+            if (!trialsResult.valid) errorMessages.push(trialsResult.message);
+            allValid &= trialsResult.valid;
             
-            const cardsAdmin = parseInt(document.getElementById('cardsAdministered').value) || 128;
+            const trialsAdmin = parseInt(document.getElementById('trialsAdministered').value) || 128;
             
             // Total correct
-            const correctResult = validateInput('totalCorrect', 0, cardsAdmin, (value) => {
-                return value <= cardsAdmin ? {valid: true} : {valid: false, message: 'Total correct cannot exceed trials administered'};
+            const correctResult = validateInput('totalCorrect', 0, trialsAdmin, (value) => {
+                return value <= trialsAdmin ? {valid: true} : {valid: false, message: 'Total correct cannot exceed trials administered'};
             });
             if (!correctResult.valid) errorMessages.push(correctResult.message);
             allValid &= correctResult.valid;
             
             // Total errors
-            const errorsResult = validateInput('totalErrors', 0, cardsAdmin, (value) => {
+            const errorsResult = validateInput('totalErrors', 0, trialsAdmin, (value) => {
                 const totalCorrect = parseInt(document.getElementById('totalCorrect').value) || 0;
-                return (value + totalCorrect <= cardsAdmin) ? {valid: true} : {valid: false, message: 'Total correct + total errors cannot exceed trials administered'};
+                return (value + totalCorrect <= trialsAdmin) ? {valid: true} : {valid: false, message: 'Total correct + total errors cannot exceed trials administered'};
             });
             if (!errorsResult.valid) errorMessages.push(errorsResult.message);
             allValid &= errorsResult.valid;
@@ -524,7 +652,7 @@
             const totalErrors = parseInt(document.getElementById('totalErrors').value) || 0;
             
             // Perseverative responses
-            const persevRespResult = validateInput('perseverativeResponses', 0, Math.min(128, cardsAdmin), (value) => {
+            const persevRespResult = validateInput('perseverativeResponses', 0, trialsAdmin, (value) => {
                 return value <= totalErrors ? {valid: true} : {valid: false, message: 'Perseverative responses cannot exceed total errors'};
             });
             if (!persevRespResult.valid) errorMessages.push(persevRespResult.message);
@@ -549,26 +677,17 @@
             if (!nonPersevResult.valid) errorMessages.push(nonPersevResult.message);
             allValid &= nonPersevResult.valid;
             
-            const nonPersevErrors = parseInt(document.getElementById('nonperseverativeErrors').value) || 0;
-            
-            // Unique errors
-            const uniqueResult = validateInput('uniqueErrors', 0, nonPersevErrors, (value) => {
-                return value <= nonPersevErrors ? {valid: true} : {valid: false, message: 'Unique errors cannot exceed non-perseverative errors'};
-            });
-            if (!uniqueResult.valid) errorMessages.push(uniqueResult.message);
-            allValid &= uniqueResult.valid;
-            
             // Categories completed
             const catResult = validateInput('categoriesCompleted', 0, 6);
             if (!catResult.valid) errorMessages.push(catResult.message);
             allValid &= catResult.valid;
             
             // Trials to first category
-            const trialsResult = validateInput('trialsToFirstCategory', 0, cardsAdmin, (value) => {
-                return value <= cardsAdmin ? {valid: true} : {valid: false, message: 'Trials to first category cannot exceed trials administered'};
+            const trialsResult_first = validateInput('trialsToFirstCategory', 0, trialsAdmin, (value) => {
+                return value <= trialsAdmin ? {valid: true} : {valid: false, message: 'Trials to first category cannot exceed trials administered'};
             });
-            if (!trialsResult.valid) errorMessages.push(trialsResult.message);
-            allValid &= trialsResult.valid;
+            if (!trialsResult_first.valid) errorMessages.push(trialsResult_first.message);
+            allValid &= trialsResult_first.valid;
             
             // Failure to maintain set
             const failureResult = validateInput('failureToMaintainSet', 0, 6);
@@ -576,11 +695,16 @@
             allValid &= failureResult.valid;
             
             // Conceptual level responses
-            const conceptualResult = validateInput('conceptualLevelResponses', 0, cardsAdmin, (value) => {
-                return value <= cardsAdmin ? {valid: true} : {valid: false, message: 'Conceptual level responses cannot exceed trials administered'};
+            const conceptualResult = validateInput('conceptualLevelResponses', 0, trialsAdmin, (value) => {
+                return value <= trialsAdmin ? {valid: true} : {valid: false, message: 'Conceptual level responses cannot exceed trials administered'};
             });
             if (!conceptualResult.valid) errorMessages.push(conceptualResult.message);
             allValid &= conceptualResult.valid;
+            
+            // Learning to learn
+            const learningResult = validateInput('learningToLearn', -5, 15);
+            if (!learningResult.valid) errorMessages.push(learningResult.message);
+            allValid &= learningResult.valid;
             
             // Display validation messages
             const validationDiv = document.getElementById('validationMessages');
@@ -623,23 +747,28 @@
         }
 
         function collectData() {
-            const requiredFields = [
-                'cardsAdministered', 'totalCorrect', 'totalErrors', 'perseverativeResponses',
-                'perseverativeErrors', 'nonperseverativeErrors', 'uniqueErrors', 'categoriesCompleted',
-                'trialsToFirstCategory', 'failureToMaintainSet', 'conceptualLevelResponses'
+            const requiredRawFields = [
+                'trialsAdministered', 'totalCorrect', 'totalErrors', 'perseverativeResponses',
+                'perseverativeErrors', 'nonperseverativeErrors', 'conceptualLevelResponses',
+                'categoriesCompleted', 'trialsToFirstCategory', 'failureToMaintainSet', 'learningToLearn'
             ];
 
             const tScoreFields = [
-                'cardsAdministeredT', 'totalCorrectT', 'totalErrorsT', 'perseverativeResponsesT',
-                'perseverativeErrorsT', 'nonperseverativeErrorsT', 'uniqueErrorsT', 'categoriesCompletedT',
-                'trialsToFirstCategoryT', 'failureToMaintainSetT', 'conceptualLevelResponsesT'
+                'totalErrorsT', 'percentErrorsT', 'perseverativeResponsesT', 'percentPerseverativeResponsesT',
+                'perseverativeErrorsT', 'percentPerseverativeErrorsT', 'nonperseverativeErrorsT', 
+                'percentNonperseverativeErrorsT', 'percentConceptualLevelResponsesT'
+            ];
+
+            const percentileFields = [
+                'categoriesCompletedPercentile', 'trialsToFirstCategoryPercentile', 
+                'failureToMaintainSetPercentile', 'learningToLearnPercentile'
             ];
 
             const data = {};
             
             // Collect raw scores
-            for (const field of requiredFields) {
-                const value = parseInt(document.getElementById(field).value);
+            for (const field of requiredRawFields) {
+                const value = parseFloat(document.getElementById(field).value);
                 if (isNaN(value)) {
                     alert(`Please enter a value for ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
                     return null;
@@ -647,14 +776,30 @@
                 data[field] = value;
             }
 
-            // Collect T-scores from printout
+            // Collect T-scores (only for measures that have them)
             for (const field of tScoreFields) {
-                const value = parseInt(document.getElementById(field).value);
-                if (isNaN(value)) {
-                    alert(`Please enter the T-score for ${field.replace(/([A-Z])/g, ' $1').replace('T', '').toLowerCase()}`);
-                    return null;
+                const element = document.getElementById(field);
+                if (element) {
+                    const value = parseFloat(element.value);
+                    if (isNaN(value)) {
+                        alert(`Please enter the T-score for ${field.replace(/([A-Z])/g, ' $1').replace('T', '').toLowerCase()}`);
+                        return null;
+                    }
+                    data[field] = value;
                 }
-                data[field] = value;
+            }
+
+            // Collect percentile ranges (for measures that have them)
+            for (const field of percentileFields) {
+                const element = document.getElementById(field);
+                if (element) {
+                    const value = element.value;
+                    if (!value) {
+                        alert(`Please select the percentile range for ${field.replace(/([A-Z])/g, ' $1').replace('Percentile', '').toLowerCase()}`);
+                        return null;
+                    }
+                    data[field] = value;
+                }
             }
 
             // Client demographics (from parent page)
@@ -662,11 +807,6 @@
             data.gender = document.getElementById('clientGender').value || 'male';
             data.education = parseInt(document.getElementById('clientEducation').value) || 12;
             data.readingLevel = document.getElementById('readingLevel').value || '12';
-
-            // Calculate percentages
-            data.perseverativeErrorsPercent = ((data.perseverativeErrors / data.cardsAdministered) * 100).toFixed(1);
-            data.conceptualLevelResponsesPercent = ((data.conceptualLevelResponses / data.cardsAdministered) * 100).toFixed(1);
-            data.totalErrorsPercent = ((data.totalErrors / data.cardsAdministered) * 100).toFixed(1);
 
             return data;
         }
