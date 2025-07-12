@@ -267,47 +267,6 @@
         </div>
 
         <div class="input-section">
-            <h3>Client Information</h3>
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="clientAge">Age:</label>
-                    <input type="number" id="clientAge" min="16" max="89">
-                </div>
-                <div class="input-group">
-                    <label for="clientGender">Gender:</label>
-                    <select id="clientGender">
-                        <option value="">Select...</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="clientEducation">Education (years):</label>
-                    <input type="number" id="clientEducation" min="6" max="25">
-                </div>
-                <div class="input-group">
-                    <label for="readingLevel">Reading Level:</label>
-                    <select id="readingLevel">
-                        <option value="">Select...</option>
-                        <option value="1">Grade 1</option>
-                        <option value="2">Grade 2</option>
-                        <option value="3">Grade 3</option>
-                        <option value="4">Grade 4</option>
-                        <option value="5">Grade 5</option>
-                        <option value="6">Grade 6</option>
-                        <option value="7">Grade 7</option>
-                        <option value="8">Grade 8</option>
-                        <option value="9">Grade 9</option>
-                        <option value="10">Grade 10</option>
-                        <option value="11">Grade 11</option>
-                        <option value="12">Grade 12</option>
-                        <option value="college">College</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="input-section">
             <h3>WCST Computerized Printout - Test Results Section</h3>
             <p><em>Enter scores exactly as they appear on the computerized WCST printout:</em></p>
             
@@ -796,6 +755,72 @@
             const tScoreFields = [
                 'totalErrorsT', 'percentErrorsT', 'perseverativeResponsesT', 'percentPerseverativeResponsesT',
                 'perseverativeErrorsT', 'percentPerseverativeErrorsT', 'nonperseverativeErrorsT', 
+                'percentNonperseverativeErrorsT', 'percentConceptualLevelResponsesT'
+            ];
+
+            const percentileFields = [
+                'categoriesCompletedPercentile', 'trialsToFirstCategoryPercentile', 
+                'failureToMaintainSetPercentile', 'learningToLearnPercentile'
+            ];
+
+            const data = {};
+            
+            // Collect raw scores
+            for (const field of requiredRawFields) {
+                const element = document.getElementById(field);
+                if (!element) {
+                    console.log(`Element ${field} not found`);
+                    continue;
+                }
+                const value = parseFloat(element.value);
+                if (isNaN(value)) {
+                    alert(`Please enter a value for ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+                    return null;
+                }
+                data[field] = value;
+            }
+
+            // Collect T-scores (only for measures that have them)
+            for (const field of tScoreFields) {
+                const element = document.getElementById(field);
+                if (element) {
+                    const value = parseFloat(element.value);
+                    if (isNaN(value)) {
+                        alert(`Please enter the T-score for ${field.replace(/([A-Z])/g, ' $1').replace('T', '').toLowerCase()}`);
+                        return null;
+                    }
+                    data[field] = value;
+                }
+            }
+
+            // Collect percentile ranges (for measures that have them)
+            for (const field of percentileFields) {
+                const element = document.getElementById(field);
+                if (element) {
+                    const value = element.value;
+                    if (!value) {
+                        alert(`Please select the percentile range for ${field.replace(/([A-Z])/g, ' $1').replace('Percentile', '').toLowerCase()}`);
+                        return null;
+                    }
+                    data[field] = value;
+                }
+            }
+
+            // Client demographics (from parent page or defaults)
+            data.age = 25; // Will be overridden by parent message
+            data.gender = 'male'; // Will be overridden by parent message
+            data.education = 12; // Will be overridden by parent message
+            data.readingLevel = '12'; // Will be overridden by parent message
+
+            // Add calculated percentages to data
+            data.percentErrors = parseFloat(document.getElementById('percentErrorsDisplay').textContent.replace('%', ''));
+            data.percentPerseverativeResponses = parseFloat(document.getElementById('percentPerseverativeResponsesDisplay').textContent.replace('%', ''));
+            data.percentPerseverativeErrors = parseFloat(document.getElementById('percentPerseverativeErrorsDisplay').textContent.replace('%', ''));
+            data.percentNonperseverativeErrors = parseFloat(document.getElementById('percentNonperseverativeErrorsDisplay').textContent.replace('%', ''));
+            data.percentConceptualLevelResponses = parseFloat(document.getElementById('percentConceptualLevelResponsesDisplay').textContent.replace('%', ''));
+
+            return data;
+        }'percentPerseverativeErrorsT', 'nonperseverativeErrorsT', 
                 'percentNonperseverativeErrorsT', 'percentConceptualLevelResponsesT'
             ];
 
