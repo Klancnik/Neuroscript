@@ -347,6 +347,41 @@
             return warnings;
         }
 
+        function generateValidationWarnings(data) {
+            const warnings = [];
+
+            // Age validation
+            if (data.age < 18 || data.age > 89) {
+                warnings.push("⚠️ Age outside Stuss et al. (1987) normative range (18-89 years)");
+            }
+
+            // Unusual performance patterns
+            if (data.delay0 < 12) {
+                warnings.push("⚠️ Poor immediate recall - consider hearing, attention, or comprehension issues");
+            }
+
+            if (data.delay9 > data.delay0) {
+                warnings.push("⚠️ 9-second recall better than immediate - unusual pattern requiring review");
+            }
+
+            if (data.delay18 > data.delay9) {
+                warnings.push("⚠️ 18-second recall better than 9-second - highly unusual pattern");
+            }
+
+            // Extremely poor working memory
+            const totalDecay = data.delay0 - data.delay18;
+            if (totalDecay > 10) {
+                warnings.push("⚠️ Severe working memory decay - consider validity or significant impairment");
+            }
+
+            // Floor effects
+            if (data.delay18 === 0) {
+                warnings.push("⚠️ Zero recall at 18 seconds - consider severe impairment or validity concerns");
+            }
+
+            return warnings;
+        }
+
         function generateTrigramsReport() {
             // First check validation
             if (!checkValidation()) {
