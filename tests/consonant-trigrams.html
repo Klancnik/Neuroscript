@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consonant Trigrams Test Generator</title>
+    <!-- Load external normative database for range classifications -->
+    <script src="../neuroscript-norms.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -162,14 +164,17 @@
         </div>
     </div>
 
-    <!-- Load external normative databases -->
-    <script src="../neuroscript-norms.js"></script>
-    <script src="../ccc-norms.js"></script>
-
     <script>
         // Data management
         let currentNarrative = '';
         let currentScoreTable = '';
+
+        // Embedded Stuss et al. (1987) normative data for Consonant Trigrams
+        const stussNorms = {
+            delay0: { mean: 14.2, sd: 1.1 },
+            delay9: { mean: 10.8, sd: 2.3 },
+            delay18: { mean: 7.4, sd: 2.8 }
+        };
 
         // Demographics auto-population from master dashboard
         window.addEventListener('message', function(event) {
@@ -209,7 +214,7 @@
             return isValid;
         }
 
-        // Add validation listeners
+        // Add validation listeners when page loads
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('age').addEventListener('input', function() {
                 validateInput(this, 18, 90);
@@ -257,14 +262,40 @@
         }
 
         function getPercentileFromScore(score, delay) {
-            // Use external CCC normative database
-            if (window.CCCNorms) {
-                return window.CCCNorms.getPercentile(score, delay);
-            }
+            const norms = stussNorms[`delay${delay}`];
+            if (!norms) return 50;
             
-            // Fallback if database not loaded
-            console.warn('CCC normative database not loaded, using fallback');
-            return 50;
+            // Convert raw score to z-score, then to percentile
+            const zScore = (score - norms.mean) / norms.sd;
+            return zScoreToPercentile(zScore);
+        }
+
+        function zScoreToPercentile(z) {
+            // Approximate z-score to percentile conversion
+            if (z >= 2.33) return 99;
+            if (z >= 1.96) return 98;
+            if (z >= 1.65) return 95;
+            if (z >= 1.28) return 90;
+            if (z >= 1.04) return 85;
+            if (z >= 0.84) return 80;
+            if (z >= 0.67) return 75;
+            if (z >= 0.52) return 70;
+            if (z >= 0.39) return 65;
+            if (z >= 0.25) return 60;
+            if (z >= 0.13) return 55;
+            if (z >= 0.00) return 50;
+            if (z >= -0.13) return 45;
+            if (z >= -0.25) return 40;
+            if (z >= -0.39) return 35;
+            if (z >= -0.52) return 30;
+            if (z >= -0.67) return 25;
+            if (z >= -0.84) return 20;
+            if (z >= -1.04) return 15;
+            if (z >= -1.28) return 10;
+            if (z >= -1.65) return 5;
+            if (z >= -1.96) return 2;
+            if (z >= -2.33) return 1;
+            return 1;
         }
 
         function getPerformanceRange(percentile) {
@@ -274,7 +305,7 @@
                 return data ? data.aacn : 'Average';
             }
             
-            // Fallback classification
+            // Fallback classification if database not loaded
             if (percentile >= 98) return 'Exceptionally High';
             if (percentile >= 91) return 'High';
             if (percentile >= 75) return 'High Average';
@@ -291,7 +322,7 @@
                 return data && data.heaton !== 'Normal' ? data.heaton : null;
             }
             
-            // Fallback Heaton levels
+            // Fallback Heaton levels if database not loaded
             if (percentile <= 2) return 'severe level of impairment';
             if (percentile <= 9) return 'moderate to severe level of impairment';
             if (percentile <= 16) return 'mild to moderate level of impairment';
@@ -307,22 +338,24 @@
             }
 
             // Unusual performance patterns
-            if (data.delay0 < 12) {
+            if (data.delay0 > 0 && data.delay0 < 12) {
                 warnings.push("⚠️ Poor immediate recall - consider hearing, attention, or comprehension issues");
             }
 
-            if (data.delay9 > data.delay0) {
+            if (data.delay9 > 0 && data.delay0 > 0 && data.delay9 > data.delay0) {
                 warnings.push("⚠️ 9-second recall better than immediate - unusual pattern requiring review");
             }
 
-            if (data.delay18 > data.delay9) {
+            if (data.delay18 > 0 && data.delay9 > 0 && data.delay18 > data.delay9) {
                 warnings.push("⚠️ 18-second recall better than 9-second - highly unusual pattern");
             }
 
             // Extremely poor working memory
-            const totalDecay = data.delay0 - data.delay18;
-            if (totalDecay > 10) {
-                warnings.push("⚠️ Severe working memory decay - consider validity or significant impairment");
+            if (data.delay0 > 0 && data.delay18 > 0) {
+                const totalDecay = data.delay0 - data.delay18;
+                if (totalDecay > 10) {
+                    warnings.push("⚠️ Severe working memory decay - consider validity or significant impairment");
+                }
             }
 
             // Floor effects
@@ -334,8 +367,11 @@
         }
 
         function generateTrigramsReport() {
+            console.log('Generate button clicked!');
+            
             // First check validation
             if (!checkValidation()) {
+                console.log('Validation failed');
                 return;
             }
 
@@ -360,15 +396,18 @@
                 delay18: parseInt(document.getElementById('delay18').value) || 0
             };
 
+            console.log('Processing data:', data);
+
             const warnings = generateValidationWarnings(data);
             const gender = data.gender;
             const pronoun = gender === 'Male' ? 'His' : 'Her';
             const pronounLower = gender === 'Male' ? 'his' : 'her';
-            const heShe = gender === 'Male' ? 'he' : 'she';
 
             // Calculate percentiles using embedded normative data
             const percentile9 = data.delay9 > 0 ? getPercentileFromScore(data.delay9, 9) : 0;
             const percentile18 = data.delay18 > 0 ? getPercentileFromScore(data.delay18, 18) : 0;
+
+            console.log('Percentiles calculated:', { percentile9, percentile18 });
 
             // Get performance ranges using external database
             const range9 = data.delay9 > 0 ? getPerformanceRange(percentile9) : '';
@@ -497,6 +536,8 @@
             // Display report
             document.getElementById('output').innerHTML = report;
             document.getElementById('output').style.display = 'block';
+
+            console.log('Report generated successfully!');
         }
 
         function completeTest() {
