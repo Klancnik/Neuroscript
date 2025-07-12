@@ -105,15 +105,13 @@
             font-weight: bold;
             width: 40%;
         }
-        .data-entry-table td:nth-child(2) {
+        .data-entry-table td:nth-child(2), .data-entry-table td:nth-child(3) {
             width: 30%;
             text-align: center;
         }
-        .data-entry-table td:nth-child(3) {
-            width: 30%;
-            text-align: center;
-            font-weight: bold;
-            color: #2c3e50;
+        .data-entry-table td:nth-child(3) input {
+            background-color: #f8f9fa;
+            border-color: #6c757d;
         }
         .validation-messages {
             margin-top: 15px;
@@ -269,57 +267,57 @@
                         <tr>
                             <td>Trials Administered</td>
                             <td><input type="number" id="cardsAdministered" min="64" max="128" placeholder="128"></td>
-                            <td id="cardsAdministeredT">--</td>
+                            <td><input type="number" id="cardsAdministeredT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Total Correct</td>
                             <td><input type="number" id="totalCorrect" min="0" max="128" placeholder=""></td>
-                            <td id="totalCorrectT">--</td>
+                            <td><input type="number" id="totalCorrectT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Total Errors</td>
                             <td><input type="number" id="totalErrors" min="0" max="128" placeholder=""></td>
-                            <td id="totalErrorsT">--</td>
+                            <td><input type="number" id="totalErrorsT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Perseverative Responses</td>
                             <td><input type="number" id="perseverativeResponses" min="0" max="128" placeholder=""></td>
-                            <td id="perseverativeResponsesT">--</td>
+                            <td><input type="number" id="perseverativeResponsesT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Perseverative Errors</td>
                             <td><input type="number" id="perseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td id="perseverativeErrorsT">--</td>
+                            <td><input type="number" id="perseverativeErrorsT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Non-Perseverative Errors</td>
                             <td><input type="number" id="nonperseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td id="nonperseverativeErrorsT">--</td>
+                            <td><input type="number" id="nonperseverativeErrorsT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Unique Errors</td>
                             <td><input type="number" id="uniqueErrors" min="0" max="128" placeholder=""></td>
-                            <td id="uniqueErrorsT">--</td>
+                            <td><input type="number" id="uniqueErrorsT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Categories Completed</td>
                             <td><input type="number" id="categoriesCompleted" min="0" max="6" placeholder=""></td>
-                            <td id="categoriesCompletedT">--</td>
+                            <td><input type="number" id="categoriesCompletedT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Trials to First Category</td>
                             <td><input type="number" id="trialsToFirstCategory" min="0" max="128" placeholder=""></td>
-                            <td id="trialsToFirstCategoryT">--</td>
+                            <td><input type="number" id="trialsToFirstCategoryT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Failure to Maintain Set</td>
                             <td><input type="number" id="failureToMaintainSet" min="0" max="6" placeholder=""></td>
-                            <td id="failureToMaintainSetT">--</td>
+                            <td><input type="number" id="failureToMaintainSetT" min="20" max="80" placeholder="--"></td>
                         </tr>
                         <tr>
                             <td>Conceptual Level Responses</td>
                             <td><input type="number" id="conceptualLevelResponses" min="0" max="128" placeholder=""></td>
-                            <td id="conceptualLevelResponsesT">--</td>
+                            <td><input type="number" id="conceptualLevelResponsesT" min="20" max="80" placeholder="--"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -631,8 +629,15 @@
                 'trialsToFirstCategory', 'failureToMaintainSet', 'conceptualLevelResponses'
             ];
 
+            const tScoreFields = [
+                'cardsAdministeredT', 'totalCorrectT', 'totalErrorsT', 'perseverativeResponsesT',
+                'perseverativeErrorsT', 'nonperseverativeErrorsT', 'uniqueErrorsT', 'categoriesCompletedT',
+                'trialsToFirstCategoryT', 'failureToMaintainSetT', 'conceptualLevelResponsesT'
+            ];
+
             const data = {};
             
+            // Collect raw scores
             for (const field of requiredFields) {
                 const value = parseInt(document.getElementById(field).value);
                 if (isNaN(value)) {
@@ -642,7 +647,17 @@
                 data[field] = value;
             }
 
-            // Client demographics
+            // Collect T-scores from printout
+            for (const field of tScoreFields) {
+                const value = parseInt(document.getElementById(field).value);
+                if (isNaN(value)) {
+                    alert(`Please enter the T-score for ${field.replace(/([A-Z])/g, ' $1').replace('T', '').toLowerCase()}`);
+                    return null;
+                }
+                data[field] = value;
+            }
+
+            // Client demographics (from parent page)
             data.age = parseInt(document.getElementById('clientAge').value) || 25;
             data.gender = document.getElementById('clientGender').value || 'male';
             data.education = parseInt(document.getElementById('clientEducation').value) || 12;
@@ -657,54 +672,54 @@
         }
 
         function generateScoreTable(data) {
-            // Calculate T-scores using normative data
+            // Get T-scores from the input fields (entered from printout)
             const scores = [
                 {
                     measure: 'Categories Completed',
                     raw: data.categoriesCompleted,
-                    tScore: Math.round(getWCSTTScore(data.categoriesCompleted, 'categoriesCompleted', data.age, data.education)),
+                    tScore: data.categoriesCompletedT,
                     interpretation: ''
                 },
                 {
                     measure: 'Perseverative Errors',
                     raw: data.perseverativeErrors,
-                    tScore: Math.round(getWCSTTScore(data.perseverativeErrors, 'perseverativeErrors', data.age, data.education)),
+                    tScore: data.perseverativeErrorsT,
                     interpretation: ''
                 },
                 {
                     measure: 'Perseverative Errors (%)',
                     raw: data.perseverativeErrorsPercent + '%',
-                    tScore: Math.round(getWCSTTScore(parseFloat(data.perseverativeErrorsPercent), 'perseverativeErrorsPercent', data.age, data.education)),
+                    tScore: data.perseverativeErrorsT, // Use same T-score as perseverative errors
                     interpretation: ''
                 },
                 {
                     measure: 'Non-Perseverative Errors',
                     raw: data.nonperseverativeErrors,
-                    tScore: Math.round(getWCSTTScore(data.nonperseverativeErrors, 'nonperseverativeErrors', data.age, data.education)),
+                    tScore: data.nonperseverativeErrorsT,
                     interpretation: ''
                 },
                 {
                     measure: 'Conceptual Level Responses',
                     raw: data.conceptualLevelResponses,
-                    tScore: Math.round(getWCSTTScore(data.conceptualLevelResponses, 'conceptualLevelResponses', data.age, data.education)),
+                    tScore: data.conceptualLevelResponsesT,
                     interpretation: ''
                 },
                 {
                     measure: 'Conceptual Level Responses (%)',
                     raw: data.conceptualLevelResponsesPercent + '%',
-                    tScore: Math.round(getWCSTTScore(parseFloat(data.conceptualLevelResponsesPercent), 'conceptualLevelResponsesPercent', data.age, data.education)),
+                    tScore: data.conceptualLevelResponsesT, // Use same T-score as conceptual level responses
                     interpretation: ''
                 },
                 {
                     measure: 'Trials to First Category',
                     raw: data.trialsToFirstCategory,
-                    tScore: Math.round(getWCSTTScore(data.trialsToFirstCategory, 'trialsToFirstCategory', data.age, data.education)),
+                    tScore: data.trialsToFirstCategoryT,
                     interpretation: ''
                 },
                 {
                     measure: 'Failure to Maintain Set',
                     raw: data.failureToMaintainSet,
-                    tScore: Math.round(getWCSTTScore(data.failureToMaintainSet, 'failureToMaintainSet', data.age, data.education)),
+                    tScore: data.failureToMaintainSetT,
                     interpretation: ''
                 }
             ];
@@ -751,13 +766,13 @@
             const possessive = data.gender === 'female' ? 'her' : 'his';
             const pronoun_cap = data.gender === 'female' ? 'She' : 'He';
 
-            // Calculate T-scores for narrative
-            const catCompletedT = Math.round(getWCSTTScore(data.categoriesCompleted, 'categoriesCompleted', data.age, data.education));
-            const persevErrorsT = Math.round(getWCSTTScore(data.perseverativeErrors, 'perseverativeErrors', data.age, data.education));
-            const conceptualRespT = Math.round(getWCSTTScore(data.conceptualLevelResponses, 'conceptualLevelResponses', data.age, data.education));
-            const trialsFirstCatT = Math.round(getWCSTTScore(data.trialsToFirstCategory, 'trialsToFirstCategory', data.age, data.education));
+            // Use T-scores from the printout (not calculated)
+            const catCompletedT = data.categoriesCompletedT;
+            const persevErrorsT = data.perseverativeErrorsT;
+            const conceptualRespT = data.conceptualLevelResponsesT;
+            const trialsFirstCatT = data.trialsToFirstCategoryT;
 
-            // Get clinical interpretations
+            // Get clinical interpretations using database
             const catCompletedRange = getClinicalInterpretationFromDB(catCompletedT);
             const persevErrorsRange = getClinicalInterpretationFromDB(persevErrorsT);
             const conceptualRespRange = getClinicalInterpretationFromDB(conceptualRespT);
