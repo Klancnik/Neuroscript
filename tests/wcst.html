@@ -1,4 +1,37 @@
-<!DOCTYPE html>
+<tr>
+                            <td>% Errors</td>
+                            <td><input type="number" id="percentErrors" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
+                            <td><input type="number" id="percentErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>Perseverative Responses</td>
+                            <td><input type="number" id="perseverativeResponses" min="0" max="128" placeholder=""></td>
+                            <td><input type="number" id="perseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>% Perseverative Responses</td>
+                            <td><input type="number" id="percentPerseverativeResponses" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
+                            <td><input type="number" id="percentPerseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>Perseverative Errors</td>
+                            <td><input type="number" id="perseverativeErrors" min="0" max="128" placeholder=""></td>
+                            <td><input type="number" id="perseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>% Perseverative Errors</td>
+                            <td><input type="number" id="percentPerseverativeErrors" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
+                            <td><input type="number" id="percentPerseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>Non-Perseverative Errors</td>
+                            <td><input type="number" id="nonperseverativeErrors" min="0" max="128" placeholder=""></td>
+                            <td><input type="number" id="nonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                        </tr>
+                        <tr>
+                            <td>% Non-Perseverative Errors</td>
+                            <td><input type="number" id="percentNonperseverativeErrors" min="0" max="100" step="0.1" placeholder="" class="auto-calculated"></td>
+                            <td><input type="number" id="percentNonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -563,30 +596,37 @@
             const trialsAdmin = parseInt(document.getElementById('trialsAdministered').value) || 0;
             
             if (trialsAdmin > 0) {
-                // Calculate % Errors
+                // Calculate and display % Errors
                 const totalErrors = parseInt(document.getElementById('totalErrors').value) || 0;
                 const percentErrors = ((totalErrors / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentErrors').value = percentErrors;
+                document.getElementById('percentErrorsDisplay').textContent = percentErrors + '%';
                 
-                // Calculate % Perseverative Responses
+                // Calculate and display % Perseverative Responses
                 const persevResponses = parseInt(document.getElementById('perseverativeResponses').value) || 0;
                 const percentPersevResponses = ((persevResponses / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentPerseverativeResponses').value = percentPersevResponses;
+                document.getElementById('percentPerseverativeResponsesDisplay').textContent = percentPersevResponses + '%';
                 
-                // Calculate % Perseverative Errors
+                // Calculate and display % Perseverative Errors
                 const persevErrors = parseInt(document.getElementById('perseverativeErrors').value) || 0;
                 const percentPersevErrors = ((persevErrors / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentPerseverativeErrors').value = percentPersevErrors;
+                document.getElementById('percentPerseverativeErrorsDisplay').textContent = percentPersevErrors + '%';
                 
-                // Calculate % Non-Perseverative Errors
+                // Calculate and display % Non-Perseverative Errors
                 const nonPersevErrors = parseInt(document.getElementById('nonperseverativeErrors').value) || 0;
                 const percentNonPersevErrors = ((nonPersevErrors / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentNonperseverativeErrors').value = percentNonPersevErrors;
+                document.getElementById('percentNonperseverativeErrorsDisplay').textContent = percentNonPersevErrors + '%';
                 
-                // Calculate % Conceptual Level Responses
+                // Calculate and display % Conceptual Level Responses
                 const conceptualResponses = parseInt(document.getElementById('conceptualLevelResponses').value) || 0;
                 const percentConceptual = ((conceptualResponses / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentConceptualLevelResponses').value = percentConceptual;
+                document.getElementById('percentConceptualLevelResponsesDisplay').textContent = percentConceptual + '%';
+            } else {
+                // Reset displays if no trials administered
+                document.getElementById('percentErrorsDisplay').textContent = '--';
+                document.getElementById('percentPerseverativeResponsesDisplay').textContent = '--';
+                document.getElementById('percentPerseverativeErrorsDisplay').textContent = '--';
+                document.getElementById('percentNonperseverativeErrorsDisplay').textContent = '--';
+                document.getElementById('percentConceptualLevelResponsesDisplay').textContent = '--';
             }
         }
 
