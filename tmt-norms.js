@@ -128,9 +128,8 @@ window.TMTNorms = {
         // Use the existing neuroscript-norms database for consistency
         if (window.NeuroscriptDB) {
             const data = window.NeuroscriptDB.getByTScore(tScore);
-            // Ensure "range" is added if not already present
-            const baseRange = data.aacn;
-            return baseRange.includes("range") ? baseRange : baseRange + " range";
+            // Force add "range" suffix regardless of what's in the database
+            return data.aacn + " range";
         }
         
         // Fallback if neuroscript-norms not available
