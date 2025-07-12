@@ -175,9 +175,6 @@
         window.addEventListener('message', function(event) {
             if (event.data.type === 'clientInfo') {
                 const clientInfo = event.data.data;
-                if (clientInfo.clientName) {
-                    // Name field not needed for individual tests
-                }
                 if (clientInfo.clientAge) {
                     document.getElementById('age').value = clientInfo.clientAge;
                 }
@@ -194,43 +191,49 @@
             }
         });
 
-        // Input validation
+        // Input validation with visual feedback
         function validateInput(input, min, max) {
             const value = parseFloat(input.value);
             const isValid = input.value === '' || (!isNaN(value) && value >= min && value <= max);
             
             if (isValid) {
                 input.classList.remove('validation-error');
+                input.style.borderColor = '#ddd';
+                input.style.backgroundColor = 'white';
             } else {
                 input.classList.add('validation-error');
+                input.style.borderColor = '#dc3545';
+                input.style.backgroundColor = '#f8d7da';
             }
             
             return isValid;
         }
 
         // Add validation listeners
-        document.getElementById('age').addEventListener('input', function() {
-            validateInput(this, 18, 90);
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('age').addEventListener('input', function() {
+                validateInput(this, 18, 90);
+            });
 
-        document.getElementById('education').addEventListener('input', function() {
-            validateInput(this, 8, 25);
-        });
+            document.getElementById('education').addEventListener('input', function() {
+                validateInput(this, 8, 25);
+            });
 
-        document.getElementById('readingLevel').addEventListener('input', function() {
-            validateInput(this, 1, 16);
-        });
+            document.getElementById('readingLevel').addEventListener('input', function() {
+                validateInput(this, 1, 16);
+            });
 
-        document.getElementById('delay0').addEventListener('input', function() {
-            validateInput(this, 0, 15);
-        });
+            document.getElementById('delay0').addEventListener('input', function() {
+                validateInput(this, 0, 15);
+            });
 
-        document.getElementById('delay9').addEventListener('input', function() {
-            validateInput(this, 0, 15);
-        });
+            document.getElementById('delay9').addEventListener('input', function() {
+                validateInput(this, 0, 15);
+            });
 
-        document.getElementById('delay18').addEventListener('input', function() {
-            validateInput(this, 0, 15);
+            document.getElementById('delay18').addEventListener('input', function() {
+                validateInput(this, 0, 15);
+            });
         });
 
         function checkValidation() {
@@ -260,6 +263,7 @@
             }
             
             // Fallback if database not loaded
+            console.warn('CCC normative database not loaded, using fallback');
             return 50;
         }
 
@@ -330,6 +334,7 @@
         }
 
         function generateTrigramsReport() {
+            // First check validation
             if (!checkValidation()) {
                 return;
             }
@@ -361,17 +366,17 @@
             const pronounLower = gender === 'Male' ? 'his' : 'her';
             const heShe = gender === 'Male' ? 'he' : 'she';
 
-            // Calculate percentiles using external database
-            const percentile9 = getPercentileFromScore(data.delay9, 9);
-            const percentile18 = getPercentileFromScore(data.delay18, 18);
+            // Calculate percentiles using embedded normative data
+            const percentile9 = data.delay9 > 0 ? getPercentileFromScore(data.delay9, 9) : 0;
+            const percentile18 = data.delay18 > 0 ? getPercentileFromScore(data.delay18, 18) : 0;
 
             // Get performance ranges using external database
-            const range9 = getPerformanceRange(percentile9);
-            const range18 = getPerformanceRange(percentile18);
+            const range9 = data.delay9 > 0 ? getPerformanceRange(percentile9) : '';
+            const range18 = data.delay18 > 0 ? getPerformanceRange(percentile18) : '';
 
             // Get impairment levels using external database
-            const impairment9 = getHeatonLevel(percentile9);
-            const impairment18 = getHeatonLevel(percentile18);
+            const impairment9 = data.delay9 > 0 ? getHeatonLevel(percentile9) : null;
+            const impairment18 = data.delay18 > 0 ? getHeatonLevel(percentile18) : null;
 
             // Generate clinical interpretation
             let interpretation = '';
