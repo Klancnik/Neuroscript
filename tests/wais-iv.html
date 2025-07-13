@@ -420,11 +420,15 @@
                 
                 // Gender field  
                 if (clientData.gender) {
-                    document.getElementById('gender').value = clientData.gender;
-                    console.log('Set gender from gender:', clientData.gender);
+                    // Capitalize first letter to match dropdown options
+                    const genderValue = clientData.gender.charAt(0).toUpperCase() + clientData.gender.slice(1).toLowerCase();
+                    document.getElementById('gender').value = genderValue;
+                    console.log('Set gender from gender:', genderValue);
                 } else if (clientData.clientGender) {
-                    document.getElementById('gender').value = clientData.clientGender;
-                    console.log('Set gender from clientGender:', clientData.clientGender);
+                    // Capitalize first letter to match dropdown options  
+                    const genderValue = clientData.clientGender.charAt(0).toUpperCase() + clientData.clientGender.slice(1).toLowerCase();
+                    document.getElementById('gender').value = genderValue;
+                    console.log('Set gender from clientGender:', genderValue);
                 }
                 
                 // Education field
