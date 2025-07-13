@@ -143,44 +143,45 @@
                 </div>
             </div>
 
-            <div class="section-header">Primary CPT-II Measures (T-Scores)</div>
-            <p><em>From CPT-II Computer Report - Higher T-scores indicate worse performance</em></p>
-            <div class="score-grid">
-                <div class="input-group">
-                    <label>Omissions T-Score:</label>
-                    <input type="number" id="omissions" min="30" max="90" placeholder="30-90">
-                </div>
-                <div class="input-group">
-                    <label>Commissions T-Score:</label>
-                    <input type="number" id="commissions" min="30" max="90" placeholder="30-90">
-                </div>
-                <div class="input-group">
-                    <label>Hit RT T-Score:</label>
-                    <input type="number" id="hitRT" min="30" max="90" placeholder="30-90">
-                </div>
-                <div class="input-group">
-                    <label>Hit RT SE T-Score:</label>
-                    <input type="number" id="hitRTSE" min="30" max="90" placeholder="30-90">
-                </div>
-                <div class="input-group">
-                    <label>Variability T-Score:</label>
-                    <input type="number" id="variability" min="30" max="90" placeholder="30-90">
-                </div>
-                <div class="input-group">
-                    <label>Detectability (d') T-Score:</label>
-                    <input type="number" id="detectability" min="30" max="90" placeholder="30-90">
-                </div>
+            <div class="section-header">Primary CPT-II Measures (From CPT Printout Page 5)</div>
+            <p><em>Summary of Overall Measures - Enter T-Scores (Higher T-scores indicate worse performance)</em></p>
+            
+            <!-- Layout matching CPT printout: Measure names vertically, T-scores in adjacent column -->
+            <div style="display: grid; grid-template-columns: 300px 120px; gap: 10px; align-items: center; margin: 20px 0;">
+                <div style="font-weight: bold; padding: 8px; background: #e9ecef; border-radius: 3px;">Measure</div>
+                <div style="font-weight: bold; padding: 8px; background: #e9ecef; border-radius: 3px; text-align: center;">T-Score</div>
+                
+                <div style="padding: 8px;">Omissions %</div>
+                <input type="number" id="omissions" min="30" max="90" placeholder="30-90" style="padding: 8px; text-align: center;">
+                
+                <div style="padding: 8px;">Commissions %</div>
+                <input type="number" id="commissions" min="30" max="90" placeholder="30-90" style="padding: 8px; text-align: center;">
+                
+                <div style="padding: 8px;">Hit RT</div>
+                <input type="number" id="hitRT" min="30" max="90" placeholder="30-90" style="padding: 8px; text-align: center;">
+                
+                <div style="padding: 8px;">Hit RT Std. Error</div>
+                <input type="number" id="hitRTSE" min="30" max="90" placeholder="30-90" style="padding: 8px; text-align: center;">
+                
+                <div style="padding: 8px;">Variability</div>
+                <input type="number" id="variability" min="30" max="90" placeholder="30-90" style="padding: 8px; text-align: center;">
+                
+                <div style="padding: 8px;">Detectability (d')</div>
+                <input type="number" id="detectability" min="30" max="90" placeholder="30-90" style="padding: 8px; text-align: center;">
+                
+                <div style="padding: 8px;">Perseverations %</div>
+                <input type="number" id="perseverationsTScore" min="30" max="90" placeholder="30-90" style="padding: 8px; text-align: center;">
             </div>
 
             <div class="section-header">Response Style (Optional)</div>
             <div class="score-grid">
                 <div class="input-group">
-                    <label>Response Style β:</label>
-                    <input type="number" id="responseStyle" step="0.01" placeholder="Response bias">
+                    <label>Response Style β (Raw Value):</label>
+                    <input type="number" id="responseStyle" step="0.01" placeholder="e.g., 1.05">
                 </div>
                 <div class="input-group">
-                    <label>Perseverations:</label>
-                    <input type="number" id="perseverations" min="0" placeholder="0+">
+                    <label>Perseverations (Raw Count):</label>
+                    <input type="number" id="perseverations" min="0" placeholder="Raw count">
                 </div>
             </div>
 
@@ -223,17 +224,22 @@
                 const conventionalT = convertCPTScore(cptTScore);
                 const data = window.NeuroscriptDB.getByTScore(conventionalT);
                 if (data) {
-                    return data.aacn + " Range";
+                    let range = data.aacn + " Range";
+                    // Add Heaton impairment descriptors for T<40 equivalent (CPT T>60)
+                    if (cptTScore >= 60 && data.heaton) {
+                        range += `, indicating a ${data.heaton}`;
+                    }
+                    return range;
                 }
             }
             
             // Fallback for CPT-specific ranges (inverted)
-            if (cptTScore >= 65) return "Significantly Atypical Range";
-            if (cptTScore >= 60) return "Mildly Atypical Range"; 
-            if (cptTScore >= 55) return "Slightly Atypical Range";
-            if (cptTScore >= 45) return "Typical Range";
-            if (cptTScore >= 40) return "Slightly Better Range";
-            return "Much Better Range";
+            if (cptTScore >= 65) return "Exceptionally Low Range, indicating a moderate to severe level of impairment";
+            if (cptTScore >= 60) return "Low Average Range, indicating a mild level of impairment";
+            if (cptTScore >= 55) return "Low Average Range";
+            if (cptTScore >= 45) return "Average Range";
+            if (cptTScore >= 40) return "Average Range";
+            return "High Average Range";
         }
 
         // Get percentile from CPT T-score
@@ -259,7 +265,6 @@
             return Math.round(100 - 2);
         }
 
-        // Get clinical interpretation for CPT measures
         function getCPTInterpretation(measure, cptTScore) {
             if (!cptTScore) return '';
             
@@ -293,6 +298,11 @@
                     low: "indicating poor perceptual sensitivity", // Note: inverted for detectability
                     typical: "suggesting typical perceptual sensitivity",
                     high: "indicating good perceptual sensitivity"
+                },
+                perseverations: {
+                    high: "indicating a tendency toward perseverative responding and difficulty with cognitive flexibility",
+                    typical: "suggesting typical response control",
+                    low: "indicating good response control"
                 }
             };
 
@@ -329,7 +339,7 @@
 
             // Multiple elevated measures
             let elevatedCount = 0;
-            [data.omissions, data.commissions, data.hitRT, data.hitRTSE, data.variability].forEach(score => {
+            [data.omissions, data.commissions, data.hitRT, data.hitRTSE, data.variability, data.perseverationsTScore].forEach(score => {
                 if (score >= 60) elevatedCount++;
             });
             
@@ -371,7 +381,7 @@
             }
 
             // Check if any CPT scores are entered
-            const cptScores = ['omissions', 'commissions', 'hitRT', 'hitRTSE', 'variability', 'detectability'];
+            const cptScores = ['omissions', 'commissions', 'hitRT', 'hitRTSE', 'variability', 'detectability', 'perseverationsTScore'];
             const hasScores = cptScores.some(field => document.getElementById(field).value);
             
             if (!hasScores) {
@@ -402,7 +412,9 @@
                 responseStyle: document.getElementById('responseStyle').value ? 
                     parseFloat(document.getElementById('responseStyle').value) : null,
                 perseverations: document.getElementById('perseverations').value ? 
-                    parseInt(document.getElementById('perseverations').value) : null
+                    parseInt(document.getElementById('perseverations').value) : null,
+                perseverationsTScore: document.getElementById('perseverationsTScore').value ? 
+                    parseInt(document.getElementById('perseverationsTScore').value) : null,
             };
 
             const warnings = generateValidationWarnings(data);
@@ -485,7 +497,17 @@
                 scoreTable += `<tr><td>Detectability (d')</td><td>${data.detectability}</td><td>${detectPercentile}</td><td>${detectRange}</td></tr>`;
             }
 
-            // Response style and perseverations
+            // Perseverations analysis (both T-score and raw count)
+            if (data.perseverationsTScore) {
+                const persevRange = getCPTRange(data.perseverationsTScore);
+                const persevPercentile = getCPTPercentile(data.perseverationsTScore);
+                const persevInterp = getCPTInterpretation('perseverations', data.perseverationsTScore);
+                report += `<p>Perseverative responses were in the ${persevRange} (T=${data.perseverationsTScore}, ${persevPercentile}th percentile), ${persevInterp}.</p>\n`;
+                
+                scoreTable += `<tr><td>Perseverations</td><td>${data.perseverationsTScore}</td><td>${persevPercentile}</td><td>${persevRange}</td></tr>`;
+            }
+
+            // Response style and raw perseverations count
             if (data.responseStyle || data.perseverations) {
                 report += `<p>Additional measures: `;
                 if (data.responseStyle) {
@@ -495,7 +517,7 @@
                 }
                 if (data.perseverations) {
                     if (data.responseStyle) report += '; ';
-                    report += `${data.perseverations} perseverative responses`;
+                    report += `${data.perseverations} perseverative responses recorded`;
                 }
                 report += `.</p>\n`;
             }
@@ -513,9 +535,9 @@
             if (data.omissions) report += `<p>• Omissions: ${data.omissions} (${getCPTPercentile(data.omissions)}th percentile)</p>`;
             if (data.commissions) report += `<p>• Commissions: ${data.commissions} (${getCPTPercentile(data.commissions)}th percentile)</p>`;
             if (data.hitRT) report += `<p>• Hit RT: ${data.hitRT} (${getCPTPercentile(data.hitRT)}th percentile)</p>`;
-            if (data.variability) report += `<p>• Variability: ${data.variability} (${getCPTPercentile(data.variability)}th percentile)</p>`;
             if (data.detectability) report += `<p>• Detectability: ${data.detectability} (${getCPTPercentile(data.detectability)}th percentile)</p>`;
-            if (data.perseverations) report += `<p>• Perseverations: ${data.perseverations}</p>`;
+            if (data.perseverationsTScore) report += `<p>• Perseverations: ${data.perseverationsTScore} (${getCPTPercentile(data.perseverationsTScore)}th percentile)</p>`;
+            if (data.perseverations) report += `<p>• Perseverations (raw count): ${data.perseverations}</p>`;
             if (data.responseStyle) report += `<p>• Response Style β: ${data.responseStyle.toFixed(2)}</p>`;
             report += `<p><strong>Note:</strong> CPT-II T-scores ≥60 are considered clinically significant for attention problems</p>`;
             report += `</div>`;
