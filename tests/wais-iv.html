@@ -436,12 +436,8 @@
         function getSubtestInterpretationFromDB(score) {
             try {
                 const data = window.NeuroscriptDB.getByWechslerScore(score);
-                if (data && data.aacn) {
-                    let interpretation = data.aacn + ' range';
-                    if (data.heaton) {
-                        interpretation += ', ' + data.heaton;
-                    }
-                    return interpretation;
+                if (data) {
+                    return window.NeuroscriptDB.getDetailedInterpretation(score, 'wechsler');
                 }
                 return 'score not available for interpretation';
             } catch (error) {
@@ -453,12 +449,8 @@
         function getCompositeInterpretationFromDB(score) {
             try {
                 const data = window.NeuroscriptDB.getByStandardScore(score);
-                if (data && data.aacn) {
-                    let interpretation = data.aacn + ' range';
-                    if (data.heaton) {
-                        interpretation += ', ' + data.heaton;
-                    }
-                    return interpretation;
+                if (data) {
+                    return window.NeuroscriptDB.getDetailedInterpretation(score, 'standard');
                 }
                 return 'score not available for interpretation';
             } catch (error) {
