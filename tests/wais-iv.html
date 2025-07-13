@@ -49,50 +49,94 @@
             margin-bottom: 25px;
         }
         
-        /* Printout-Style Layout for Subtests */
+        /* Printout-Style Layout Tables */
+        .printout-table {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            border: 2px solid #007bff;
+            background: white;
+        }
+        .table-header, .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .table-header {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .label-column, .score-column {
+            padding: 12px 15px;
+            border-right: 1px solid #dee2e6;
+        }
+        .score-column {
+            border-right: none;
+            text-align: center;
+        }
+        .score-column input {
+            width: 100%;
+            max-width: 120px;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        /* Subtest Domain Layout */
         .subtest-domains {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
             margin-bottom: 25px;
-            border: 2px solid #007bff;
-            padding: 20px;
-            background: #f8f9fa;
         }
         .domain-column {
-            text-align: center;
+            border: 2px solid #007bff;
+            background: #f8f9fa;
+            padding: 15px;
         }
         .domain-header {
             font-weight: bold;
-            font-size: 14px;
+            font-size: 16px;
             color: #007bff;
             margin-bottom: 15px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #007bff;
-        }
-        .subtest-item {
-            margin-bottom: 12px;
-        }
-        .subtest-label {
-            display: block;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 3px;
-            color: #495057;
-        }
-        .subtest-abbrev {
-            display: block;
-            font-size: 10px;
-            color: #6c757d;
-            margin-bottom: 2px;
+            text-align: center;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #007bff;
         }
         
-        /* Supplemental subtests in regular grid */
-        .supplemental-grid {
+        .printout-subtable {
+            background: white;
+            border: 1px solid #dee2e6;
+        }
+        .subtable-header, .subtable-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: 2fr 1fr;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .subtable-header {
+            background: #f8f9fa;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .sublabel-column, .subscore-column {
+            padding: 8px 12px;
+            border-right: 1px solid #dee2e6;
+        }
+        .subscore-column {
+            border-right: none;
+            text-align: center;
+        }
+        .subscore-column input {
+            width: 100%;
+            max-width: 80px;
+            padding: 6px 8px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .supplemental {
+            background: #f9f9f9;
+            font-style: italic;
         }
         
         .input-group {
@@ -195,30 +239,34 @@
         </div>
 
         <h2>Composite Scores</h2>
-        <div class="composite-grid">
-            <div class="input-group">
-                <label for="vci">VCI Score:</label>
-                <input type="number" id="vci" placeholder="40-160" min="40" max="160">
+        <div class="printout-table">
+            <div class="table-header">
+                <div class="label-column"><strong>Scale</strong></div>
+                <div class="score-column"><strong>Composite Score</strong></div>
             </div>
-            <div class="input-group">
-                <label for="pri">PRI Score:</label>
-                <input type="number" id="pri" placeholder="40-160" min="40" max="160">
+            <div class="table-row">
+                <div class="label-column">Verbal Comprehension</div>
+                <div class="score-column"><input type="number" id="vci" placeholder="40-160" min="40" max="160"></div>
             </div>
-            <div class="input-group">
-                <label for="wmi">WMI Score:</label>
-                <input type="number" id="wmi" placeholder="40-160" min="40" max="160">
+            <div class="table-row">
+                <div class="label-column">Perceptual Reasoning</div>
+                <div class="score-column"><input type="number" id="pri" placeholder="40-160" min="40" max="160"></div>
             </div>
-            <div class="input-group">
-                <label for="psi">PSI Score:</label>
-                <input type="number" id="psi" placeholder="40-160" min="40" max="160">
+            <div class="table-row">
+                <div class="label-column">Working Memory</div>
+                <div class="score-column"><input type="number" id="wmi" placeholder="40-160" min="40" max="160"></div>
             </div>
-            <div class="input-group">
-                <label for="fsiq">FSIQ Score:</label>
-                <input type="number" id="fsiq" placeholder="40-160" min="40" max="160">
+            <div class="table-row">
+                <div class="label-column">Processing Speed</div>
+                <div class="score-column"><input type="number" id="psi" placeholder="40-160" min="40" max="160"></div>
             </div>
-            <div class="input-group">
-                <label for="gai">GAI Score:</label>
-                <input type="number" id="gai" placeholder="40-160" min="40" max="160">
+            <div class="table-row">
+                <div class="label-column">Full Scale</div>
+                <div class="score-column"><input type="number" id="fsiq" placeholder="40-160" min="40" max="160"></div>
+            </div>
+            <div class="table-row">
+                <div class="label-column">General Ability</div>
+                <div class="score-column"><input type="number" id="gai" placeholder="40-160" min="40" max="160"></div>
             </div>
         </div>
 
@@ -227,93 +275,102 @@
         
         <div class="subtest-domains">
             <div class="domain-column">
-                <div class="domain-header">Verbal Comprehension</div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">SI</span>
-                    <span class="subtest-label">Similarities</span>
-                    <input type="number" id="similarities" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">VC</span>
-                    <span class="subtest-label">Vocabulary</span>
-                    <input type="number" id="vocabulary" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">IN</span>
-                    <span class="subtest-label">Information</span>
-                    <input type="number" id="information" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">(CO)</span>
-                    <span class="subtest-label">Comprehension*</span>
-                    <input type="number" id="comprehension" placeholder="Optional" min="1" max="19">
-                </div>
-            </div>
-            
-            <div class="domain-column">
-                <div class="domain-header">Perceptual Reasoning</div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">BD</span>
-                    <span class="subtest-label">Block Design</span>
-                    <input type="number" id="blockdesign" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">MR</span>
-                    <span class="subtest-label">Matrix Reasoning</span>
-                    <input type="number" id="matrixreasoning" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">VP</span>
-                    <span class="subtest-label">Visual Puzzles</span>
-                    <input type="number" id="visualpuzzles" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">(FW)</span>
-                    <span class="subtest-label">Figure Weights*</span>
-                    <input type="number" id="figureweights" placeholder="Optional" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">(PCm)</span>
-                    <span class="subtest-label">Picture Completion*</span>
-                    <input type="number" id="picturecompletion" placeholder="Optional" min="1" max="19">
+                <div class="domain-header">Verbal Comprehension Subtests</div>
+                <div class="printout-subtable">
+                    <div class="subtable-header">
+                        <div class="sublabel-column"><strong>Subtest</strong></div>
+                        <div class="subscore-column"><strong>Scaled Score</strong></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Similarities</div>
+                        <div class="subscore-column"><input type="number" id="similarities" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Vocabulary</div>
+                        <div class="subscore-column"><input type="number" id="vocabulary" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Information</div>
+                        <div class="subscore-column"><input type="number" id="information" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row supplemental">
+                        <div class="sublabel-column">Comprehension*</div>
+                        <div class="subscore-column"><input type="number" id="comprehension" placeholder="Optional" min="1" max="19"></div>
+                    </div>
                 </div>
             </div>
             
             <div class="domain-column">
-                <div class="domain-header">Working Memory</div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">DS</span>
-                    <span class="subtest-label">Digit Span</span>
-                    <input type="number" id="digitspan" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">AR</span>
-                    <span class="subtest-label">Arithmetic</span>
-                    <input type="number" id="arithmetic" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">(LN)</span>
-                    <span class="subtest-label">Letter-Number Seq*</span>
-                    <input type="number" id="letternumber" placeholder="Optional" min="1" max="19">
+                <div class="domain-header">Perceptual Reasoning Subtests</div>
+                <div class="printout-subtable">
+                    <div class="subtable-header">
+                        <div class="sublabel-column"><strong>Subtest</strong></div>
+                        <div class="subscore-column"><strong>Scaled Score</strong></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Block Design</div>
+                        <div class="subscore-column"><input type="number" id="blockdesign" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Matrix Reasoning</div>
+                        <div class="subscore-column"><input type="number" id="matrixreasoning" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Visual Puzzles</div>
+                        <div class="subscore-column"><input type="number" id="visualpuzzles" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row supplemental">
+                        <div class="sublabel-column">Figure Weights*</div>
+                        <div class="subscore-column"><input type="number" id="figureweights" placeholder="Optional" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row supplemental">
+                        <div class="sublabel-column">Picture Completion*</div>
+                        <div class="subscore-column"><input type="number" id="picturecompletion" placeholder="Optional" min="1" max="19"></div>
+                    </div>
                 </div>
             </div>
             
             <div class="domain-column">
-                <div class="domain-header">Processing Speed</div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">SS</span>
-                    <span class="subtest-label">Symbol Search</span>
-                    <input type="number" id="symbolsearch" placeholder="1-19" min="1" max="19">
+                <div class="domain-header">Working Memory Subtests</div>
+                <div class="printout-subtable">
+                    <div class="subtable-header">
+                        <div class="sublabel-column"><strong>Subtest</strong></div>
+                        <div class="subscore-column"><strong>Scaled Score</strong></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Digit Span</div>
+                        <div class="subscore-column"><input type="number" id="digitspan" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Arithmetic</div>
+                        <div class="subscore-column"><input type="number" id="arithmetic" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row supplemental">
+                        <div class="sublabel-column">Letter-Number Seq*</div>
+                        <div class="subscore-column"><input type="number" id="letternumber" placeholder="Optional" min="1" max="19"></div>
+                    </div>
                 </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">CD</span>
-                    <span class="subtest-label">Coding</span>
-                    <input type="number" id="coding" placeholder="1-19" min="1" max="19">
-                </div>
-                <div class="subtest-item">
-                    <span class="subtest-abbrev">(CA)</span>
-                    <span class="subtest-label">Cancellation*</span>
-                    <input type="number" id="cancellation" placeholder="Optional" min="1" max="19">
+            </div>
+            
+            <div class="domain-column">
+                <div class="domain-header">Processing Speed Subtests</div>
+                <div class="printout-subtable">
+                    <div class="subtable-header">
+                        <div class="sublabel-column"><strong>Subtest</strong></div>
+                        <div class="subscore-column"><strong>Scaled Score</strong></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Symbol Search</div>
+                        <div class="subscore-column"><input type="number" id="symbolsearch" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row">
+                        <div class="sublabel-column">Coding</div>
+                        <div class="subscore-column"><input type="number" id="coding" placeholder="1-19" min="1" max="19"></div>
+                    </div>
+                    <div class="subtable-row supplemental">
+                        <div class="sublabel-column">Cancellation*</div>
+                        <div class="subscore-column"><input type="number" id="cancellation" placeholder="Optional" min="1" max="19"></div>
+                    </div>
                 </div>
             </div>
         </div>
