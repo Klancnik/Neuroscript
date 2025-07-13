@@ -601,6 +601,9 @@
                 return;
             }
  
+            // Organize results by cognitive domains
+            const domainResults = organizeByCognitiveDomains(window.dashboard.testResults);
+            
             // Create integrated report
             let reportHTML = `
                 <!DOCTYPE html>
@@ -608,16 +611,26 @@
                 <head>
                     <title>Neuropsychological Assessment Report</title>
                     <style>
-                        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; }
+                        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; color: #333; }
                         .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
                         .client-info { background: #f9f9f9; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
-                        .test-section { margin-bottom: 40px; page-break-inside: avoid; }
-                        .test-section h2 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
-                        .narrative { margin-bottom: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        .domain-section { margin-bottom: 35px; page-break-inside: avoid; }
+                        .domain-section h1 { color: #333; border-bottom: 2px solid #666; padding-bottom: 8px; margin-bottom: 15px; font-size: 1.4em; }
+                        .appendix { margin-top: 50px; border-top: 2px solid #333; padding-top: 30px; }
+                        .appendix h2 { color: #333; border-bottom: 1px solid #999; padding-bottom: 8px; margin-bottom: 20px; }
+                        .test-table { margin-bottom: 30px; }
+                        .test-table h3 { color: #555; margin-bottom: 10px; font-size: 1.1em; }
+                        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
                         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #f2f2f2; }
-                        @media print { body { margin: 0; } .header { page-break-after: avoid; } }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                        .score-table td:nth-child(2), .score-table td:nth-child(3) { text-align: center; }
+                        .narrative p { margin-bottom: 12px; }
+                        .note { font-style: italic; color: #666; margin-top: 20px; }
+                        @media print { 
+                            body { margin: 20px; } 
+                            .header { page-break-after: avoid; }
+                            .domain-section { page-break-inside: avoid; }
+                        }
                     </style>
                 </head>
                 <body>
@@ -635,37 +648,63 @@
                         <p><strong>Education:</strong> ${window.dashboard.clientData.clientEducation || 'Not specified'} years</p>
                         <p><strong>Reading Level:</strong> ${window.dashboard.clientData.readingLevel || 'Not assessed'} grade</p>
                     </div>
+
+                    <h3><b>TEST RESULTS</b></h3>
+                    <p><i>In the following sections, a variety of descriptors are used to represent the examinee's abilities. 
+                    <b>Range classifications</b> (e.g., High Average; Average; Low Average; and Borderline) and <b>impairment ratings</b> 
+                    (e.g., Mild, Moderate, and Severe) describe the examinee's performance relative to the typical performance of 
+                    age- and/or education-matched peers. <b>Percentile ranks</b> reflect the percentage (number out of 100) of a 
+                    group of individuals who score at or below the examinee's score.</i></p>
             `;
- 
-            // Add test sections
+
+            // Add domain sections
+            Object.keys(domainResults).forEach(domain => {
+                if (domainResults[domain].length > 0) {
+                    reportHTML += `
+                        <div class="domain-section">
+                            <h1><b>${domain}</b></h1>
+                            <div class="narrative">
+                                ${domainResults[domain].join('\n')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Add appendix with all score tables
+            reportHTML += `
+                <div class="appendix">
+                    <h2>Appendix: Complete Test Results</h2>
+                    <p><i>The following tables provide detailed score information for all administered tests. 
+                    These scores can be used for verification and cross-reference with the narrative interpretations above.</i></p>
+            `;
+
+            // Add individual test score tables
             completedTests.forEach(testName => {
                 const result = window.dashboard.testResults[testName];
-                reportHTML += `
-                    <div class="test-section">
-                        <h2>${result.testName}</h2>
-                        <div class="narrative">${result.narrative}</div>
-                        ${result.scoreTable || ''}
-                    </div>
-                `;
+                if (result.scoreTable) {
+                    reportHTML += `
+                        <div class="test-table">
+                            <h3>${result.testName}</h3>
+                            ${result.scoreTable}
+                        </div>
+                    `;
+                }
             });
- 
+
             reportHTML += `
-                    <div class="test-section">
-                        <h2>Summary</h2>
-                        <p>This report was generated using Neuroscript, a professional neuropsychological assessment system. 
-                        The assessment included ${completedTests.length} standardized tests administered and interpreted 
-                        according to current clinical standards. All statistical conversions are based on validated 
-                        normative databases with appropriate demographic corrections.</p>
-                        
-                        <p><strong>Note:</strong> This computer-generated report should be reviewed and interpreted by a 
-                        qualified neuropsychologist. Clinical judgment should always be applied when integrating test 
-                        results with other clinical information.</p>
-                        
-                        <p style="margin-top: 40px; font-size: 0.9em; color: #666;">
-                        Generated on ${new Date().toLocaleString()} | Neuroscript v1.0 | 
-                        Tests completed: ${completedTests.join(', ')}
-                        </p>
-                    </div>
+                </div>
+                
+                <div class="note">
+                    <p><strong>Note:</strong> This computer-generated report should be reviewed and interpreted by a 
+                    qualified neuropsychologist. Clinical judgment should always be applied when integrating test 
+                    results with other clinical information.</p>
+                    
+                    <p style="margin-top: 30px; font-size: 0.85em; color: #888;">
+                    Generated on ${new Date().toLocaleString()} | Neuroscript v1.0 | 
+                    Tests completed: ${completedTests.join(', ')}
+                    </p>
+                </div>
                 </body>
                 </html>
             `;
@@ -675,6 +714,151 @@
             reportWindow.document.write(reportHTML);
             reportWindow.document.close();
             reportWindow.focus();
+        }
+
+        function organizeByCognitiveDomains(testResults) {
+            const domains = {
+                'General Intellectual Functioning': [],
+                'Language': [],
+                'Attention': [],
+                'Learning and Memory': [],
+                'Visuospatial / Visuoconstructional': [],
+                'Executive Functioning / Problem Solving': []
+            };
+
+            Object.keys(testResults).forEach(testName => {
+                const result = testResults[testName];
+                const narrative = result.narrative;
+
+                // Map tests to appropriate domains based on content
+                switch(testName) {
+                    case 'wais-iv':
+                        // WAIS-IV spans multiple domains
+                        domains['General Intellectual Functioning'].push(extractWAISGeneral(narrative));
+                        domains['Language'].push(extractWAISLanguage(narrative));
+                        domains['Attention'].push(extractWAISAttention(narrative));
+                        domains['Visuospatial / Visuoconstructional'].push(extractWAISVisuospatial(narrative));
+                        domains['Executive Functioning / Problem Solving'].push(extractWAISExecutive(narrative));
+                        break;
+                    
+                    case 'cvlt-3':
+                        domains['Learning and Memory'].push(narrative);
+                        break;
+                    
+                    case 'wms-iii':
+                        // WMS-III spans memory and attention
+                        domains['Learning and Memory'].push(extractWMSMemory(narrative));
+                        domains['Attention'].push(extractWMSAttention(narrative));
+                        break;
+                    
+                    case 'trails':
+                        domains['Attention'].push(narrative);
+                        break;
+                    
+                    case 'cpt-ii':
+                        domains['Attention'].push(narrative);
+                        break;
+                    
+                    case 'consonant-trigrams':
+                        domains['Attention'].push(narrative);
+                        break;
+                    
+                    case 'wcst':
+                        domains['Executive Functioning / Problem Solving'].push(narrative);
+                        break;
+                }
+            });
+
+            // Remove empty domains and clean up narratives
+            Object.keys(domains).forEach(domain => {
+                domains[domain] = domains[domain].filter(text => text && text.trim().length > 0);
+            });
+
+            return domains;
+        }
+
+        // Helper functions to extract domain-specific content from narratives
+        function extractWAISGeneral(narrative) {
+            // Extract general intellectual functioning content
+            const lines = narrative.split('\n').filter(line => line.trim());
+            return lines.filter(line => 
+                line.includes('Full Scale IQ') || 
+                line.includes('General Ability Index') ||
+                line.includes('Overall cognitive') ||
+                line.includes('Index scores')
+            ).join(' ');
+        }
+
+        function extractWAISLanguage(narrative) {
+            const lines = narrative.split('\n').filter(line => line.trim());
+            return lines.filter(line => 
+                line.includes('Verbal Comprehension') ||
+                line.includes('Vocabulary') ||
+                line.includes('Similarities') ||
+                line.includes('Information') ||
+                line.includes('verbal reasoning') ||
+                line.includes('language')
+            ).join(' ');
+        }
+
+        function extractWAISAttention(narrative) {
+            const lines = narrative.split('\n').filter(line => line.trim());
+            return lines.filter(line => 
+                line.includes('Working Memory') ||
+                line.includes('Processing Speed') ||
+                line.includes('Digit Span') ||
+                line.includes('Arithmetic') ||
+                line.includes('Coding') ||
+                line.includes('Symbol Search') ||
+                line.includes('attention') ||
+                line.includes('concentration')
+            ).join(' ');
+        }
+
+        function extractWAISVisuospatial(narrative) {
+            const lines = narrative.split('\n').filter(line => line.trim());
+            return lines.filter(line => 
+                line.includes('Perceptual Reasoning') ||
+                line.includes('Block Design') ||
+                line.includes('Matrix Reasoning') ||
+                line.includes('Visual Puzzles') ||
+                line.includes('Figure Weights') ||
+                line.includes('Picture Completion') ||
+                line.includes('visual') ||
+                line.includes('spatial')
+            ).join(' ');
+        }
+
+        function extractWAISExecutive(narrative) {
+            const lines = narrative.split('\n').filter(line => line.trim());
+            return lines.filter(line => 
+                line.includes('Matrix Reasoning') ||
+                line.includes('Figure Weights') ||
+                line.includes('problem solving') ||
+                line.includes('executive') ||
+                line.includes('reasoning')
+            ).join(' ');
+        }
+
+        function extractWMSMemory(narrative) {
+            const lines = narrative.split('\n').filter(line => line.trim());
+            return lines.filter(line => 
+                line.includes('memory') ||
+                line.includes('recall') ||
+                line.includes('learning') ||
+                line.includes('retention')
+            ).join(' ');
+        }
+
+        function extractWMSAttention(narrative) {
+            const lines = narrative.split('\n').filter(line => line.trim());
+            return lines.filter(line => 
+                line.includes('Mental Control') ||
+                line.includes('Letter-Number') ||
+                line.includes('Spatial Span') ||
+                line.includes('attention') ||
+                line.includes('concentration')
+            ).join(' ');
         }
  
         // Initialize dashboard
