@@ -406,10 +406,41 @@
                 const clientData = event.data.data;
                 console.log('Received client data:', clientData);
                 
-                if (clientData.age) document.getElementById('age').value = clientData.age;
-                if (clientData.gender) document.getElementById('gender').value = clientData.gender;
-                if (clientData.education) document.getElementById('education').value = clientData.education;
-                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel;
+                // Map client data to form fields
+                if (clientData.age) {
+                    document.getElementById('age').value = clientData.age;
+                    console.log('Set age to:', clientData.age);
+                }
+                if (clientData.gender) {
+                    document.getElementById('gender').value = clientData.gender;
+                    console.log('Set gender to:', clientData.gender);
+                }
+                if (clientData.education) {
+                    document.getElementById('education').value = clientData.education;
+                    console.log('Set education to:', clientData.education);
+                }
+                if (clientData.readingLevel) {
+                    document.getElementById('readingLevel').value = clientData.readingLevel;
+                    console.log('Set reading level to:', clientData.readingLevel);
+                }
+                
+                // Alternative field names in case master dashboard uses different naming
+                if (!clientData.age && clientData.clientAge) {
+                    document.getElementById('age').value = clientData.clientAge;
+                    console.log('Set age from clientAge:', clientData.clientAge);
+                }
+                if (!clientData.gender && clientData.clientGender) {
+                    document.getElementById('gender').value = clientData.clientGender;
+                    console.log('Set gender from clientGender:', clientData.clientGender);
+                }
+                if (!clientData.education && clientData.clientEducation) {
+                    document.getElementById('education').value = clientData.clientEducation;
+                    console.log('Set education from clientEducation:', clientData.clientEducation);
+                }
+                if (!clientData.readingLevel && clientData.clientReadingLevel) {
+                    document.getElementById('readingLevel').value = clientData.clientReadingLevel;
+                    console.log('Set reading level from clientReadingLevel:', clientData.clientReadingLevel);
+                }
             }
         });
 
