@@ -1,4 +1,43 @@
-<!DOCTYPE html>
+function generateReport() {
+            console.log('generateReport() called');
+            
+            try {
+                // Check if external database is loaded
+                if (!window.NeuroscriptDB) {
+                    console.error('External database not loaded!');
+                    document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please ensure neuroscript-norms.js is properly loaded.</p>`;
+                    document.getElementById('output').style.display = 'block';
+                    return;
+                }
+                
+                console.log('Database loaded successfully');
+
+                // Get form data
+                const data = {
+                    age: parseInt(document.getElementById('age').value) || 0,
+                    gender: document.getElementById('gender').value,
+                    education: parseInt(document.getElementById('education').value) || 0,
+                    readingLevel: parseFloat(document.getElementById('readingLevel').value) || 0,
+                    vci: parseInt(document.getElementById('vci').value) || 0,
+                    pri: parseInt(document.getElementById('pri').value) || 0,
+                    wmi: parseInt(document.getElementById('wmi').value) || 0,
+                    psi: parseInt(document.getElementById('psi').value) || 0,
+                    fsiq: parseInt(document.getElementById('fsiq').value) || 0,
+                    gai: parseInt(document.getElementById('gai').value) || 0,
+                    similarities: parseInt(document.getElementById('similarities').value) || 0,
+                    vocabulary: parseInt(document.getElementById('vocabulary').value) || 0,
+                    information: parseInt(document.getElementById('information').value) || 0,
+                    blockdesign: parseInt(document.getElementById('blockdesign').value) || 0,
+                    matrixreasoning: parseInt(document.getElementById('matrixreasoning').value) || 0,
+                    visualpuzzles: parseInt(document.getElementById('visualpuzzles').value) || 0,
+                    digitspan: parseInt(document.getElementById('digitspan').value) || 0,
+                    arithmetic: parseInt(document.getElementById('arithmetic').value) || 0,
+                    symbolsearch: parseInt(document.getElementById('symbolsearch').value) || 0,
+                    coding: parseInt(document.getElementById('coding').value) || 0,
+                    comprehension: parseInt(document.getElementById('comprehension').value) || 0,
+                    picturecompletion: parseInt(document.getElementById('picturecompletion').value) || 0,
+                    letternumber: parseInt(document.getElementById('letternumber').value) || 0,
+                    fig<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -241,21 +280,53 @@
         let currentNarrative = '';
         let currentScoreTable = '';
 
-        // CORRECTED: Use database properly for all interpretations
+        // CORRECTED: Use database properly for all interpretations with better error handling
         function getSubtestInterpretationFromDB(score) {
-            if (!window.NeuroscriptDB || !score) return "Average range";
+            console.log('getSubtestInterpretationFromDB called with score:', score);
             
-            // Use the database's getDetailedInterpretation function instead of hardcoded language
-            const interpretation = window.NeuroscriptDB.getDetailedInterpretation(score, 'wechsler');
-            return interpretation + " (ss=" + score + ")";
+            if (!score || score === 0) {
+                console.log('No score provided, returning default');
+                return "Average range";
+            }
+            
+            if (!window.NeuroscriptDB) {
+                console.error('NeuroscriptDB not available!');
+                return "Average range (ss=" + score + ") - Database not loaded";
+            }
+            
+            try {
+                // Use the database's getDetailedInterpretation function instead of hardcoded language
+                const interpretation = window.NeuroscriptDB.getDetailedInterpretation(score, 'wechsler');
+                console.log('Database interpretation:', interpretation);
+                return interpretation + " (ss=" + score + ")";
+            } catch (error) {
+                console.error('Error getting subtest interpretation:', error);
+                return "Average range (ss=" + score + ") - Error accessing database";
+            }
         }
 
         function getIndexInterpretationFromDB(score) {
-            if (!window.NeuroscriptDB || !score) return "Average range";
+            console.log('getIndexInterpretationFromDB called with score:', score);
             
-            // Use the database's getDetailedInterpretation function for index scores
-            const interpretation = window.NeuroscriptDB.getDetailedInterpretation(score, 'standard');
-            return interpretation;
+            if (!score || score === 0) {
+                console.log('No score provided, returning default');
+                return "Average range";
+            }
+            
+            if (!window.NeuroscriptDB) {
+                console.error('NeuroscriptDB not available!');
+                return "Average range - Database not loaded";
+            }
+            
+            try {
+                // Use the database's getDetailedInterpretation function for index scores
+                const interpretation = window.NeuroscriptDB.getDetailedInterpretation(score, 'standard');
+                console.log('Database interpretation:', interpretation);
+                return interpretation;
+            } catch (error) {
+                console.error('Error getting index interpretation:', error);
+                return "Average range - Error accessing database";
+            }
         }
 
         // Add input validation
@@ -279,13 +350,18 @@
         });
 
         function generateReport() {
+            console.log('generateReport() called');
+            
             try {
                 // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
+                    console.error('External database not loaded!');
                     document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please ensure neuroscript-norms.js is properly loaded.</p>`;
                     document.getElementById('output').style.display = 'block';
                     return;
                 }
+                
+                console.log('Database loaded successfully');
 
                 // Get form data
                 const data = {
@@ -316,27 +392,36 @@
                     cancellation: parseInt(document.getElementById('cancellation').value) || 0
                 };
 
+                console.log('Form data collected:', data);
+
                 // Set pronouns
                 const pronoun = data.gender === 'Female' ? 'She' : 'He';
                 const pronounLower = data.gender === 'Female' ? 'she' : 'he';
                 const possessive = data.gender === 'Female' ? 'her' : 'his';
 
                 let report = '<h2>WAIS-IV Results</h2>';
+                console.log('Starting report generation...');
                 
                 // General Intellectual Functioning
                 if (data.fsiq > 0 || data.gai > 0 || data.vci > 0 || data.pri > 0 || data.wmi > 0 || data.psi > 0) {
+                    console.log('Adding General Intellectual Functioning section');
                     report += '<h3>General Intellectual Functioning</h3>';
                     
                     if (data.fsiq > 0) {
-                        report += `<p>${possessive} Full Scale IQ score (FSIQ = ${data.fsiq}) fell within the ${getIndexInterpretationFromDB(data.fsiq)}.</p>`;
+                        console.log('Processing FSIQ:', data.fsiq);
+                        const fsiqInterpretation = getIndexInterpretationFromDB(data.fsiq);
+                        report += `<p>${possessive} Full Scale IQ score (FSIQ = ${data.fsiq}) fell within the ${fsiqInterpretation}.</p>`;
                     }
                     
                     if (data.gai > 0) {
-                        report += `<p>${possessive} General Ability Index (GAI = ${data.gai}) fell within the ${getIndexInterpretationFromDB(data.gai)}.</p>`;
+                        console.log('Processing GAI:', data.gai);
+                        const gaiInterpretation = getIndexInterpretationFromDB(data.gai);
+                        report += `<p>${possessive} General Ability Index (GAI = ${data.gai}) fell within the ${gaiInterpretation}.</p>`;
                     }
 
                     // Index scores table
                     if (data.vci > 0 || data.pri > 0 || data.wmi > 0 || data.psi > 0) {
+                        console.log('Creating index scores table');
                         report += `<p>The WAIS-IV also permits calculation of Index scores that reflect ability in more specific areas, these are given in the table below:</p>`;
                         report += `<table style="border-collapse: collapse; width: 100%; margin: 20px 0;">
                             <tr style="background-color: #f2f2f2;">
@@ -377,75 +462,96 @@
                 }
 
                 // Language Section - Using corrected database function
-                if (data.similarities > 0 || data.vocabulary > 0 || data.information > 0 || data.comprehension) {
+                if (data.similarities > 0 || data.vocabulary > 0 || data.information > 0 || data.comprehension > 0) {
+                    console.log('Adding Language section');
                     report += '<h3>Language</h3>';
                     if (data.similarities > 0) {
-                        report += `<p>${pronoun} performance on a verbal test of abstract reasoning (WAIS-IV Similarities) was in the ${getSubtestInterpretationFromDB(data.similarities)}.</p>`;
+                        const simInterpretation = getSubtestInterpretationFromDB(data.similarities);
+                        report += `<p>${pronoun} performance on a verbal test of abstract reasoning (WAIS-IV Similarities) was in the ${simInterpretation}.</p>`;
                     }
                     if (data.vocabulary > 0) {
-                        report += `<p>${pronoun} performance on a test requiring ${pronounLower} to provide word definitions (WAIS-IV Vocabulary) was in the ${getSubtestInterpretationFromDB(data.vocabulary)}.</p>`;
+                        const vocabInterpretation = getSubtestInterpretationFromDB(data.vocabulary);
+                        report += `<p>${pronoun} performance on a test requiring ${pronounLower} to provide word definitions (WAIS-IV Vocabulary) was in the ${vocabInterpretation}.</p>`;
                     }
                     if (data.information > 0) {
-                        report += `<p>${pronoun} performance on a verbal test of remote factual memory and general academic knowledge (WAIS-IV Information) was in the ${getSubtestInterpretationFromDB(data.information)}.</p>`;
+                        const infoInterpretation = getSubtestInterpretationFromDB(data.information);
+                        report += `<p>${pronoun} performance on a verbal test of remote factual memory and general academic knowledge (WAIS-IV Information) was in the ${infoInterpretation}.</p>`;
                     }
-                    if (data.comprehension) {
-                        report += `<p>${pronoun} performance on a test of practical judgment and common sense reasoning (WAIS-IV Comprehension) was in the ${getSubtestInterpretationFromDB(data.comprehension)}.</p>`;
+                    if (data.comprehension > 0) {
+                        const compInterpretation = getSubtestInterpretationFromDB(data.comprehension);
+                        report += `<p>${pronoun} performance on a test of practical judgment and common sense reasoning (WAIS-IV Comprehension) was in the ${compInterpretation}.</p>`;
                     }
                 }
 
                 // Attention Section - Using corrected database function
-                if (data.digitspan > 0 || data.arithmetic > 0 || data.letternumber || data.symbolsearch > 0 || data.coding > 0 || data.cancellation) {
+                if (data.digitspan > 0 || data.arithmetic > 0 || data.letternumber > 0 || data.symbolsearch > 0 || data.coding > 0 || data.cancellation > 0) {
+                    console.log('Adding Attention section');
                     report += '<h3>Attention</h3>';
                     if (data.digitspan > 0) {
-                        report += `<p>On a test requiring ${pronounLower} to recall strings of numbers read aloud (WAIS-IV Digit Span), ${possessive} score fell within the ${getSubtestInterpretationFromDB(data.digitspan)}.</p>`;
+                        const dsInterpretation = getSubtestInterpretationFromDB(data.digitspan);
+                        report += `<p>On a test requiring ${pronounLower} to recall strings of numbers read aloud (WAIS-IV Digit Span), ${possessive} score fell within the ${dsInterpretation}.</p>`;
                     }
                     if (data.arithmetic > 0) {
-                        report += `<p>On a test of mental arithmetic (WAIS-IV Arithmetic), ${possessive} score fell within the ${getSubtestInterpretationFromDB(data.arithmetic)}.</p>`;
+                        const arithInterpretation = getSubtestInterpretationFromDB(data.arithmetic);
+                        report += `<p>On a test of mental arithmetic (WAIS-IV Arithmetic), ${possessive} score fell within the ${arithInterpretation}.</p>`;
                     }
-                    if (data.letternumber) {
-                        report += `<p>On a test requiring reordering of intermixed letters and numbers (WAIS-IV Letter-Number Sequencing), ${possessive} score fell within the ${getSubtestInterpretationFromDB(data.letternumber)}.</p>`;
+                    if (data.letternumber > 0) {
+                        const lnInterpretation = getSubtestInterpretationFromDB(data.letternumber);
+                        report += `<p>On a test requiring reordering of intermixed letters and numbers (WAIS-IV Letter-Number Sequencing), ${possessive} score fell within the ${lnInterpretation}.</p>`;
                     }
                     if (data.symbolsearch > 0) {
-                        report += `<p>On a test of visual search speed requiring minimal graphomotor dexterity (WAIS-IV Symbol Search), ${possessive} score fell within the ${getSubtestInterpretationFromDB(data.symbolsearch)}.</p>`;
+                        const ssInterpretation = getSubtestInterpretationFromDB(data.symbolsearch);
+                        report += `<p>On a test of visual search speed requiring minimal graphomotor dexterity (WAIS-IV Symbol Search), ${possessive} score fell within the ${ssInterpretation}.</p>`;
                     }
                     if (data.coding > 0) {
-                        report += `<p>On a test requiring ${pronounLower} to write symbols arbitrarily paired with specific digits (WAIS-IV Coding), ${possessive} score fell within the ${getSubtestInterpretationFromDB(data.coding)}.</p>`;
+                        const codingInterpretation = getSubtestInterpretationFromDB(data.coding);
+                        report += `<p>On a test requiring ${pronounLower} to write symbols arbitrarily paired with specific digits (WAIS-IV Coding), ${possessive} score fell within the ${codingInterpretation}.</p>`;
                     }
-                    if (data.cancellation) {
-                        report += `<p>On a visual attention and response inhibition task (WAIS-IV Cancellation), ${possessive} score fell within the ${getSubtestInterpretationFromDB(data.cancellation)}.</p>`;
+                    if (data.cancellation > 0) {
+                        const cancelInterpretation = getSubtestInterpretationFromDB(data.cancellation);
+                        report += `<p>On a visual attention and response inhibition task (WAIS-IV Cancellation), ${possessive} score fell within the ${cancelInterpretation}.</p>`;
                     }
                 }
 
                 // Visuospatial / Visuoconstructional Section - Using corrected database function
-                if (data.blockdesign > 0 || data.visualpuzzles > 0 || data.picturecompletion) {
+                if (data.blockdesign > 0 || data.visualpuzzles > 0 || data.picturecompletion > 0) {
+                    console.log('Adding Visuospatial section');
                     report += '<h3>Visuospatial / Visuoconstructional</h3>';
                     if (data.blockdesign > 0) {
-                        report += `<p>${pronoun} ability to reproduce set designs from colored blocks (WAIS-IV Block Design) was within the ${getSubtestInterpretationFromDB(data.blockdesign)}.</p>`;
+                        const bdInterpretation = getSubtestInterpretationFromDB(data.blockdesign);
+                        report += `<p>${pronoun} ability to reproduce set designs from colored blocks (WAIS-IV Block Design) was within the ${bdInterpretation}.</p>`;
                     }
                     if (data.visualpuzzles > 0) {
-                        report += `<p>${pronoun} test requiring mental reconstruction of visual images (WAIS-IV Visual Puzzles) was within the ${getSubtestInterpretationFromDB(data.visualpuzzles)}.</p>`;
+                        const vpInterpretation = getSubtestInterpretationFromDB(data.visualpuzzles);
+                        report += `<p>${pronoun} test requiring mental reconstruction of visual images (WAIS-IV Visual Puzzles) was within the ${vpInterpretation}.</p>`;
                     }
-                    if (data.picturecompletion) {
-                        report += `<p>${pronoun} test requiring identification of missing elements in pictures (WAIS-IV Picture Completion) was within the ${getSubtestInterpretationFromDB(data.picturecompletion)}.</p>`;
+                    if (data.picturecompletion > 0) {
+                        const pcInterpretation = getSubtestInterpretationFromDB(data.picturecompletion);
+                        report += `<p>${pronoun} test requiring identification of missing elements in pictures (WAIS-IV Picture Completion) was within the ${pcInterpretation}.</p>`;
                     }
                 }
 
                 // Executive Functioning / Problem Solving Section - Using corrected database function
-                if (data.matrixreasoning > 0 || data.figureweights) {
+                if (data.matrixreasoning > 0 || data.figureweights > 0) {
+                    console.log('Adding Executive Functioning section');
                     report += '<h3>Executive Functioning / Problem Solving</h3>';
                     if (data.matrixreasoning > 0) {
-                        report += `<p>${pronoun} scored within the ${getSubtestInterpretationFromDB(data.matrixreasoning)} on a visual test of fluid intelligence and perceptual organization (WAIS-IV Matrix Reasoning).</p>`;
+                        const mrInterpretation = getSubtestInterpretationFromDB(data.matrixreasoning);
+                        report += `<p>${pronoun} scored within the ${mrInterpretation} on a visual test of fluid intelligence and perceptual organization (WAIS-IV Matrix Reasoning).</p>`;
                     }
-                    if (data.figureweights) {
-                        report += `<p>${pronoun} performance on a test of quantitative and analogical reasoning (WAIS-IV Figure Weights) was in the ${getSubtestInterpretationFromDB(data.figureweights)}.</p>`;
+                    if (data.figureweights > 0) {
+                        const fwInterpretation = getSubtestInterpretationFromDB(data.figureweights);
+                        report += `<p>${pronoun} performance on a test of quantitative and analogical reasoning (WAIS-IV Figure Weights) was in the ${fwInterpretation}.</p>`;
                     }
                 }
 
+                console.log('Generating score table...');
                 // Create score table for appendix
                 currentScoreTable = generateScoreTable(data);
 
                 // Store for completion
                 currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+                console.log('Report generated successfully. Length:', report.length);
 
                 // Display the report
                 document.getElementById('output').innerHTML = report + currentScoreTable;
@@ -453,7 +559,7 @@
                 
             } catch (error) {
                 console.error('Error generating report:', error);
-                document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p>`;
+                document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p><p>Check console for details.</p>`;
                 document.getElementById('output').style.display = 'block';
             }
         }
