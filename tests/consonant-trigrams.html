@@ -342,8 +342,11 @@
         // Use external database for AACN ranges (same as other tests)
         function getPerformanceRange(percentile) {
             if (window.NeuroscriptDB) {
-                const data = window.NeuroscriptDB.getByPercentile(percentile);
-                return data ? data.aacn : 'Average';
+                // Find the closest percentile match in the database
+                let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
+                    Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
+                );
+                return closest.aacn;
             }
             
             // Fallback if database not loaded
@@ -359,8 +362,11 @@
         // Use external database for Heaton impairment levels (same as other tests)
         function getHeatonLevel(percentile) {
             if (window.NeuroscriptDB) {
-                const data = window.NeuroscriptDB.getByPercentile(percentile);
-                return data && data.heaton !== 'Normal' ? data.heaton : null;
+                // Find the closest percentile match in the database
+                let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
+                    Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
+                );
+                return closest.heaton !== 'Normal' ? closest.heaton : null;
             }
             
             // Fallback if database not loaded
