@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consonant Trigrams Test Generator</title>
+    <!-- Load shared normative database for AACN ranges and Heaton levels -->
+    <script src="../neuroscript-norms.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,8 +34,8 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
-        input[type="number"] {
-            width: 80px;
+        input[type="number"], select {
+            width: 120px;
             padding: 5px;
             border: 1px solid #ddd;
             border-radius: 3px;
@@ -44,7 +46,7 @@
         }
         .score-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
@@ -96,24 +98,22 @@
             border-radius: 5px;
             margin: 10px 0;
         }
-        .validation-alert {
-            background: #f8d7da;
-            color: #721c24;
+        .technical-note {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            color: #0056b3;
             padding: 10px;
             border-radius: 5px;
-            margin-bottom: 15px;
-            display: none;
+            margin: 10px 0;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🧠 Consonant Trigrams Test Report Generator</h1>
+        <p><em>Using Shura et al. (2016) validated US norms with education stratification</em></p>
         
-        <div class="validation-alert" id="validationAlert">
-            Please correct the highlighted fields before generating the report.
-        </div>
-
         <div class="input-section">
             <h2>Client Demographics</h2>
             <div class="input-group">
@@ -129,7 +129,15 @@
                 </select>
             </div>
             <div class="input-group">
-                <label>Education (years):</label>
+                <label>Education Level:</label>
+                <select id="educationLevel">
+                    <option value="">Select...</option>
+                    <option value="lessThanBachelor">High School / Some College / Associate's</option>
+                    <option value="bachelorPlus">Bachelor's Degree or Higher</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Years of Education:</label>
                 <input type="number" id="education" value="" min="8" max="25" placeholder="8-25">
             </div>
             <div class="input-group">
@@ -140,16 +148,18 @@
             <div class="section-header">Raw Scores (Letters Recalled out of 15 per condition)</div>
             <div class="score-grid">
                 <div>
-                    <label>0-Second Delay:</label>
+                    <label>0-Second Delay (Immediate):</label>
                     <input type="number" id="delay0" value="" min="0" max="15" placeholder="0-15">
                 </div>
                 <div>
                     <label>9-Second Delay:</label>
                     <input type="number" id="delay9" value="" min="0" max="15" placeholder="0-15">
+                    <small style="color: #666;">*Required for report</small>
                 </div>
                 <div>
                     <label>18-Second Delay:</label>
                     <input type="number" id="delay18" value="" min="0" max="15" placeholder="0-15">
+                    <small style="color: #666;">*Required for report</small>
                 </div>
             </div>
 
@@ -162,14 +172,76 @@
         </div>
     </div>
 
-    <!-- Load external normative databases -->
-    <script src="../neuroscript-norms.js"></script>
-    <script src="../ccc-norms.js"></script>
-
     <script>
         // Data management
         let currentNarrative = '';
         let currentScoreTable = '';
+
+        // Shura et al. (2016) normative data - Healthy US Veterans sample
+        const shuraNorms = {
+            // Healthy controls (n=58, ages 21-60, US Veterans)
+            healthyControls: {
+                delay0: { mean: 14.98, sd: 0.13, range: [14, 15] },
+                delay9: { mean: 11.90, sd: 2.63, range: [6, 15] },
+                delay18: { mean: 10.45, sd: 3.18, range: [3, 15] }
+            },
+            
+            // Education effect - significant finding from Shura et al.
+            educationEffect: {
+                bachelorPlus: 1.95,  // Bachelor's+ perform ~2 points better
+                lessThanBachelor: 0   // Reference group
+            },
+            
+            // Metadata
+            sampleInfo: {
+                ageRange: "21-60 years",
+                source: "US Veterans",
+                reliability: 0.79,
+                validityTested: true
+            },
+            
+            getPercentile: function(score, delay, educationLevel = 'lessThanBachelor') {
+                const norms = this.healthyControls[`delay${delay}`];
+                if (!norms) return 50;
+                
+                let adjustedScore = score;
+                
+                // Apply education correction for bachelor's+ (subtract advantage to get percentile)
+                if (educationLevel === 'bachelorPlus' && delay !== 0) {
+                    adjustedScore -= this.educationEffect.bachelorPlus;
+                }
+                
+                const zScore = (adjustedScore - norms.mean) / norms.sd;
+                return this.zScoreToPercentile(zScore);
+            },
+            
+            zScoreToPercentile: function(z) {
+                if (z >= 2.33) return 99;
+                if (z >= 1.96) return 98;
+                if (z >= 1.65) return 95;
+                if (z >= 1.28) return 90;
+                if (z >= 1.04) return 85;
+                if (z >= 0.84) return 80;
+                if (z >= 0.67) return 75;
+                if (z >= 0.52) return 70;
+                if (z >= 0.39) return 65;
+                if (z >= 0.25) return 60;
+                if (z >= 0.13) return 55;
+                if (z >= 0.00) return 50;
+                if (z >= -0.13) return 45;
+                if (z >= -0.25) return 40;
+                if (z >= -0.39) return 35;
+                if (z >= -0.52) return 30;
+                if (z >= -0.67) return 25;
+                if (z >= -0.84) return 20;
+                if (z >= -1.04) return 15;
+                if (z >= -1.28) return 10;
+                if (z >= -1.65) return 5;
+                if (z >= -1.96) return 2;
+                if (z >= -2.33) return 1;
+                return 1;
+            }
+        };
 
         // Demographics auto-population from master dashboard
         window.addEventListener('message', function(event) {
@@ -184,6 +256,14 @@
                 }
                 if (clientInfo.clientEducation) {
                     document.getElementById('education').value = clientInfo.clientEducation;
+                    
+                    // Auto-set education level based on years
+                    const years = parseInt(clientInfo.clientEducation);
+                    if (years >= 16) {
+                        document.getElementById('educationLevel').value = 'bachelorPlus';
+                    } else {
+                        document.getElementById('educationLevel').value = 'lessThanBachelor';
+                    }
                 }
                 if (clientInfo.clientReading) {
                     document.getElementById('readingLevel').value = clientInfo.clientReading;
@@ -191,33 +271,15 @@
             }
         });
 
-        // Debugging - check if databases are loaded
-        window.addEventListener('load', function() {
-            console.log('Page loaded. Checking databases...');
-            console.log('window.NeuroscriptDB exists:', !!window.NeuroscriptDB);
-            console.log('window.CCCNorms exists:', !!window.CCCNorms);
-            
-            if (!window.NeuroscriptDB) {
-                console.error('NeuroscriptDB not loaded! Check neuroscript-norms.js');
-            }
-            if (!window.CCCNorms) {
-                console.error('CCCNorms not loaded! Check ccc-norms.js');
-            }
-        });
-
-        // Input validation with visual feedback
+        // Input validation with red highlighting
         function validateInput(input, min, max) {
             const value = parseFloat(input.value);
             const isValid = input.value === '' || (!isNaN(value) && value >= min && value <= max);
             
             if (isValid) {
                 input.classList.remove('validation-error');
-                input.style.borderColor = '#ddd';
-                input.style.backgroundColor = 'white';
             } else {
                 input.classList.add('validation-error');
-                input.style.borderColor = '#dc3545';
-                input.style.backgroundColor = '#f8d7da';
             }
             
             return isValid;
@@ -231,6 +293,15 @@
 
             document.getElementById('education').addEventListener('input', function() {
                 validateInput(this, 8, 25);
+                
+                // Auto-update education level
+                const years = parseInt(this.value);
+                const levelSelect = document.getElementById('educationLevel');
+                if (years >= 16) {
+                    levelSelect.value = 'bachelorPlus';
+                } else if (years > 0) {
+                    levelSelect.value = 'lessThanBachelor';
+                }
             });
 
             document.getElementById('readingLevel').addEventListener('input', function() {
@@ -260,35 +331,22 @@
                 }
             });
             
-            const validationAlert = document.getElementById('validationAlert');
             if (hasErrors) {
-                validationAlert.style.display = 'block';
+                alert('Please correct the highlighted fields before generating the report.');
                 return false;
-            } else {
-                validationAlert.style.display = 'none';
-                return true;
-            }
-        }
-
-        function getPercentileFromScore(score, delay) {
-            // Use external CCC normative database
-            if (window.CCCNorms) {
-                return window.CCCNorms.getPercentile(score, delay);
             }
             
-            // Fallback if database not loaded
-            console.warn('CCC normative database not loaded, using fallback');
-            return 50;
+            return true;
         }
 
+        // Use external database for AACN ranges (same as other tests)
         function getPerformanceRange(percentile) {
-            // Use external neuroscript normative database for range classification
             if (window.NeuroscriptDB) {
                 const data = window.NeuroscriptDB.getByPercentile(percentile);
                 return data ? data.aacn : 'Average';
             }
             
-            // Fallback classification
+            // Fallback if database not loaded
             if (percentile >= 98) return 'Exceptionally High';
             if (percentile >= 91) return 'High';
             if (percentile >= 75) return 'High Average';
@@ -298,185 +356,160 @@
             return 'Exceptionally Low';
         }
 
+        // Use external database for Heaton impairment levels (same as other tests)
         function getHeatonLevel(percentile) {
-            // Use external neuroscript normative database for impairment levels
             if (window.NeuroscriptDB) {
                 const data = window.NeuroscriptDB.getByPercentile(percentile);
                 return data && data.heaton !== 'Normal' ? data.heaton : null;
             }
             
-            // Fallback Heaton levels
+            // Fallback if database not loaded
             if (percentile <= 2) return 'severe level of impairment';
             if (percentile <= 9) return 'moderate to severe level of impairment';
             if (percentile <= 16) return 'mild to moderate level of impairment';
             return null;
         }
 
-        function generateValidationWarnings(data) {
-            const warnings = [];
-
-            // Age validation
-            if (data.age < 18 || data.age > 89) {
-                warnings.push("⚠️ Age outside Stuss et al. (1987) normative range (18-89 years)");
+        // Format performance description exactly like other tests
+        function formatPerformanceDescription(percentile, range, heatonLevel) {
+            let description = `${range} range (${percentile}th percentile)`;
+            if (heatonLevel) {
+                description += `, indicating a ${heatonLevel}`;
             }
-
-            // Unusual performance patterns
-            if (data.delay0 < 12) {
-                warnings.push("⚠️ Poor immediate recall - consider hearing, attention, or comprehension issues");
-            }
-
-            if (data.delay9 > data.delay0) {
-                warnings.push("⚠️ 9-second recall better than immediate - unusual pattern requiring review");
-            }
-
-            if (data.delay18 > data.delay9) {
-                warnings.push("⚠️ 18-second recall better than 9-second - highly unusual pattern");
-            }
-
-            // Extremely poor working memory
-            const totalDecay = data.delay0 - data.delay18;
-            if (totalDecay > 10) {
-                warnings.push("⚠️ Severe working memory decay - consider validity or significant impairment");
-            }
-
-            // Floor effects
-            if (data.delay18 === 0) {
-                warnings.push("⚠️ Zero recall at 18 seconds - consider severe impairment or validity concerns");
-            }
-
-            return warnings;
+            return description;
         }
 
         function generateValidationWarnings(data) {
-            const warnings = [];
+            let warnings = [];
 
-            // Age validation
-            if (data.age < 18 || data.age > 89) {
-                warnings.push("⚠️ Age outside Stuss et al. (1987) normative range (18-89 years)");
+            // Age boundary warnings
+            if (data.age < 21 || data.age > 60) {
+                warnings.push("⚠️ Age outside Shura et al. (2016) normative range (21-60 years) - interpret with caution");
+            }
+
+            // Reading level warnings
+            if (!data.readingLevel) {
+                warnings.push("⚠️ Reading level not assessed - may affect instruction comprehension");
+            } else if (data.readingLevel < 5) {
+                warnings.push("⚠️ Grade <5 reading level - instruction comprehension may be compromised");
             }
 
             // Unusual performance patterns
-            if (data.delay0 < 12) {
-                warnings.push("⚠️ Poor immediate recall - consider hearing, attention, or comprehension issues");
-            }
-
-            if (data.delay9 > data.delay0) {
+            if (data.delay9 > 0 && data.delay0 > 0 && data.delay9 > data.delay0) {
                 warnings.push("⚠️ 9-second recall better than immediate - unusual pattern requiring review");
             }
 
-            if (data.delay18 > data.delay9) {
+            if (data.delay18 > 0 && data.delay9 > 0 && data.delay18 > data.delay9) {
                 warnings.push("⚠️ 18-second recall better than 9-second - highly unusual pattern");
             }
 
-            // Extremely poor working memory
-            const totalDecay = data.delay0 - data.delay18;
-            if (totalDecay > 10) {
-                warnings.push("⚠️ Severe working memory decay - consider validity or significant impairment");
+            // Working memory decay analysis
+            if (data.delay0 > 0 && data.delay18 > 0) {
+                const totalDecay = data.delay0 - data.delay18;
+                if (totalDecay > 10) {
+                    warnings.push("⚠️ Severe working memory decay - consider validity or significant impairment");
+                }
             }
 
             // Floor effects
             if (data.delay18 === 0) {
                 warnings.push("⚠️ Zero recall at 18 seconds - consider severe impairment or validity concerns");
+            }
+
+            if (data.delay0 > 0 && data.delay0 < 12) {
+                warnings.push("⚠️ Poor immediate recall - consider hearing, attention, or comprehension issues");
             }
 
             return warnings;
         }
 
         function generateTrigramsReport() {
-            // First check validation
             if (!checkValidation()) {
                 return;
             }
 
-            // Check if minimum required fields are filled
-            const delay9 = document.getElementById('delay9').value;
-            const delay18 = document.getElementById('delay18').value;
-            
-            if (!delay9 && !delay18) {
-                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
-                document.getElementById('output').style.display = 'block';
+            // Check if external database is loaded
+            if (!window.NeuroscriptDB) {
+                alert('External normative database not loaded. Please refresh the page and try again.');
                 return;
             }
 
+            // Get input data
             const data = {
                 age: parseInt(document.getElementById('age').value) || 0,
                 gender: document.getElementById('gender').value,
+                educationLevel: document.getElementById('educationLevel').value,
                 education: parseInt(document.getElementById('education').value) || 0,
-                readingLevel: document.getElementById('readingLevel').value ? 
-                    parseFloat(document.getElementById('readingLevel').value) : null,
+                readingLevel: parseFloat(document.getElementById('readingLevel').value) || null,
                 delay0: parseInt(document.getElementById('delay0').value) || 0,
                 delay9: parseInt(document.getElementById('delay9').value) || 0,
                 delay18: parseInt(document.getElementById('delay18').value) || 0
             };
 
-            console.log('Processing data:', data);
+            // Require 9-second and 18-second scores
+            if (!data.delay9 || !data.delay18) {
+                alert('Please enter both 9-second and 18-second delay scores to generate the report.');
+                return;
+            }
+
+            // Require education level selection
+            if (!data.educationLevel) {
+                alert('Please select the education level (Bachelor\'s degree or higher vs. less than Bachelor\'s).');
+                return;
+            }
 
             const warnings = generateValidationWarnings(data);
             const gender = data.gender;
             const pronoun = gender === 'Male' ? 'His' : 'Her';
             const pronounLower = gender === 'Male' ? 'his' : 'her';
-            const heShe = gender === 'Male' ? 'he' : 'she';
 
-            // Calculate percentiles using embedded normative data
-            const percentile9 = data.delay9 > 0 ? getPercentileFromScore(data.delay9, 9) : 0;
-            const percentile18 = data.delay18 > 0 ? getPercentileFromScore(data.delay18, 18) : 0;
+            // Calculate percentiles using Shura norms with education stratification
+            const perc0 = data.delay0 > 0 ? shuraNorms.getPercentile(data.delay0, 0, data.educationLevel) : 0;
+            const perc9 = shuraNorms.getPercentile(data.delay9, 9, data.educationLevel);
+            const perc18 = shuraNorms.getPercentile(data.delay18, 18, data.educationLevel);
 
-            console.log('Percentiles:', { percentile9, percentile18 });
+            // Get AACN ranges and Heaton levels using external database
+            const range0 = data.delay0 > 0 ? getPerformanceRange(perc0) : '';
+            const range9 = getPerformanceRange(perc9);
+            const range18 = getPerformanceRange(perc18);
 
-            // Get performance ranges using external database
-            const range9 = data.delay9 > 0 ? getPerformanceRange(percentile9) : '';
-            const range18 = data.delay18 > 0 ? getPerformanceRange(percentile18) : '';
+            const heaton0 = data.delay0 > 0 ? getHeatonLevel(perc0) : null;
+            const heaton9 = getHeatonLevel(perc9);
+            const heaton18 = getHeatonLevel(perc18);
 
-            // Get impairment levels using external database
-            const impairment9 = data.delay9 > 0 ? getHeatonLevel(percentile9) : null;
-            const impairment18 = data.delay18 > 0 ? getHeatonLevel(percentile18) : null;
+            // Format performance descriptions exactly like other tests
+            const desc0 = data.delay0 > 0 ? formatPerformanceDescription(perc0, range0, heaton0) : '';
+            const desc9 = formatPerformanceDescription(perc9, range9, heaton9);
+            const desc18 = formatPerformanceDescription(perc18, range18, heaton18);
 
-            // Generate clinical interpretation
-            let interpretation = '';
+            // Generate clinical narrative
+            let narrative = `On a test of working memory requiring recall of letter sequences following distraction, `;
+            narrative += `${pronounLower} performance fell within the ${desc9} following a 9-second delay `;
             
-            if (data.delay9 > 0 && data.delay18 > 0) {
-                // Both scores available
-                const connector = (range9 === range18) ? 'and' : 'but';
-                interpretation = `On a test of working memory requiring recall of letter sequences following distraction, ${pronounLower} performance fell within the ${range9} range (${percentile9}th percentile) following a 9-second delay ${connector} in the ${range18} range (${percentile18}th percentile) following an 18-second delay.`;
-                
-                // Add impairment levels if present
-                if (impairment9 || impairment18) {
-                    interpretation += ' This suggests';
-                    if (impairment9 && impairment18) {
-                        if (impairment9 === impairment18) {
-                            interpretation += ` a ${impairment9} in working memory functioning.`;
-                        } else {
-                            interpretation += ` a ${impairment9} at 9 seconds and a ${impairment18} at 18 seconds.`;
-                        }
-                    } else if (impairment9) {
-                        interpretation += ` a ${impairment9} at the 9-second delay.`;
-                    } else {
-                        interpretation += ` a ${impairment18} at the 18-second delay.`;
-                    }
-                }
-            } else if (data.delay9 > 0) {
-                // Only 9-second score
-                interpretation = `On a test of working memory requiring recall of letter sequences following distraction, ${pronounLower} performance fell within the ${range9} range (${percentile9}th percentile) following a 9-second delay.`;
-                if (impairment9) {
-                    interpretation += ` This suggests a ${impairment9} in working memory functioning.`;
-                }
-            } else if (data.delay18 > 0) {
-                // Only 18-second score
-                interpretation = `On a test of working memory requiring recall of letter sequences following distraction, ${pronounLower} performance fell within the ${range18} range (${percentile18}th percentile) following an 18-second delay.`;
-                if (impairment18) {
-                    interpretation += ` This suggests a ${impairment18} in working memory functioning.`;
-                }
+            // Use connector logic like other tests
+            const connector = (range9 === range18) ? 'and' : 'but';
+            narrative += `${connector} in the ${desc18} following an 18-second delay. `;
+
+            if (data.delay0 > 0) {
+                narrative += `Immediate recall was in the ${desc0}. `;
             }
 
-            // Clinical context and implications
-            if (data.delay18 > 0 && data.delay18 < 5) {
-                interpretation += ` Severely impaired recall following distraction suggests significant difficulties with working memory and may impact functional activities requiring temporary storage and manipulation of information.`;
-            } else if (data.delay18 > 0 && data.delay18 >= 12) {
-                interpretation += ` Strong performance suggests intact working memory abilities under conditions of distraction.`;
+            // Add clinical interpretation based on working memory decay
+            const decay9to18 = data.delay9 - data.delay18;
+            if (decay9to18 <= 1) {
+                narrative += `This pattern shows minimal decay over the delay intervals, suggesting adequate working memory maintenance.`;
+            } else if (decay9to18 <= 3) {
+                narrative += `This pattern shows normal decay over the delay intervals.`;
+            } else if (decay9to18 <= 5) {
+                narrative += `This pattern shows moderately rapid decay over the delay intervals, indicating working memory difficulties.`;
+            } else {
+                narrative += `This pattern shows rapid decay over the delay intervals, suggesting significant working memory impairment.`;
             }
 
-            // Build score table
-            let scoreTable = `
+            currentNarrative = narrative;
+
+            // Build score table for master dashboard
+            currentScoreTable = `
                 <h3>Consonant Trigrams Test Score Summary</h3>
                 <table border="1" style="border-collapse: collapse; width: 100%; margin-top: 15px;">
                     <tr style="background-color: #f8f9fa;">
@@ -487,86 +520,96 @@
                     </tr>`;
 
             if (data.delay0 > 0) {
-                const percentile0 = getPercentileFromScore(data.delay0, 0);
-                const range0 = getPerformanceRange(percentile0);
-                scoreTable += `
+                currentScoreTable += `
                     <tr>
                         <td style="padding: 8px;">0-Second Delay (Immediate)</td>
                         <td style="padding: 8px; text-align: center;">${data.delay0}/15</td>
-                        <td style="padding: 8px; text-align: center;">${percentile0}th</td>
+                        <td style="padding: 8px; text-align: center;">${perc0}th</td>
                         <td style="padding: 8px; text-align: center;">${range0}</td>
                     </tr>`;
             }
 
-            if (data.delay9 > 0) {
-                scoreTable += `
+            currentScoreTable += `
                     <tr>
                         <td style="padding: 8px;">9-Second Delay</td>
                         <td style="padding: 8px; text-align: center;">${data.delay9}/15</td>
-                        <td style="padding: 8px; text-align: center;">${percentile9}th</td>
+                        <td style="padding: 8px; text-align: center;">${perc9}th</td>
                         <td style="padding: 8px; text-align: center;">${range9}</td>
-                    </tr>`;
-            }
-
-            if (data.delay18 > 0) {
-                scoreTable += `
+                    </tr>
                     <tr>
                         <td style="padding: 8px;">18-Second Delay</td>
                         <td style="padding: 8px; text-align: center;">${data.delay18}/15</td>
-                        <td style="padding: 8px; text-align: center;">${percentile18}th</td>
+                        <td style="padding: 8px; text-align: center;">${perc18}th</td>
                         <td style="padding: 8px; text-align: center;">${range18}</td>
-                    </tr>`;
+                    </tr>
+                </table>`;
+
+            // Build complete report for display
+            let report = `<h2><b>Consonant Trigrams Test Report</b></h2>`;
+            
+            report += `<h3><b>Clinical Interpretation</b></h3>`;
+            report += `<p>${narrative}</p>`;
+
+            report += `<h3><b>Score Summary</b></h3>`;
+            report += currentScoreTable;
+
+            // Technical details section
+            report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+            report += `<h4><b>Technical Details</b></h4>`;
+            report += `<p><strong>Working Memory Analysis:</strong></p>`;
+            if (data.delay0 > 0) {
+                report += `<p>• Decay from 0 to 9 seconds: ${data.delay0 - data.delay9} letters</p>`;
             }
+            report += `<p>• Decay from 9 to 18 seconds: ${data.delay9 - data.delay18} letters</p>`;
+            if (data.delay0 > 0) {
+                report += `<p>• Total decay: ${data.delay0 - data.delay18} letters</p>`;
+            }
+            
+            const educationText = data.educationLevel === 'bachelorPlus' ? 
+                'Bachelor\'s degree or higher' : 'Less than Bachelor\'s degree';
+            report += `<p><strong>Education Stratification:</strong> ${educationText}</p>`;
+            report += `<p><strong>Age Range:</strong> Validated for ages 21-60 years</p>`;
+            report += `</div>`;
 
-            scoreTable += `</table>`;
+            // Normative source citation
+            report += `<div class="technical-note">`;
+            report += `<h4><b>📚 Normative Data Source</b></h4>`;
+            report += `<p><strong>Reference:</strong> Shura, R.D., Rowland, J.A., & Miskey, H.M. (2016). Auditory Consonant Trigrams: A Psychometric Update. <em>Archives of Clinical Neuropsychology, 31</em>(1), 47-57.</p>`;
+            report += `<p><strong>Sample:</strong> Healthy US Veterans (n=58), ages 21-60, validity tested with Word Memory Test</p>`;
+            report += `<p><strong>Reliability:</strong> Cronbach's α = 0.79 for total score</p>`;
+            report += `<p><strong>Education Effect:</strong> Significant effect found for Bachelor's degree or higher education level</p>`;
+            report += `</div>`;
 
-            // Build complete report
-            let report = `
-                <h2>Consonant Trigrams Test Report</h2>
-                <div style="margin-bottom: 20px;">
-                    <p><strong>Test:</strong> Consonant Trigrams (Working Memory)</p>
-                    <p><strong>Normative Data:</strong> Stuss et al. (1987)</p>
-                </div>
-                
-                ${scoreTable}
-                
-                <h3>Clinical Interpretation</h3>
-                <p>${interpretation}</p>
-            `;
-
-            // Add warnings if any
+            // Add validation warnings if any
             if (warnings.length > 0) {
-                report += `
-                    <h3>Clinical Considerations</h3>
-                    <div class="warning">
-                        ${warnings.map(warning => `<p>${warning}</p>`).join('')}
-                    </div>`;
+                report += `<div class="warning">`;
+                report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                warnings.forEach(warning => {
+                    report += `<p style="margin: 5px 0;">${warning}</p>`;
+                });
+                report += `</div>`;
             }
 
-            // Store narrative and score table for master dashboard
-            currentNarrative = interpretation;
-            currentScoreTable = scoreTable;
-
-            // Display report
             document.getElementById('output').innerHTML = report;
             document.getElementById('output').style.display = 'block';
         }
 
         function completeTest() {
-            if (currentNarrative && currentScoreTable) {
-                // Send completion message to master dashboard
-                if (window.parent !== window) {
-                    window.parent.postMessage({
-                        type: 'testComplete',
-                        testName: 'consonant-trigrams',
-                        narrative: currentNarrative,
-                        scoreTable: currentScoreTable
-                    }, '*');
-                }
-                alert('Consonant Trigrams test completed and results sent to master dashboard!');
-            } else {
-                alert('Please generate a report first before completing the test.');
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
             }
+            
+            // Send completion message to master dashboard
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'testComplete',
+                    testName: 'consonant-trigrams',
+                    narrative: currentNarrative,
+                    scoreTable: currentScoreTable
+                }, '*');
+            }
+            alert('Consonant Trigrams test completed and results sent to master dashboard!');
         }
     </script>
 </body>
