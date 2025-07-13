@@ -497,14 +497,21 @@
                 scoreTable += `<tr><td>Detectability (d')</td><td>${data.detectability}</td><td>${detectPercentile}</td><td>${detectRange}</td></tr>`;
             }
 
-            // Perseverations analysis (both T-score and raw count)
+            // Perseverations analysis (special handling - not normally distributed)
             if (data.perseverationsTScore) {
                 const persevRange = getCPTRange(data.perseverationsTScore);
                 const persevPercentile = getCPTPercentile(data.perseverationsTScore);
-                const persevInterp = getCPTInterpretation('perseverations', data.perseverationsTScore);
-                report += `<p>Perseverative responses were in the ${persevRange} (T=${data.perseverationsTScore}, ${persevPercentile}th percentile), ${persevInterp}.</p>\n`;
                 
-                scoreTable += `<tr><td>Perseverations</td><td>${data.perseverationsTScore}</td><td>${persevPercentile}</td><td>${persevRange}</td></tr>`;
+                // Remove impairment rating from range for perseverations
+                const cleanRange = persevRange.replace(/, indicating a.*$/, '');
+                
+                if (data.perseverationsTScore >= 60) {
+                    report += `<p>Perseverative responses were in the ${cleanRange} (T=${data.perseverationsTScore}, ${persevPercentile}th percentile). The number of identified perseverative responses are outside of normal limits. As, on this test, this could be due to a number of different factors, the attending psychologist should review the raw data to make a determination.</p>\n`;
+                } else {
+                    report += `<p>Perseverative responses were in the ${cleanRange} (T=${data.perseverationsTScore}, ${persevPercentile}th percentile).</p>\n`;
+                }
+                
+                scoreTable += `<tr><td>Perseverations</td><td>${data.perseverationsTScore}</td><td>${persevPercentile}</td><td>${cleanRange}</td></tr>`;
             }
 
             // Response style and raw perseverations count
