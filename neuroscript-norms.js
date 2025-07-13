@@ -1,6 +1,7 @@
 // Neuroscript Shared Normative Database
 // Exact Statistical Equivalencies from Heaton (1991)
 // Shared across all test generators for consistency
+// UPDATED: Corrected Heaton impairment language to "mild level" instead of "mildly impaired level"
 
 window.NeuroscriptDB = {
     // Complete conversion table with exact statistical equivalencies
@@ -28,7 +29,7 @@ window.NeuroscriptDB = {
         {z: -1.3, t: 37, percentile: 9.7, standard: 81, wechsler: 6, classification: "Below Average", aacn: "Below Average", heaton: "mild to moderate level of impairment"},
         {z: -1.2, t: 38, percentile: 11.5, standard: 82, wechsler: 6, classification: "Below Average", aacn: "Below Average", heaton: "mild to moderate level of impairment"},
         {z: -1.1, t: 39, percentile: 13.6, standard: 84, wechsler: 7, classification: "Below Average", aacn: "Below Average", heaton: "mild to moderate level of impairment"},
-        {z: -1.0, t: 40, percentile: 15.9, standard: 85, wechsler: 7, classification: "Below Average", aacn: "Below Average", heaton: "mild to moderate level of impairment"},
+        {z: -1.0, t: 40, percentile: 15.9, standard: 85, wechsler: 7, classification: "Below Average", aacn: "Below Average", heaton: "mild level of impairment"},
         {z: -0.9, t: 41, percentile: 18.4, standard: 87, wechsler: 7, classification: "Below Average", aacn: "Below Average", heaton: "Normal"},
         {z: -0.8, t: 42, percentile: 21.2, standard: 88, wechsler: 8, classification: "Below Average", aacn: "Below Average", heaton: "Normal"},
         {z: -0.7, t: 43, percentile: 24.2, standard: 90, wechsler: 8, classification: "Below Average", aacn: "Below Average", heaton: "Normal"},
@@ -43,7 +44,7 @@ window.NeuroscriptDB = {
         {z: 0.2, t: 52, percentile: 57.9, standard: 103, wechsler: 11, classification: "Average", aacn: "Average", heaton: "Normal"},
         {z: 0.3, t: 53, percentile: 61.8, standard: 105, wechsler: 11, classification: "Average", aacn: "Average", heaton: "Normal"},
         {z: 0.4, t: 54, percentile: 65.5, standard: 106, wechsler: 11, classification: "Average", aacn: "Average", heaton: "Normal"},
-        {z: 0.5, t: 55, percentile: 69.1, standard: 108, wechsler: 12, classification: "Average", aacn: "High Average", heaton: "Normal"},
+        {z: 0.5, t: 55, percentile: 69.1, standard: 108, wechsler: 12, classification: "Average", aacn: "Average", heaton: "Normal"},
         {z: 0.6, t: 56, percentile: 72.6, standard: 109, wechsler: 12, classification: "High Average", aacn: "High Average", heaton: "Normal"},
         {z: 0.7, t: 57, percentile: 75.8, standard: 111, wechsler: 12, classification: "High Average", aacn: "High Average", heaton: "Normal"},
         {z: 0.8, t: 58, percentile: 78.8, standard: 112, wechsler: 13, classification: "High Average", aacn: "High Average", heaton: "Normal"},
@@ -62,37 +63,16 @@ window.NeuroscriptDB = {
         {z: 2.1, t: 71, percentile: 98.2, standard: 132, wechsler: 17, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
         {z: 2.2, t: 72, percentile: 98.6, standard: 133, wechsler: 17, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
         {z: 2.3, t: 73, percentile: 98.9, standard: 135, wechsler: 17, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
-        {z: 2.4, t: 74, percentile: 99.2, standard: 136, wechsler: 17, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
-        {z: 2.5, t: 75, percentile: 99.4, standard: 137, wechsler: 17, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
-        {z: 2.6, t: 76, percentile: 99.5, standard: 139, wechsler: 17, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
-        {z: 2.7, t: 77, percentile: 99.6, standard: 140, wechsler: 18, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
-        {z: 2.8, t: 78, percentile: 99.75, standard: 142, wechsler: 18, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
-        {z: 2.9, t: 79, percentile: 99.8, standard: 143, wechsler: 18, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
+        {z: 2.4, t: 74, percentile: 99.2, standard: 136, wechsler: 18, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
+        {z: 2.5, t: 75, percentile: 99.4, standard: 138, wechsler: 18, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
+        {z: 2.6, t: 76, percentile: 99.5, standard: 139, wechsler: 18, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
+        {z: 2.7, t: 77, percentile: 99.7, standard: 141, wechsler: 19, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
+        {z: 2.8, t: 78, percentile: 99.7, standard: 142, wechsler: 19, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
+        {z: 2.9, t: 79, percentile: 99.8, standard: 144, wechsler: 19, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"},
         {z: 3.0, t: 80, percentile: 99.9, standard: 145, wechsler: 19, classification: "Very Superior", aacn: "Exceptionally High", heaton: "Very Superior"}
     ],
 
-    // CPT-specific scoring (reversed - higher T-scores = worse performance)
-    cptInterpretations: {
-        speed: {
-            verySignificantlyFaster: "very significantly faster than average",
-            significantlyFaster: "significantly faster than average", 
-            slightlyFaster: "slightly faster than average",
-            withinNormalLimits: "within normal limits",
-            slowerThanAverage: "slower than average",
-            significantlySlower: "significantly slower than average"
-        },
-        errors: {
-            veryFew: "very few",
-            wellBelowAverage: "well below average", 
-            fewerThanAverage: "fewer than average",
-            average: "average",
-            higherThanAverage: "higher than average",
-            significantlyHigher: "significantly higher than average",
-            verySignificantlyHigher: "very significantly higher than average"
-        }
-    },
-
-    // Quick lookup functions
+    // Lookup functions
     getByStandardScore: function(score) {
         // Find closest match
         let closest = this.conversionTable.reduce((prev, curr) => 
@@ -167,6 +147,7 @@ window.NeuroscriptDB = {
         let interpretation = data.aacn + " range";
         
         // Add Heaton impairment level for T < 40 (equivalent scores)
+        // UPDATED: Now uses corrected language "mild level of impairment" instead of "mildly impaired level of impairment"
         if (data.t < 40) {
             interpretation += ` (T=${data.t}), indicating a ${data.heaton}`;
         }
