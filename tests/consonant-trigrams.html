@@ -265,8 +265,8 @@
                         document.getElementById('educationLevel').value = 'lessThanBachelor';
                     }
                 }
-                if (clientInfo.clientReading) {
-                    document.getElementById('readingLevel').value = clientInfo.clientReading;
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
                 }
             }
         });
@@ -428,9 +428,12 @@
                 return;
             }
 
+            console.log("Generate Trigrams Report function called");
+
             // Check if external database is loaded
             if (!window.NeuroscriptDB) {
-                alert('External normative database not loaded. Please refresh the page and try again.');
+                document.getElementById('output').innerHTML = '<div class="warning"><h4>⚠️ Database Error</h4><p>External normative database not loaded. Please refresh the page and try again.</p></div>';
+                document.getElementById('output').style.display = 'block';
                 return;
             }
 
@@ -445,6 +448,8 @@
                 delay9: parseInt(document.getElementById('delay9').value) || 0,
                 delay18: parseInt(document.getElementById('delay18').value) || 0
             };
+
+            console.log("Processing data:", data);
 
             // Require 9-second and 18-second scores
             if (!data.delay9 || !data.delay18) {
@@ -463,135 +468,144 @@
             const pronoun = gender === 'Male' ? 'His' : 'Her';
             const pronounLower = gender === 'Male' ? 'his' : 'her';
 
-            // Calculate percentiles using Shura norms with education stratification
-            const perc0 = data.delay0 > 0 ? shuraNorms.getPercentile(data.delay0, 0, data.educationLevel) : 0;
-            const perc9 = shuraNorms.getPercentile(data.delay9, 9, data.educationLevel);
-            const perc18 = shuraNorms.getPercentile(data.delay18, 18, data.educationLevel);
+            try {
+                // Calculate percentiles using Shura norms with education stratification
+                const perc0 = data.delay0 > 0 ? shuraNorms.getPercentile(data.delay0, 0, data.educationLevel) : 0;
+                const perc9 = shuraNorms.getPercentile(data.delay9, 9, data.educationLevel);
+                const perc18 = shuraNorms.getPercentile(data.delay18, 18, data.educationLevel);
 
-            // Get AACN ranges and Heaton levels using external database
-            const range0 = data.delay0 > 0 ? getPerformanceRange(perc0) : '';
-            const range9 = getPerformanceRange(perc9);
-            const range18 = getPerformanceRange(perc18);
+                console.log("Percentiles:", { perc0, perc9, perc18 });
 
-            const heaton0 = data.delay0 > 0 ? getHeatonLevel(perc0) : null;
-            const heaton9 = getHeatonLevel(perc9);
-            const heaton18 = getHeatonLevel(perc18);
+                // Get AACN ranges and Heaton levels using external database
+                const range0 = data.delay0 > 0 ? getPerformanceRange(perc0) : '';
+                const range9 = getPerformanceRange(perc9);
+                const range18 = getPerformanceRange(perc18);
 
-            // Format performance descriptions exactly like other tests
-            const desc0 = data.delay0 > 0 ? formatPerformanceDescription(perc0, range0, heaton0) : '';
-            const desc9 = formatPerformanceDescription(perc9, range9, heaton9);
-            const desc18 = formatPerformanceDescription(perc18, range18, heaton18);
+                const heaton0 = data.delay0 > 0 ? getHeatonLevel(perc0) : null;
+                const heaton9 = getHeatonLevel(perc9);
+                const heaton18 = getHeatonLevel(perc18);
 
-            // Generate clinical narrative
-            let narrative = `On a test of working memory requiring recall of letter sequences following distraction, `;
-            narrative += `${pronounLower} performance fell within the ${desc9} following a 9-second delay `;
-            
-            // Use connector logic like other tests
-            const connector = (range9 === range18) ? 'and' : 'but';
-            narrative += `${connector} in the ${desc18} following an 18-second delay. `;
+                // Format performance descriptions exactly like other tests
+                const desc0 = data.delay0 > 0 ? formatPerformanceDescription(perc0, range0, heaton0) : '';
+                const desc9 = formatPerformanceDescription(perc9, range9, heaton9);
+                const desc18 = formatPerformanceDescription(perc18, range18, heaton18);
 
-            if (data.delay0 > 0) {
-                narrative += `Immediate recall was in the ${desc0}. `;
-            }
+                // Generate clinical narrative
+                let narrative = `On a test of working memory requiring recall of letter sequences following distraction, `;
+                narrative += `${pronounLower} performance fell within the ${desc9} following a 9-second delay `;
+                
+                // Use connector logic like other tests
+                const connector = (range9 === range18) ? 'and' : 'but';
+                narrative += `${connector} in the ${desc18} following an 18-second delay. `;
 
-            // Add clinical interpretation based on working memory decay
-            const decay9to18 = data.delay9 - data.delay18;
-            if (decay9to18 <= 1) {
-                narrative += `This pattern shows minimal decay over the delay intervals, suggesting adequate working memory maintenance.`;
-            } else if (decay9to18 <= 3) {
-                narrative += `This pattern shows normal decay over the delay intervals.`;
-            } else if (decay9to18 <= 5) {
-                narrative += `This pattern shows moderately rapid decay over the delay intervals, indicating working memory difficulties.`;
-            } else {
-                narrative += `This pattern shows rapid decay over the delay intervals, suggesting significant working memory impairment.`;
-            }
+                if (data.delay0 > 0) {
+                    narrative += `Immediate recall was in the ${desc0}. `;
+                }
 
-            currentNarrative = narrative;
+                // Add clinical interpretation based on working memory decay
+                const decay9to18 = data.delay9 - data.delay18;
+                if (decay9to18 <= 1) {
+                    narrative += `This pattern shows minimal decay over the delay intervals, suggesting adequate working memory maintenance.`;
+                } else if (decay9to18 <= 3) {
+                    narrative += `This pattern shows normal decay over the delay intervals.`;
+                } else if (decay9to18 <= 5) {
+                    narrative += `This pattern shows moderately rapid decay over the delay intervals, indicating working memory difficulties.`;
+                } else {
+                    narrative += `This pattern shows rapid decay over the delay intervals, suggesting significant working memory impairment.`;
+                }
 
-            // Build score table for master dashboard
-            currentScoreTable = `
-                <h3>Consonant Trigrams Test Score Summary</h3>
-                <table border="1" style="border-collapse: collapse; width: 100%; margin-top: 15px;">
-                    <tr style="background-color: #f8f9fa;">
-                        <th style="padding: 8px; text-align: left;">Delay Condition</th>
-                        <th style="padding: 8px; text-align: center;">Raw Score</th>
-                        <th style="padding: 8px; text-align: center;">Percentile</th>
-                        <th style="padding: 8px; text-align: center;">Performance Range</th>
-                    </tr>`;
+                currentNarrative = narrative;
 
-            if (data.delay0 > 0) {
+                // Build score table for master dashboard
+                currentScoreTable = `
+                    <h3>Consonant Trigrams Test Score Summary</h3>
+                    <table border="1" style="border-collapse: collapse; width: 100%; margin-top: 15px;">
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 8px; text-align: left;">Delay Condition</th>
+                            <th style="padding: 8px; text-align: center;">Raw Score</th>
+                            <th style="padding: 8px; text-align: center;">Percentile</th>
+                            <th style="padding: 8px; text-align: center;">Performance Range</th>
+                        </tr>`;
+
+                if (data.delay0 > 0) {
+                    currentScoreTable += `
+                        <tr>
+                            <td style="padding: 8px;">0-Second Delay (Immediate)</td>
+                            <td style="padding: 8px; text-align: center;">${data.delay0}/15</td>
+                            <td style="padding: 8px; text-align: center;">${perc0}th</td>
+                            <td style="padding: 8px; text-align: center;">${range0}</td>
+                        </tr>`;
+                }
+
                 currentScoreTable += `
-                    <tr>
-                        <td style="padding: 8px;">0-Second Delay (Immediate)</td>
-                        <td style="padding: 8px; text-align: center;">${data.delay0}/15</td>
-                        <td style="padding: 8px; text-align: center;">${perc0}th</td>
-                        <td style="padding: 8px; text-align: center;">${range0}</td>
-                    </tr>`;
-            }
+                        <tr>
+                            <td style="padding: 8px;">9-Second Delay</td>
+                            <td style="padding: 8px; text-align: center;">${data.delay9}/15</td>
+                            <td style="padding: 8px; text-align: center;">${perc9}th</td>
+                            <td style="padding: 8px; text-align: center;">${range9}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;">18-Second Delay</td>
+                            <td style="padding: 8px; text-align: center;">${data.delay18}/15</td>
+                            <td style="padding: 8px; text-align: center;">${perc18}th</td>
+                            <td style="padding: 8px; text-align: center;">${range18}</td>
+                        </tr>
+                    </table>`;
 
-            currentScoreTable += `
-                    <tr>
-                        <td style="padding: 8px;">9-Second Delay</td>
-                        <td style="padding: 8px; text-align: center;">${data.delay9}/15</td>
-                        <td style="padding: 8px; text-align: center;">${perc9}th</td>
-                        <td style="padding: 8px; text-align: center;">${range9}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">18-Second Delay</td>
-                        <td style="padding: 8px; text-align: center;">${data.delay18}/15</td>
-                        <td style="padding: 8px; text-align: center;">${perc18}th</td>
-                        <td style="padding: 8px; text-align: center;">${range18}</td>
-                    </tr>
-                </table>`;
+                // Build complete report for display
+                let report = `<h2><b>Consonant Trigrams Test Report</b></h2>`;
+                
+                report += `<h3><b>Clinical Interpretation</b></h3>`;
+                report += `<p>${narrative}</p>`;
 
-            // Build complete report for display
-            let report = `<h2><b>Consonant Trigrams Test Report</b></h2>`;
-            
-            report += `<h3><b>Clinical Interpretation</b></h3>`;
-            report += `<p>${narrative}</p>`;
+                report += `<h3><b>Score Summary</b></h3>`;
+                report += currentScoreTable;
 
-            report += `<h3><b>Score Summary</b></h3>`;
-            report += currentScoreTable;
-
-            // Technical details section
-            report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
-            report += `<h4><b>Technical Details</b></h4>`;
-            report += `<p><strong>Working Memory Analysis:</strong></p>`;
-            if (data.delay0 > 0) {
-                report += `<p>• Decay from 0 to 9 seconds: ${data.delay0 - data.delay9} letters</p>`;
-            }
-            report += `<p>• Decay from 9 to 18 seconds: ${data.delay9 - data.delay18} letters</p>`;
-            if (data.delay0 > 0) {
-                report += `<p>• Total decay: ${data.delay0 - data.delay18} letters</p>`;
-            }
-            
-            const educationText = data.educationLevel === 'bachelorPlus' ? 
-                'Bachelor\'s degree or higher' : 'Less than Bachelor\'s degree';
-            report += `<p><strong>Education Stratification:</strong> ${educationText}</p>`;
-            report += `<p><strong>Age Range:</strong> Validated for ages 21-60 years</p>`;
-            report += `</div>`;
-
-            // Normative source citation
-            report += `<div class="technical-note">`;
-            report += `<h4><b>📚 Normative Data Source</b></h4>`;
-            report += `<p><strong>Reference:</strong> Shura, R.D., Rowland, J.A., & Miskey, H.M. (2016). Auditory Consonant Trigrams: A Psychometric Update. <em>Archives of Clinical Neuropsychology, 31</em>(1), 47-57.</p>`;
-            report += `<p><strong>Sample:</strong> Healthy US Veterans (n=58), ages 21-60, validity tested with Word Memory Test</p>`;
-            report += `<p><strong>Reliability:</strong> Cronbach's α = 0.79 for total score</p>`;
-            report += `<p><strong>Education Effect:</strong> Significant effect found for Bachelor's degree or higher education level</p>`;
-            report += `</div>`;
-
-            // Add validation warnings if any
-            if (warnings.length > 0) {
-                report += `<div class="warning">`;
-                report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
-                warnings.forEach(warning => {
-                    report += `<p style="margin: 5px 0;">${warning}</p>`;
-                });
+                // Technical details section
+                report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                report += `<h4><b>Technical Details</b></h4>`;
+                report += `<p><strong>Working Memory Analysis:</strong></p>`;
+                if (data.delay0 > 0) {
+                    report += `<p>• Decay from 0 to 9 seconds: ${data.delay0 - data.delay9} letters</p>`;
+                }
+                report += `<p>• Decay from 9 to 18 seconds: ${data.delay9 - data.delay18} letters</p>`;
+                if (data.delay0 > 0) {
+                    report += `<p>• Total decay: ${data.delay0 - data.delay18} letters</p>`;
+                }
+                
+                const educationText = data.educationLevel === 'bachelorPlus' ? 
+                    'Bachelor\'s degree or higher' : 'Less than Bachelor\'s degree';
+                report += `<p><strong>Education Stratification:</strong> ${educationText}</p>`;
+                report += `<p><strong>Age Range:</strong> Validated for ages 21-60 years</p>`;
                 report += `</div>`;
-            }
 
-            document.getElementById('output').innerHTML = report;
-            document.getElementById('output').style.display = 'block';
+                // Normative source citation
+                report += `<div class="technical-note">`;
+                report += `<h4><b>📚 Normative Data Source</b></h4>`;
+                report += `<p><strong>Reference:</strong> Shura, R.D., Rowland, J.A., & Miskey, H.M. (2016). Auditory Consonant Trigrams: A Psychometric Update. <em>Archives of Clinical Neuropsychology, 31</em>(1), 47-57.</p>`;
+                report += `<p><strong>Sample:</strong> Healthy US Veterans (n=58), ages 21-60, validity tested with Word Memory Test</p>`;
+                report += `<p><strong>Reliability:</strong> Cronbach's α = 0.79 for total score</p>`;
+                report += `<p><strong>Education Effect:</strong> Significant effect found for Bachelor's degree or higher education level</p>`;
+                report += `</div>`;
+
+                // Add validation warnings if any
+                if (warnings.length > 0) {
+                    report += `<div class="warning">`;
+                    report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                    warnings.forEach(warning => {
+                        report += `<p style="margin: 5px 0;">${warning}</p>`;
+                    });
+                    report += `</div>`;
+                }
+
+                document.getElementById('output').innerHTML = report;
+                document.getElementById('output').style.display = 'block';
+
+            } catch (error) {
+                console.error("Error generating report:", error);
+                document.getElementById('output').innerHTML = '<div class="warning"><h4>⚠️ Error</h4><p>Error generating report: ' + error.message + '</p></div>';
+                document.getElementById('output').style.display = 'block';
+            }
         }
 
         function completeTest() {
