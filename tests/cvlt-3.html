@@ -200,17 +200,17 @@
             </div>
 
             <div class="section-header">🧠 Process Score Summary (From CVLT Printout Page 5) - Optional</div>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div>
-                    <label>Semantic Clustering (Scaled):</label>
+                    <label>Trials 1-5 Semantic Clustering (Scaled):</label>
                     <input type="number" id="clusteringScaled" value="" min="1" max="19" placeholder="1-19">
                 </div>
                 <div>
-                    <label>Primacy Effect (Scaled):</label>
+                    <label>Trials 1-5 % Recall Primacy (Scaled):</label>
                     <input type="number" id="primacyScaled" value="" min="1" max="19" placeholder="1-19">
                 </div>
                 <div>
-                    <label>Recency Effect (Scaled):</label>
+                    <label>Trials 1-5 % Recall Recency (Scaled):</label>
                     <input type="number" id="recencyScaled" value="" min="1" max="19" placeholder="1-19">
                 </div>
                 <div>
@@ -219,20 +219,39 @@
                 </div>
             </div>
 
-            <div class="section-header">🔍 Error Analysis (From CVLT Printout) - Optional</div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+            <div class="section-header">🔍 Error Analysis & Validity (From CVLT Printout) - Optional</div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div>
-                    <label>Total Intrusions (Scaled):</label>
+                    <label>Intrusion Errors - Trials 1-5 (Scaled):</label>
                     <input type="number" id="intrusionsScaled" value="" min="1" max="19" placeholder="1-19">
                 </div>
                 <div>
-                    <label>False Positives:</label>
+                    <label>False Positives - Yes/No Recognition:</label>
                     <input type="number" id="falsePos" value="" min="0" max="32" placeholder="0-32">
                 </div>
                 <div>
-                    <label>Total Repetitions:</label>
+                    <label>Total Repetitions - Trials 1-5:</label>
                     <input type="number" id="repetitions" value="" min="0" max="50" placeholder="0-50">
                 </div>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #495057;">Forced Choice Recognition Total:</label>
+                    <input type="number" id="forcedChoice" value="" min="0" max="16" placeholder="0-16">
+                </div>
+            </div>
+
+            <div class="section-header">⚠️ Forced Choice Recognition Validity Indicators (From CVLT Printout Page 8)</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div>
+                    <label>Number of Target Words Recalled on Immediate/Delay but Missed on Forced Choice Recognition:</label>
+                    <input type="number" id="fcRecalledMissed" value="" min="0" max="16" placeholder="0-16">
+                </div>
+                <div>
+                    <label>Number of Hits on Yes/No Recognition but Missed on Forced Choice Recognition:</label>
+                    <input type="number" id="fcYesNoMissed" value="" min="0" max="16" placeholder="0-16">
+                </div>
+            </div>
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-size: 13px;">
+                <strong>Clinical Note:</strong> Two or more errors total across both forced choice validity indicators suggest significant validity concerns and should prompt careful review of effort and engagement.
             </div>
 
             <button class="generate-btn" onclick="generateCVLTText()">Generate CVLT-3 Report</button>
@@ -325,6 +344,12 @@
             
             if (data.forcedChoice <= 8) {
                 warnings.push("⚠️ Forced choice at/below chance level (≤8/16) - extremely implausible pattern");
+            }
+            
+            // Forced choice validity indicators (matching printout exactly)
+            const totalFCErrors = (data.fcRecalledMissed || 0) + (data.fcYesNoMissed || 0);
+            if (totalFCErrors >= 2) {
+                warnings.push("⚠️ SIGNIFICANT VALIDITY CONCERNS: ≥2 total errors on forced choice recognition validity indicators - review effort and engagement");
             }
             
             const maxPreviousRecall = Math.max(data.trial1 || 0, data.trial2 || 0, data.trial3 || 0, data.trial4 || 0, data.trial5 || 0,
@@ -425,11 +450,17 @@
                     intrusionsScaled: document.getElementById('intrusionsScaled').value ? 
                         parseInt(document.getElementById('intrusionsScaled').value) : null,
                     
-                    // Error analysis
+                    // Error analysis and validity
                     falsePos: document.getElementById('falsePos').value ? 
                         parseInt(document.getElementById('falsePos').value) : null,
                     repetitions: document.getElementById('repetitions').value ? 
-                        parseInt(document.getElementById('repetitions').value) : null
+                        parseInt(document.getElementById('repetitions').value) : null,
+                    
+                    // Forced choice validity indicators
+                    fcRecalledMissed: document.getElementById('fcRecalledMissed').value ? 
+                        parseInt(document.getElementById('fcRecalledMissed').value) : null,
+                    fcYesNoMissed: document.getElementById('fcYesNoMissed').value ? 
+                        parseInt(document.getElementById('fcYesNoMissed').value) : null
                 };
 
                 const warnings = generateValidationWarnings(data);
@@ -512,34 +543,51 @@
                     
                     const processScores = [];
                     if (data.clusteringScaled) {
-                        processScores.push(`semantic clustering was in the ${getSubtestInterpretationFromDB(data.clusteringScaled)} (ss=${data.clusteringScaled})`);
+                        processScores.push(`semantic clustering across trials 1-5 was in the ${getSubtestInterpretationFromDB(data.clusteringScaled)} (ss=${data.clusteringScaled})`);
                     }
                     if (data.learningSlopeScaled) {
-                        processScores.push(`learning slope was in the ${getSubtestInterpretationFromDB(data.learningSlopeScaled)} (ss=${data.learningSlopeScaled})`);
+                        processScores.push(`learning slope across trials 1-5 was in the ${getSubtestInterpretationFromDB(data.learningSlopeScaled)} (ss=${data.learningSlopeScaled})`);
                     }
                     if (data.primacyScaled) {
-                        processScores.push(`primacy effect was in the ${getSubtestInterpretationFromDB(data.primacyScaled)} (ss=${data.primacyScaled})`);
+                        processScores.push(`primacy effect (early word recall) was in the ${getSubtestInterpretationFromDB(data.primacyScaled)} (ss=${data.primacyScaled})`);
                     }
                     if (data.recencyScaled) {
-                        processScores.push(`recency effect was in the ${getSubtestInterpretationFromDB(data.recencyScaled)} (ss=${data.recencyScaled})`);
+                        processScores.push(`recency effect (late word recall) was in the ${getSubtestInterpretationFromDB(data.recencyScaled)} (ss=${data.recencyScaled})`);
                     }
                     
                     learningSection += processScores.join(', ') + '.</p>\n';
                 }
 
                 // Error analysis
-                if (data.intrusionsScaled || data.falsePos) {
+                if (data.intrusionsScaled || data.falsePos || data.repetitions) {
                     learningSection += `<p><em>Error Analysis:</em> `;
                     
                     const errorAnalysis = [];
                     if (data.intrusionsScaled) {
-                        errorAnalysis.push(`intrusion errors were in the ${getSubtestInterpretationFromDB(data.intrusionsScaled)} (ss=${data.intrusionsScaled})`);
+                        errorAnalysis.push(`intrusion errors across trials 1-5 were in the ${getSubtestInterpretationFromDB(data.intrusionsScaled)} (ss=${data.intrusionsScaled})`);
                     }
                     if (data.falsePos) {
-                        errorAnalysis.push(`false positive errors totaled ${data.falsePos}`);
+                        errorAnalysis.push(`false positive errors on yes/no recognition totaled ${data.falsePos}`);
+                    }
+                    if (data.repetitions) {
+                        errorAnalysis.push(`repetition errors across trials 1-5 totaled ${data.repetitions}`);
                     }
                     
                     learningSection += errorAnalysis.join(', ') + '.</p>\n';
+                }
+
+                // Forced choice validity analysis
+                if (data.fcRecalledMissed !== null || data.fcYesNoMissed !== null) {
+                    const totalFCErrors = (data.fcRecalledMissed || 0) + (data.fcYesNoMissed || 0);
+                    learningSection += `<p><em>Validity Indicators:</em> On forced choice recognition validity measures, ${pronounLower} missed ${data.fcRecalledMissed || 0} target words that were previously recalled and ${data.fcYesNoMissed || 0} words that were correctly identified on yes/no recognition (total errors: ${totalFCErrors}). `;
+                    
+                    if (totalFCErrors >= 2) {
+                        learningSection += `This pattern raises significant concerns about effort and engagement during testing.</p>\n`;
+                    } else if (totalFCErrors === 1) {
+                        learningSection += `This pattern is within acceptable limits but warrants clinical consideration.</p>\n`;
+                    } else {
+                        learningSection += `This pattern supports adequate effort during testing.</p>\n`;
+                    }
                 }
 
                 // Compile final report
@@ -582,11 +630,23 @@
                 }
                 
                 // Process scores
-                if (data.clusteringScaled) adminTests.push(['Semantic Clustering', '—', data.clusteringScaled + ' (ss)', getSubtestInterpretationFromDB(data.clusteringScaled)]);
-                if (data.learningSlopeScaled) adminTests.push(['Learning Slope', '—', data.learningSlopeScaled + ' (ss)', getSubtestInterpretationFromDB(data.learningSlopeScaled)]);
-                if (data.primacyScaled) adminTests.push(['Primacy Effect', '—', data.primacyScaled + ' (ss)', getSubtestInterpretationFromDB(data.primacyScaled)]);
-                if (data.recencyScaled) adminTests.push(['Recency Effect', '—', data.recencyScaled + ' (ss)', getSubtestInterpretationFromDB(data.recencyScaled)]);
-                if (data.intrusionsScaled) adminTests.push(['Total Intrusions', '—', data.intrusionsScaled + ' (ss)', getSubtestInterpretationFromDB(data.intrusionsScaled)]);
+                if (data.clusteringScaled) adminTests.push(['Trials 1-5 Semantic Clustering', '—', data.clusteringScaled + ' (ss)', getSubtestInterpretationFromDB(data.clusteringScaled)]);
+                if (data.learningSlopeScaled) adminTests.push(['Trials 1-5 Learning Slope', '—', data.learningSlopeScaled + ' (ss)', getSubtestInterpretationFromDB(data.learningSlopeScaled)]);
+                if (data.primacyScaled) adminTests.push(['Trials 1-5 % Recall Primacy', '—', data.primacyScaled + ' (ss)', getSubtestInterpretationFromDB(data.primacyScaled)]);
+                if (data.recencyScaled) adminTests.push(['Trials 1-5 % Recall Recency', '—', data.recencyScaled + ' (ss)', getSubtestInterpretationFromDB(data.recencyScaled)]);
+                if (data.intrusionsScaled) adminTests.push(['Intrusion Errors - Trials 1-5', '—', data.intrusionsScaled + ' (ss)', getSubtestInterpretationFromDB(data.intrusionsScaled)]);
+                
+                // Error analysis
+                if (data.falsePos) adminTests.push(['False Positives - Yes/No Recognition', data.falsePos, '—', data.falsePos >= 15 ? 'Excessive' : data.falsePos >= 8 ? 'Elevated' : 'Normal']);
+                if (data.repetitions) adminTests.push(['Total Repetitions - Trials 1-5', data.repetitions, '—', data.repetitions >= 10 ? 'Elevated' : 'Normal']);
+                
+                // Forced choice validity indicators
+                if (data.fcRecalledMissed !== null || data.fcYesNoMissed !== null) {
+                    const totalFC = (data.fcRecalledMissed || 0) + (data.fcYesNoMissed || 0);
+                    adminTests.push(['FC: Target Words Recalled but Missed', data.fcRecalledMissed || 0, '—', data.fcRecalledMissed >= 2 ? 'Concerning' : 'Normal']);
+                    adminTests.push(['FC: Yes/No Hits but Missed', data.fcYesNoMissed || 0, '—', data.fcYesNoMissed >= 2 ? 'Concerning' : 'Normal']);
+                    adminTests.push(['Total FC Validity Errors', totalFC, '—', totalFC >= 2 ? 'SIGNIFICANT CONCERN' : totalFC === 1 ? 'Monitor' : 'Normal']);
+                }
 
                 let scoreTable = '';
                 if (adminTests.length > 0) {
