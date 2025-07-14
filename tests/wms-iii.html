@@ -457,169 +457,171 @@
                     warnings.push(`⚠️ Age ${data.age} is outside WMS-III normative range (16-89 years)`);
                 }
 
-                // Executive Summary with Primary Indices
-                let indexReport = '';
-                if (data.immediateMemory || data.generalMemory || data.workingMemory) {
-                    indexReport += '<h3>Memory Assessment Summary</h3>';
+                // Cognitive Functioning Header
+                let cognitiveReport = '';
+                if (data.generalMemory || data.audiRecogDelayed || data.logicalMemory1 || data.logicalMemory2 || data.verbalPaired1 || data.verbalPaired2 || data.wordLists1 || data.wordLists2 || data.faces1 || data.faces2 || data.familyPictures1 || data.familyPictures2 || data.visualRepro1 || data.visualRepro2 || data.digitSpan || data.spatialSpan || data.letterNumber || data.mentalControl) {
+                    cognitiveReport += '<h3>Cognitive Functioning</h3>';
                     
-                    if (data.immediateMemory) {
-                        indexReport += `<p>${pronoun} immediate memory abilities, as measured by the WMS-III Immediate Memory Index, fell within the ${getIndexInterpretationFromDB(data.immediateMemory)}.</p>`;
-                    }
+                    // Memory Section with Index Scores
+                    let memoryContent = '';
+                    
+                    // Index scores first - only General Memory and Recognition Memory
                     if (data.generalMemory) {
-                        indexReport += `<p>${pronoun} general memory abilities, as measured by the WMS-III General Memory Index, fell within the ${getIndexInterpretationFromDB(data.generalMemory)}.</p>`;
+                        memoryContent += `<p>${pronoun} general memory abilities, as measured by the WMS-III General Memory Index, fell within the ${getIndexInterpretationFromDB(data.generalMemory)} (Index score = ${data.generalMemory}).</p>`;
                     }
-                    if (data.workingMemory) {
-                        indexReport += `<p>${pronoun} working memory abilities, as measured by the WMS-III Working Memory Index, fell within the ${getIndexInterpretationFromDB(data.workingMemory)}.</p>`;
+                    if (data.audiRecogDelayed) {
+                        const recognitionQuality = data.audiRecogDelayed < 85 ? 'impaired' : 'intact';
+                        memoryContent += `<p>${pronoun} auditory recognition memory, as measured by the WMS-III Auditory Recognition Delayed Index, fell within the ${getIndexInterpretationFromDB(data.audiRecogDelayed)} (Index score = ${data.audiRecogDelayed}), suggesting ${recognitionQuality} ability to recognize previously heard information when multiple-choice format is provided.</p>`;
                     }
-                    
-                    // Modality-specific indices
-                    if (data.audiImmediate && data.visualImmediate) {
-                        const diff = Math.abs(data.audiImmediate - data.visualImmediate);
-                        if (diff >= 15) {
-                            const higher = data.audiImmediate > data.visualImmediate ? 'auditory' : 'visual';
-                            const lower = data.audiImmediate > data.visualImmediate ? 'visual' : 'auditory';
-                            indexReport += `<p>A significant discrepancy was observed between immediate ${higher} memory (${Math.max(data.audiImmediate, data.visualImmediate)}) and immediate ${lower} memory (${Math.min(data.audiImmediate, data.visualImmediate)}), suggesting relative strengths in ${higher} processing.</p>`;
-                        }
-                    }
-                }
 
-                // Auditory Memory Section
-                let auditoryReport = '';
-                if (data.logicalMemory1 || data.logicalMemory2 || data.verbalPaired1 || data.verbalPaired2 || data.wordLists1 || data.wordLists2) {
-                    auditoryReport += '<h3>Auditory Memory</h3>';
-                    
-                    // Logical Memory (stories)
+                    // Logical Memory (simplified format)
                     if (data.logicalMemory1 || data.logicalMemory2) {
-                        let lmText = '';
                         if (data.logicalMemory1 && data.logicalMemory2) {
-                            lmText = `${pronoun} ability to learn and recall narrative passages (WMS-III Logical Memory) was within the ${getSubtestInterpretationFromDB(data.logicalMemory1)} for immediate recall and ${getSubtestInterpretationFromDB(data.logicalMemory2)} for delayed recall`;
+                            const lm1Range = getSubtestInterpretationFromDB(data.logicalMemory1);
+                            const lm2Range = getSubtestInterpretationFromDB(data.logicalMemory2);
+                            if (lm1Range === lm2Range) {
+                                memoryContent += `<p>Recall of prose passages was in the ${lm1Range} under both immediate (ss=${data.logicalMemory1}) and delayed (ss=${data.logicalMemory2}) conditions`;
+                            } else {
+                                memoryContent += `<p>Recall of prose passages was in the ${lm1Range} (ss=${data.logicalMemory1}) under immediate conditions, and in the ${lm2Range} (ss=${data.logicalMemory2}) under delayed conditions`;
+                            }
                             if (data.logicalMemoryRetention) {
-                                lmText += `, with ${data.logicalMemoryRetention}% retention over the delay interval`;
+                                memoryContent += `, with ${data.logicalMemoryRetention}% retention over the delay interval`;
                             }
+                            memoryContent += `.</p>`;
                         } else if (data.logicalMemory1) {
-                            lmText = `${pronoun} immediate recall of narrative passages (WMS-III Logical Memory I) was within the ${getSubtestInterpretationFromDB(data.logicalMemory1)}`;
+                            memoryContent += `<p>Recall of prose passages was in the ${getSubtestInterpretationFromDB(data.logicalMemory1)} (ss=${data.logicalMemory1}) under immediate conditions.</p>`;
                         } else if (data.logicalMemory2) {
-                            lmText = `${pronoun} delayed recall of narrative passages (WMS-III Logical Memory II) was within the ${getSubtestInterpretationFromDB(data.logicalMemory2)}`;
+                            memoryContent += `<p>Recall of prose passages was in the ${getSubtestInterpretationFromDB(data.logicalMemory2)} (ss=${data.logicalMemory2}) under delayed conditions.</p>`;
                         }
-                        auditoryReport += `<p>${lmText}.</p>`;
                     }
 
-                    // Verbal Paired Associates
+                    // Verbal Paired Associates (simplified format)
                     if (data.verbalPaired1 || data.verbalPaired2) {
-                        let vpaText = '';
                         if (data.verbalPaired1 && data.verbalPaired2) {
-                            vpaText = `${pronoun} ability to learn word pairs (WMS-III Verbal Paired Associates) was within the ${getSubtestInterpretationFromDB(data.verbalPaired1)} for immediate recall and ${getSubtestInterpretationFromDB(data.verbalPaired2)} for delayed recall`;
+                            const vp1Range = getSubtestInterpretationFromDB(data.verbalPaired1);
+                            const vp2Range = getSubtestInterpretationFromDB(data.verbalPaired2);
+                            if (vp1Range === vp2Range) {
+                                memoryContent += `<p>${pronoun} ability to learn word pairs was in the ${vp1Range} under both immediate (ss=${data.verbalPaired1}) and delayed (ss=${data.verbalPaired2}) conditions`;
+                            } else {
+                                memoryContent += `<p>${pronoun} ability to learn word pairs was in the ${vp1Range} (ss=${data.verbalPaired1}) under immediate conditions, and in the ${vp2Range} (ss=${data.verbalPaired2}) under delayed conditions`;
+                            }
                             if (data.verbalPairedRetention) {
-                                vpaText += `, with ${data.verbalPairedRetention}% retention`;
+                                memoryContent += `, with ${data.verbalPairedRetention}% retention`;
                             }
+                            memoryContent += `.</p>`;
                         } else if (data.verbalPaired1) {
-                            vpaText = `${pronoun} immediate learning of word pairs (WMS-III Verbal Paired Associates I) was within the ${getSubtestInterpretationFromDB(data.verbalPaired1)}`;
+                            memoryContent += `<p>${pronoun} ability to learn word pairs was in the ${getSubtestInterpretationFromDB(data.verbalPaired1)} (ss=${data.verbalPaired1}) under immediate conditions.</p>`;
                         } else if (data.verbalPaired2) {
-                            vpaText = `${pronoun} delayed recall of word pairs (WMS-III Verbal Paired Associates II) was within the ${getSubtestInterpretationFromDB(data.verbalPaired2)}`;
+                            memoryContent += `<p>${pronoun} ability to learn word pairs was in the ${getSubtestInterpretationFromDB(data.verbalPaired2)} (ss=${data.verbalPaired2}) under delayed conditions.</p>`;
                         }
-                        auditoryReport += `<p>${vpaText}.</p>`;
                     }
 
-                    // Word Lists
+                    // Word Lists (simplified format)
                     if (data.wordLists1 || data.wordLists2) {
-                        let wlText = '';
                         if (data.wordLists1 && data.wordLists2) {
-                            wlText = `${pronoun} ability to learn word lists (WMS-III Word Lists) was within the ${getSubtestInterpretationFromDB(data.wordLists1)} for immediate recall and ${getSubtestInterpretationFromDB(data.wordLists2)} for delayed recall`;
+                            const wl1Range = getSubtestInterpretationFromDB(data.wordLists1);
+                            const wl2Range = getSubtestInterpretationFromDB(data.wordLists2);
+                            if (wl1Range === wl2Range) {
+                                memoryContent += `<p>${pronoun} ability to learn word lists was in the ${wl1Range} under both immediate (ss=${data.wordLists1}) and delayed (ss=${data.wordLists2}) conditions.</p>`;
+                            } else {
+                                memoryContent += `<p>${pronoun} ability to learn word lists was in the ${wl1Range} (ss=${data.wordLists1}) under immediate conditions, and in the ${wl2Range} (ss=${data.wordLists2}) under delayed conditions.</p>`;
+                            }
                         } else if (data.wordLists1) {
-                            wlText = `${pronoun} immediate learning of word lists (WMS-III Word Lists I) was within the ${getSubtestInterpretationFromDB(data.wordLists1)}`;
+                            memoryContent += `<p>${pronoun} ability to learn word lists was in the ${getSubtestInterpretationFromDB(data.wordLists1)} (ss=${data.wordLists1}) under immediate conditions.</p>`;
                         } else if (data.wordLists2) {
-                            wlText = `${pronoun} delayed recall of word lists (WMS-III Word Lists II) was within the ${getSubtestInterpretationFromDB(data.wordLists2)}`;
+                            memoryContent += `<p>${pronoun} ability to learn word lists was in the ${getSubtestInterpretationFromDB(data.wordLists2)} (ss=${data.wordLists2}) under delayed conditions.</p>`;
                         }
-                        auditoryReport += `<p>${wlText}.</p>`;
                     }
-                }
 
-                // Visual Memory Section
-                let visualReport = '';
-                if (data.faces1 || data.faces2 || data.familyPictures1 || data.familyPictures2 || data.visualRepro1 || data.visualRepro2) {
-                    visualReport += '<h3>Visual Memory</h3>';
-                    
-                    // Faces
+                    // Faces (simplified format)
                     if (data.faces1 || data.faces2) {
-                        let facesText = '';
                         if (data.faces1 && data.faces2) {
-                            facesText = `${pronoun} ability to recognize faces (WMS-III Faces) was within the ${getSubtestInterpretationFromDB(data.faces1)} for immediate recognition and ${getSubtestInterpretationFromDB(data.faces2)} for delayed recognition`;
+                            const f1Range = getSubtestInterpretationFromDB(data.faces1);
+                            const f2Range = getSubtestInterpretationFromDB(data.faces2);
+                            if (f1Range === f2Range) {
+                                memoryContent += `<p>${pronoun} ability to recognize faces was in the ${f1Range} under both immediate (ss=${data.faces1}) and delayed (ss=${data.faces2}) conditions.</p>`;
+                            } else {
+                                memoryContent += `<p>${pronoun} ability to recognize faces was in the ${f1Range} (ss=${data.faces1}) under immediate conditions, and in the ${f2Range} (ss=${data.faces2}) under delayed conditions.</p>`;
+                            }
                         } else if (data.faces1) {
-                            facesText = `${pronoun} immediate face recognition (WMS-III Faces I) was within the ${getSubtestInterpretationFromDB(data.faces1)}`;
+                            memoryContent += `<p>${pronoun} ability to recognize faces was in the ${getSubtestInterpretationFromDB(data.faces1)} (ss=${data.faces1}) under immediate conditions.</p>`;
                         } else if (data.faces2) {
-                            facesText = `${pronoun} delayed face recognition (WMS-III Faces II) was within the ${getSubtestInterpretationFromDB(data.faces2)}`;
+                            memoryContent += `<p>${pronoun} ability to recognize faces was in the ${getSubtestInterpretationFromDB(data.faces2)} (ss=${data.faces2}) under delayed conditions.</p>`;
                         }
-                        visualReport += `<p>${facesText}.</p>`;
                     }
 
-                    // Family Pictures
+                    // Family Pictures (simplified format)
                     if (data.familyPictures1 || data.familyPictures2) {
-                        let fpText = '';
                         if (data.familyPictures1 && data.familyPictures2) {
-                            fpText = `${pronoun} ability to recall details from complex visual scenes (WMS-III Family Pictures) was within the ${getSubtestInterpretationFromDB(data.familyPictures1)} for immediate recall and ${getSubtestInterpretationFromDB(data.familyPictures2)} for delayed recall`;
+                            const fp1Range = getSubtestInterpretationFromDB(data.familyPictures1);
+                            const fp2Range = getSubtestInterpretationFromDB(data.familyPictures2);
+                            if (fp1Range === fp2Range) {
+                                memoryContent += `<p>${pronoun} ability to recall details from complex visual scenes was in the ${fp1Range} under both immediate (ss=${data.familyPictures1}) and delayed (ss=${data.familyPictures2}) conditions`;
+                            } else {
+                                memoryContent += `<p>${pronoun} ability to recall details from complex visual scenes was in the ${fp1Range} (ss=${data.familyPictures1}) under immediate conditions, and in the ${fp2Range} (ss=${data.familyPictures2}) under delayed conditions`;
+                            }
                             if (data.familyPicturesRetention) {
-                                fpText += `, with ${data.familyPicturesRetention}% retention`;
+                                memoryContent += `, with ${data.familyPicturesRetention}% retention`;
                             }
+                            memoryContent += `.</p>`;
                         } else if (data.familyPictures1) {
-                            fpText = `${pronoun} immediate recall of visual scene details (WMS-III Family Pictures I) was within the ${getSubtestInterpretationFromDB(data.familyPictures1)}`;
+                            memoryContent += `<p>${pronoun} ability to recall details from complex visual scenes was in the ${getSubtestInterpretationFromDB(data.familyPictures1)} (ss=${data.familyPictures1}) under immediate conditions.</p>`;
                         } else if (data.familyPictures2) {
-                            fpText = `${pronoun} delayed recall of visual scene details (WMS-III Family Pictures II) was within the ${getSubtestInterpretationFromDB(data.familyPictures2)}`;
+                            memoryContent += `<p>${pronoun} ability to recall details from complex visual scenes was in the ${getSubtestInterpretationFromDB(data.familyPictures2)} (ss=${data.familyPictures2}) under delayed conditions.</p>`;
                         }
-                        visualReport += `<p>${fpText}.</p>`;
                     }
 
-                    // Visual Reproduction
+                    // Visual Reproduction (simplified format)
                     if (data.visualRepro1 || data.visualRepro2) {
-                        let vrText = '';
                         if (data.visualRepro1 && data.visualRepro2) {
-                            vrText = `${pronoun} ability to reproduce geometric designs from memory (WMS-III Visual Reproduction) was within the ${getSubtestInterpretationFromDB(data.visualRepro1)} for immediate reproduction and ${getSubtestInterpretationFromDB(data.visualRepro2)} for delayed reproduction`;
-                            if (data.visualReproRetention) {
-                                vrText += `, with ${data.visualReproRetention}% retention`;
+                            const vr1Range = getSubtestInterpretationFromDB(data.visualRepro1);
+                            const vr2Range = getSubtestInterpretationFromDB(data.visualRepro2);
+                            if (vr1Range === vr2Range) {
+                                memoryContent += `<p>${pronoun} ability to reproduce geometric designs from memory was in the ${vr1Range} under both immediate (ss=${data.visualRepro1}) and delayed (ss=${data.visualRepro2}) conditions`;
+                            } else {
+                                memoryContent += `<p>${pronoun} ability to reproduce geometric designs from memory was in the ${vr1Range} (ss=${data.visualRepro1}) under immediate conditions, and in the ${vr2Range} (ss=${data.visualRepro2}) under delayed conditions`;
                             }
+                            if (data.visualReproRetention) {
+                                memoryContent += `, with ${data.visualReproRetention}% retention`;
+                            }
+                            memoryContent += `.</p>`;
                         } else if (data.visualRepro1) {
-                            vrText = `${pronoun} immediate reproduction of geometric designs (WMS-III Visual Reproduction I) was within the ${getSubtestInterpretationFromDB(data.visualRepro1)}`;
+                            memoryContent += `<p>${pronoun} ability to reproduce geometric designs from memory was in the ${getSubtestInterpretationFromDB(data.visualRepro1)} (ss=${data.visualRepro1}) under immediate conditions.</p>`;
                         } else if (data.visualRepro2) {
-                            vrText = `${pronoun} delayed reproduction of geometric designs (WMS-III Visual Reproduction II) was within the ${getSubtestInterpretationFromDB(data.visualRepro2)}`;
+                            memoryContent += `<p>${pronoun} ability to reproduce geometric designs from memory was in the ${getSubtestInterpretationFromDB(data.visualRepro2)} (ss=${data.visualRepro2}) under delayed conditions.</p>`;
                         }
-                        visualReport += `<p>${vrText}.</p>`;
                     }
-                }
 
-                // Working Memory & Attention Section
-                let workingMemoryReport = '';
-                if (data.digitSpan || data.spatialSpan || data.letterNumber || data.mentalControl) {
-                    workingMemoryReport += '<h3>Working Memory & Attention</h3>';
-                    
-                    if (data.digitSpan) {
-                        workingMemoryReport += `<p>On a test requiring ${pronounObj} to recall strings of numbers read aloud (WMS-III Digit Span), ${pronounLower} score fell within the ${getSubtestInterpretationFromDB(data.digitSpan)}.</p>`;
+                    if (memoryContent) {
+                        cognitiveReport += memoryContent;
                     }
-                    if (data.spatialSpan) {
-                        workingMemoryReport += `<p>On a test of visuospatial working memory requiring recall of spatial sequences (WMS-III Spatial Span), ${pronounLower} score fell within the ${getSubtestInterpretationFromDB(data.spatialSpan)}.</p>`;
-                    }
-                    if (data.letterNumber) {
-                        workingMemoryReport += `<p>On a test requiring reordering of intermixed letters and numbers (WMS-III Letter-Number Sequencing), ${pronounLower} score fell within the ${getSubtestInterpretationFromDB(data.letterNumber)}.</p>`;
-                    }
-                    if (data.mentalControl) {
-                        workingMemoryReport += `<p>${pronoun} performance on mental control tasks requiring automatic cognitive processes (WMS-III Mental Control) was within the ${getSubtestInterpretationFromDB(data.mentalControl)}.</p>`;
-                    }
-                }
 
-                // Recognition Memory
-                let recognitionReport = '';
-                if (data.audiRecogDelayed) {
-                    recognitionReport += '<h3>Recognition Memory</h3>';
-                    const recognitionQuality = data.audiRecogDelayed < 85 ? 'impaired' : 'intact';
-                    recognitionReport += `<p>${pronoun} auditory recognition memory (WMS-III Auditory Recognition Delayed) was within the ${getIndexInterpretationFromDB(data.audiRecogDelayed)}, suggesting ${recognitionQuality} ability to recognize previously heard information when multiple-choice format is provided.</p>`;
+                    // Attention Section (for working memory tests)
+                    let attentionContent = '';
+                    if (data.digitSpan || data.spatialSpan || data.letterNumber || data.mentalControl) {
+                        if (data.digitSpan) {
+                            attentionContent += `<p>On a test requiring ${pronounObj} to recall strings of numbers read aloud, ${pronounLower} score fell within the ${getSubtestInterpretationFromDB(data.digitSpan)} (ss=${data.digitSpan}).</p>`;
+                        }
+                        if (data.spatialSpan) {
+                            attentionContent += `<p>On a test of visuospatial working memory requiring recall of spatial sequences, ${pronounLower} score fell within the ${getSubtestInterpretationFromDB(data.spatialSpan)} (ss=${data.spatialSpan}).</p>`;
+                        }
+                        if (data.letterNumber) {
+                            attentionContent += `<p>On a test requiring reordering of intermixed letters and numbers, ${pronounLower} score fell within the ${getSubtestInterpretationFromDB(data.letterNumber)} (ss=${data.letterNumber}).</p>`;
+                        }
+                        if (data.mentalControl) {
+                            attentionContent += `<p>${pronoun} performance on mental control tasks requiring automatic cognitive processes was within the ${getSubtestInterpretationFromDB(data.mentalControl)} (ss=${data.mentalControl}).</p>`;
+                        }
+                    }
+
+                    if (attentionContent) {
+                        cognitiveReport += attentionContent;
+                    }
                 }
 
                 // Compile final report
-                if (indexReport) report += indexReport;
-                if (auditoryReport) report += auditoryReport;
-                if (visualReport) report += visualReport;
-                if (workingMemoryReport) report += workingMemoryReport;
-                if (recognitionReport) report += recognitionReport;
-
-                if (!report) {
+                if (cognitiveReport) {
+                    report += cognitiveReport;
+                } else {
                     report = '<p>No tests were entered for analysis. Please complete at least one WMS-III subtest or index score.</p>';
                 }
 
