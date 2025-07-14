@@ -226,15 +226,11 @@
                     <input type="number" id="intrusionsScaled" value="" min="1" max="19" placeholder="1-19">
                 </div>
                 <div>
-                    <label>False Positives - Yes/No Recognition:</label>
-                    <input type="number" id="falsePos" value="" min="0" max="32" placeholder="0-32">
-                </div>
-                <div>
                     <label>Total Repetitions - Trials 1-5:</label>
                     <input type="number" id="repetitions" value="" min="0" max="50" placeholder="0-50">
                 </div>
-                <div style="background: #f8f9fa; padding: 10px; border-radius: 5px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #495057;">Forced Choice Recognition Total:</label>
+                <div>
+                    <label>Forced Choice Recognition Total:</label>
                     <input type="number" id="forcedChoice" value="" min="0" max="16" placeholder="0-16">
                 </div>
             </div>
@@ -338,10 +334,6 @@
             });
             
             // Clinical validity warnings
-            if (data.falsePos >= 15) {
-                warnings.push("⚠️ Excessive false positives (≥15) occur in <2% of genuinely impaired individuals - validity concerns");
-            }
-            
             if (data.forcedChoice <= 8) {
                 warnings.push("⚠️ Forced choice at/below chance level (≤8/16) - extremely implausible pattern");
             }
@@ -451,8 +443,6 @@
                         parseInt(document.getElementById('intrusionsScaled').value) : null,
                     
                     // Error analysis and validity
-                    falsePos: document.getElementById('falsePos').value ? 
-                        parseInt(document.getElementById('falsePos').value) : null,
                     repetitions: document.getElementById('repetitions').value ? 
                         parseInt(document.getElementById('repetitions').value) : null,
                     
@@ -472,40 +462,41 @@
                 let cognitiveReport = '<h3>Cognitive Functioning</h3>\n';
                 let learningSection = '<h4>Learning and Memory</h4>\n';
 
-                // Index scores summary (using WMS-III template pattern)
-                if (data.trials15Total) {
-                    learningSection += `<p>Overall verbal learning abilities across initial trials (Trials 1-5 Total Index = ${data.trials15Total}) were in the ${getIndexInterpretationFromDB(data.trials15Total)}.</p>\n`;
+                // Index scores summary (optional - add before main paragraph if present)
+                if (data.trials15Total || data.delayedIndex || data.totalRecall) {
+                    if (data.trials15Total) {
+                        learningSection += `<p>Overall verbal learning abilities across initial trials (Trials 1-5 Total Index = ${data.trials15Total}) were in the ${getIndexInterpretationFromDB(data.trials15Total)}.</p>\n`;
+                    }
+                    if (data.delayedIndex) {
+                        learningSection += `<p>Overall delayed memory abilities (Delayed Recall Correct Index = ${data.delayedIndex}) were in the ${getIndexInterpretationFromDB(data.delayedIndex)}.</p>\n`;
+                    }
+                    if (data.totalRecall) {
+                        learningSection += `<p>Overall recall performance across all trials (Total Recall Correct Index = ${data.totalRecall}) was in the ${getIndexInterpretationFromDB(data.totalRecall)}.</p>\n`;
+                    }
                 }
+                let learningParagraph = '';
 
-                if (data.delayedIndex) {
-                    learningSection += `<p>Overall delayed memory abilities (Delayed Recall Correct Index = ${data.delayedIndex}) were in the ${getIndexInterpretationFromDB(data.delayedIndex)}.</p>\n`;
-                }
-
-                if (data.totalRecall) {
-                    learningSection += `<p>Overall recall performance across all trials (Total Recall Correct Index = ${data.totalRecall}) was in the ${getIndexInterpretationFromDB(data.totalRecall)}.</p>\n`;
-                }
-
-                // Learning trials analysis with scaled score format
+                // Start with learning sentence
                 if (data.trial1Scaled || data.trial5Scaled) {
                     if (data.trial1Scaled && data.trial5Scaled) {
                         const trial1Range = getSubtestInterpretationFromDB(data.trial1Scaled);
                         const trial5Range = getSubtestInterpretationFromDB(data.trial5Scaled);
                         
                         if (trial1Range === trial5Range) {
-                            learningSection += `<p>Learning of a 16-word list (CVLT-3) was in the ${trial1Range} on both initial presentation (ss=${data.trial1Scaled}) and final learning trial (ss=${data.trial5Scaled}).</p>\n`;
+                            learningParagraph += `Learning of a 16-word list (CVLT-3) was in the ${trial1Range} on both initial presentation (ss=${data.trial1Scaled}) and final learning trial (ss=${data.trial5Scaled}). `;
                         } else {
-                            learningSection += `<p>Learning of a 16-word list (CVLT-3) was in the ${trial1Range} (ss=${data.trial1Scaled}) on initial presentation, and in the ${trial5Range} (ss=${data.trial5Scaled}) on the final learning trial.</p>\n`;
+                            learningParagraph += `Learning of a 16-word list (CVLT-3) was in the ${trial1Range} (ss=${data.trial1Scaled}) on initial presentation, and in the ${trial5Range} (ss=${data.trial5Scaled}) on the final learning trial. `;
                         }
                     } else if (data.trial1Scaled) {
-                        learningSection += `<p>Initial learning of a 16-word list (CVLT-3) was in the ${getSubtestInterpretationFromDB(data.trial1Scaled)} (ss=${data.trial1Scaled}).</p>\n`;
+                        learningParagraph += `Initial learning of a 16-word list (CVLT-3) was in the ${getSubtestInterpretationFromDB(data.trial1Scaled)} (ss=${data.trial1Scaled}). `;
                     } else if (data.trial5Scaled) {
-                        learningSection += `<p>Learning of a 16-word list after repeated presentations (CVLT-3) was in the ${getSubtestInterpretationFromDB(data.trial5Scaled)} (ss=${data.trial5Scaled}).</p>\n`;
+                        learningParagraph += `Learning of a 16-word list after repeated presentations (CVLT-3) was in the ${getSubtestInterpretationFromDB(data.trial5Scaled)} (ss=${data.trial5Scaled}). `;
                     }
                 }
 
                 // Interference trial analysis
                 if (data.listBScaled) {
-                    learningSection += `<p>Learning under interference conditions (CVLT-3 List B) was in the ${getSubtestInterpretationFromDB(data.listBScaled)} (ss=${data.listBScaled}).</p>\n`;
+                    learningParagraph += `Learning under interference conditions was in the ${getSubtestInterpretationFromDB(data.listBScaled)} (ss=${data.listBScaled}). `;
                 }
 
                 // Delayed recall analysis with template-based comparisons
@@ -514,14 +505,14 @@
                     const longRange = getSubtestInterpretationFromDB(data.longFreeScaled);
                     
                     if (shortRange === longRange) {
-                        learningSection += `<p>Delayed recall of the word list (CVLT-3) was in the ${shortRange} under both short-delay (ss=${data.shortFreeScaled}) and long-delay (ss=${data.longFreeScaled}) conditions.</p>\n`;
+                        learningParagraph += `Delayed recall of the word list was in the ${shortRange} under both short-delay (ss=${data.shortFreeScaled}) and long-delay (ss=${data.longFreeScaled}) conditions. `;
                     } else {
-                        learningSection += `<p>Delayed recall of the word list (CVLT-3) was in the ${shortRange} (ss=${data.shortFreeScaled}) under short-delay conditions, and in the ${longRange} (ss=${data.longFreeScaled}) under long-delay conditions.</p>\n`;
+                        learningParagraph += `Delayed recall of the word list was in the ${shortRange} (ss=${data.shortFreeScaled}) under short-delay conditions, and in the ${longRange} (ss=${data.longFreeScaled}) under long-delay conditions. `;
                     }
                 } else if (data.shortFreeScaled) {
-                    learningSection += `<p>Short-delay recall of the word list (CVLT-3) was in the ${getSubtestInterpretationFromDB(data.shortFreeScaled)} (ss=${data.shortFreeScaled}).</p>\n`;
+                    learningParagraph += `Short-delay recall of the word list was in the ${getSubtestInterpretationFromDB(data.shortFreeScaled)} (ss=${data.shortFreeScaled}). `;
                 } else if (data.longFreeScaled) {
-                    learningSection += `<p>Long-delay recall of the word list (CVLT-3) was in the ${getSubtestInterpretationFromDB(data.longFreeScaled)} (ss=${data.longFreeScaled}).</p>\n`;
+                    learningParagraph += `Long-delay recall of the word list was in the ${getSubtestInterpretationFromDB(data.longFreeScaled)} (ss=${data.longFreeScaled}). `;
                 }
 
                 // Recognition analysis
@@ -534,13 +525,11 @@
                     } else {
                         recogLevel = 'impaired';
                     }
-                    learningSection += `<p>Recognition memory for the word list (CVLT-3) was ${recogLevel} (${data.recogHits}/16 correct).</p>\n`;
+                    learningParagraph += `Recognition memory for the word list was ${recogLevel} (${data.recogHits}/16 correct). `;
                 }
 
-                // Process scores analysis
+                // Process scores analysis - remove "Process Analysis:" title
                 if (data.clusteringScaled || data.primacyScaled || data.recencyScaled || data.learningSlopeScaled) {
-                    learningSection += `<p><em>Process Analysis:</em> `;
-                    
                     const processScores = [];
                     if (data.clusteringScaled) {
                         processScores.push(`semantic clustering across trials 1-5 was in the ${getSubtestInterpretationFromDB(data.clusteringScaled)} (ss=${data.clusteringScaled})`);
@@ -555,39 +544,38 @@
                         processScores.push(`recency effect (late word recall) was in the ${getSubtestInterpretationFromDB(data.recencyScaled)} (ss=${data.recencyScaled})`);
                     }
                     
-                    learningSection += processScores.join(', ') + '.</p>\n';
+                    learningParagraph += processScores.join(', ') + '. ';
                 }
 
-                // Error analysis
-                if (data.intrusionsScaled || data.falsePos || data.repetitions) {
-                    learningSection += `<p><em>Error Analysis:</em> `;
-                    
+                // Error analysis - remove "Error Analysis:" title
+                if (data.intrusionsScaled || data.repetitions) {
                     const errorAnalysis = [];
                     if (data.intrusionsScaled) {
                         errorAnalysis.push(`intrusion errors across trials 1-5 were in the ${getSubtestInterpretationFromDB(data.intrusionsScaled)} (ss=${data.intrusionsScaled})`);
-                    }
-                    if (data.falsePos) {
-                        errorAnalysis.push(`false positive errors on yes/no recognition totaled ${data.falsePos}`);
                     }
                     if (data.repetitions) {
                         errorAnalysis.push(`repetition errors across trials 1-5 totaled ${data.repetitions}`);
                     }
                     
-                    learningSection += errorAnalysis.join(', ') + '.</p>\n';
+                    learningParagraph += errorAnalysis.join(', ') + '. ';
                 }
 
-                // Forced choice validity analysis
+                // Forced choice validity analysis - remove "Validity Indicators:" title and fix pronoun
                 if (data.fcRecalledMissed !== null || data.fcYesNoMissed !== null) {
                     const totalFCErrors = (data.fcRecalledMissed || 0) + (data.fcYesNoMissed || 0);
-                    learningSection += `<p><em>Validity Indicators:</em> On forced choice recognition validity measures, ${pronounLower} missed ${data.fcRecalledMissed || 0} target words that were previously recalled and ${data.fcYesNoMissed || 0} words that were correctly identified on yes/no recognition (total errors: ${totalFCErrors}). `;
+                    learningParagraph += `On forced choice recognition validity measures, ${heShe.toLowerCase()} missed ${data.fcRecalledMissed || 0} target words that were previously recalled and ${data.fcYesNoMissed || 0} words that were correctly identified on yes/no recognition (total errors: ${totalFCErrors}). `;
                     
                     if (totalFCErrors >= 2) {
-                        learningSection += `This pattern raises significant concerns about effort and engagement during testing.</p>\n`;
+                        learningParagraph += `This pattern raises significant concerns about effort and engagement during testing.`;
                     } else if (totalFCErrors === 1) {
-                        learningSection += `This pattern is within acceptable limits but warrants clinical consideration.</p>\n`;
+                        learningParagraph += `This pattern is within acceptable limits but warrants clinical consideration.`;
                     } else {
-                        learningSection += `This pattern supports adequate effort during testing.</p>\n`;
+                        learningParagraph += `This pattern supports adequate effort during testing.`;
                     }
+                }
+
+                if (learningParagraph) {
+                    learningSection += `<p>${learningParagraph}</p>\n`;
                 }
 
                 // Compile final report
@@ -637,7 +625,6 @@
                 if (data.intrusionsScaled) adminTests.push(['Intrusion Errors - Trials 1-5', '—', data.intrusionsScaled + ' (ss)', getSubtestInterpretationFromDB(data.intrusionsScaled)]);
                 
                 // Error analysis
-                if (data.falsePos) adminTests.push(['False Positives - Yes/No Recognition', data.falsePos, '—', data.falsePos >= 15 ? 'Excessive' : data.falsePos >= 8 ? 'Elevated' : 'Normal']);
                 if (data.repetitions) adminTests.push(['Total Repetitions - Trials 1-5', data.repetitions, '—', data.repetitions >= 10 ? 'Elevated' : 'Normal']);
                 
                 // Forced choice validity indicators
