@@ -135,108 +135,61 @@
             background: #f0f8ff;
         }
         
-        /* Composite Index Grid */
-        .composite-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .composite-item {
-            text-align: center;
-        }
-        .composite-item label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #495057;
-        }
-        .composite-item input {
-            width: 80px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        /* Process Scores Grid */
-        .process-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .process-item {
+        /* Vertical Layout for All Sections */
+        .vertical-grid {
             display: flex;
             flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .vertical-item {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 15px;
             align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
         }
-        .process-item label {
+        .vertical-item label {
             font-weight: bold;
-            margin-bottom: 8px;
             color: #495057;
-            text-align: center;
+            margin: 0;
         }
-        .process-item input {
-            width: 80px;
+        .vertical-item input {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             text-align: center;
+            font-size: 14px;
         }
         
-        /* Error Analysis Grid */
-        .error-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .error-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .error-item label {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #495057;
-            text-align: center;
-        }
-        .error-item input {
-            width: 80px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        /* Validity Grid */
-        .validity-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+        /* Special styling for validity items with longer labels */
         .validity-item {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 15px;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 15px;
         }
         .validity-item label {
             font-weight: bold;
-            margin-bottom: 8px;
             color: #495057;
+            margin: 0;
             font-size: 14px;
             line-height: 1.3;
         }
         .validity-item input {
-            width: 80px;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             text-align: center;
-            align-self: center;
+            font-size: 14px;
         }
         
         /* Buttons */
@@ -375,16 +328,16 @@
 
         <!-- Composite Index Scores -->
         <div class="section-header composite-scores">📊 Composite Index Scores (From CVLT-3 Printout Page 3)</div>
-        <div class="composite-grid">
-            <div class="composite-item">
+        <div class="vertical-grid">
+            <div class="vertical-item">
                 <label>Trials 1-5 Total Index:</label>
                 <input type="number" id="trials15Total" min="40" max="160" placeholder="40-160">
             </div>
-            <div class="composite-item">
+            <div class="vertical-item">
                 <label>Delayed Recall Correct Index:</label>
                 <input type="number" id="delayedIndex" min="40" max="160" placeholder="40-160">
             </div>
-            <div class="composite-item">
+            <div class="vertical-item">
                 <label>Total Recall Correct Index:</label>
                 <input type="number" id="totalRecall" min="40" max="160" placeholder="40-160">
             </div>
@@ -392,20 +345,20 @@
 
         <!-- Process Score Summary -->
         <div class="section-header process-scores">🧠 Process Score Summary (From CVLT-3 Printout Page 5) - Optional</div>
-        <div class="process-grid">
-            <div class="process-item">
+        <div class="vertical-grid">
+            <div class="vertical-item">
                 <label>Trials 1-5 Semantic Clustering (Scaled):</label>
                 <input type="number" id="clusteringScaled" min="1" max="19" placeholder="1-19">
             </div>
-            <div class="process-item">
+            <div class="vertical-item">
                 <label>Trials 1-5 % Recall Primacy (Scaled):</label>
                 <input type="number" id="primacyScaled" min="1" max="19" placeholder="1-19">
             </div>
-            <div class="process-item">
+            <div class="vertical-item">
                 <label>Trials 1-5 % Recall Recency (Scaled):</label>
                 <input type="number" id="recencyScaled" min="1" max="19" placeholder="1-19">
             </div>
-            <div class="process-item">
+            <div class="vertical-item">
                 <label>Trials 1-5 Learning Slope (Scaled):</label>
                 <input type="number" id="learningSlopeScaled" min="1" max="19" placeholder="1-19">
             </div>
@@ -413,12 +366,12 @@
 
         <!-- Error Analysis & Validity -->
         <div class="section-header error-analysis">🔍 Error Analysis & Validity (From CVLT-3 Printout) - Optional</div>
-        <div class="error-grid">
-            <div class="error-item">
+        <div class="vertical-grid">
+            <div class="vertical-item">
                 <label>Intrusion Errors - Trials 1-5 (Scaled):</label>
                 <input type="number" id="intrusionsScaled" min="1" max="19" placeholder="1-19">
             </div>
-            <div class="error-item">
+            <div class="vertical-item">
                 <label>Total Repetitions - Trials 1-5:</label>
                 <input type="number" id="repetitions" min="0" max="50" placeholder="0-50">
             </div>
@@ -426,7 +379,7 @@
 
         <!-- Forced Choice Recognition Validity -->
         <div class="section-header validity">⚠️ Forced Choice Recognition Validity Indicators (From CVLT-3 Printout Page 8)</div>
-        <div class="validity-grid">
+        <div class="vertical-grid">
             <div class="validity-item">
                 <label>Number of Target Words Recalled on Immediate/Delay but Missed on Forced Choice Recognition:</label>
                 <input type="number" id="fcRecalledMissed" min="0" max="16" placeholder="0-16">
