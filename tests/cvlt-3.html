@@ -262,7 +262,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.8</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.9</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <!-- Demographics Section -->
@@ -854,29 +854,31 @@
                 validityConcerns.push('significant errors on yes/no recognition');
             }
             
-            // Check forced choice errors
+            // Check forced choice errors (can stand alone)
+            let forcedChoiceErrors = false;
             if (data.forcedChoice !== null && data.forcedChoice !== undefined && data.forcedChoice < 16) {
-                validityConcerns.push('errors on forced choice recognition trials');
+                forcedChoiceErrors = true;
             }
             
-            // Check validity indicators (2 or more total errors)
+            // Check validity indicators (2 or more total errors = highly unusual)
             const fcRecalledMissed = data.fcRecalledMissed || 0;
             const fcYesNoMissed = data.fcYesNoMissed || 0;
             const totalValidityErrors = fcRecalledMissed + fcYesNoMissed;
             
+            // Handle validity concerns with specific language
             if (totalValidityErrors >= 2) {
-                validityConcerns.push('inconsistencies between recall and recognition performance');
-            }
-            
-            // Add validity statement if concerns exist
-            if (validityConcerns.length > 0) {
+                // Highly unusual inconsistencies - strongest language
+                narrative += 'There were highly unusual inconsistencies between recall and recognition performance, indicating that the results of this test are likely invalid, and suggesting symptom exaggeration. ';
+            } else if (forcedChoiceErrors) {
+                // Forced choice errors can stand alone
+                narrative += 'There were validity concerns arising from errors on forced choice recognition trials. ';
+            } else if (validityConcerns.length > 0) {
+                // Other validity concerns
                 if (validityConcerns.length === 1) {
                     narrative += `There were validity concerns arising from ${validityConcerns[0]}. `;
-                } else if (validityConcerns.length === 2) {
-                    narrative += `There were validity concerns arising from ${validityConcerns[0]} and ${validityConcerns[1]}. `;
                 } else {
                     const lastConcern = validityConcerns.pop();
-                    narrative += `There were validity concerns arising from ${validityConcerns.join(', ')}, and ${lastConcern}. `;
+                    narrative += `There were validity concerns arising from ${validityConcerns.join(', ')} and ${lastConcern}. `;
                 }
             }
 
