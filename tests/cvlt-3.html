@@ -262,7 +262,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.4</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.5</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <!-- Demographics Section -->
@@ -660,12 +660,15 @@
                     fcYesNoMissed: parseInt(document.getElementById('fcYesNoMissed').value)
                 };
 
+                // Generate professional narrative
+                let narrative = generateCVLTNarrative(data);
+
                 // Generate validation warnings
                 const warnings = validateCVLTData(data);
 
-                // Generate narrative (placeholder - will be enhanced in next step)
+                // Combine narrative and warnings
                 let text = `<h4>Memory</h4>`;
-                text += `<p>Preliminary CVLT-3 results generated with enhanced layout. Full narrative enhancement coming next.</p>`;
+                text += narrative;
 
                 // Add warnings if any
                 if (warnings.length > 0) {
@@ -679,19 +682,102 @@
                 document.getElementById('output').innerHTML = text;
                 document.getElementById('output').style.display = 'block';
 
-                // Store for completion (simplified for now)
+                // Store for completion
                 currentNarrative = text.replace(/<[^>]*>/g, '').trim();
-                currentScoreTable = [
-                    ['Test Type', 'Raw Score', 'Scaled Score', 'Range']
-                ];
+                currentScoreTable = generateScoreTable(data);
                 
-                console.log('CVLT-3 report generated successfully');
+                console.log('CVLT-3 professional narrative generated successfully');
 
             } catch (error) {
                 console.error('Error generating CVLT report:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
+        }
+
+        function generateCVLTNarrative(data) {
+            let narrative = '';
+            
+            // Gender pronouns
+            const heShe = data.gender === 'Male' ? 'He' : 'She';
+            const hisHer = data.gender === 'Male' ? 'His' : 'Her';
+            const himHer = data.gender === 'Male' ? 'him' : 'her';
+
+            // 1. Overall Performance Statement (Total Recall Index)
+            if (data.totalRecall) {
+                const totalRecallRange = getIndexInterpretationFromDB(data.totalRecall);
+                
+                // Check for unusual features
+                let unusualFeatures = false;
+                let unusualNote = '';
+                
+                // Check if performance is inconsistent across measures
+                if (data.trials15Total && data.delayedIndex) {
+                    const difference = Math.abs(data.totalRecall - data.trials15Total);
+                    if (difference > 15) {
+                        unusualFeatures = true;
+                    }
+                }
+                
+                // Check for validity concerns
+                if (data.forcedChoice && data.forcedChoice <= 8) {
+                    unusualFeatures = true;
+                }
+                
+                if (data.fcRecalledMissed && data.fcRecalledMissed > 2) {
+                    unusualFeatures = true;
+                }
+
+                if (unusualFeatures) {
+                    unusualNote = ', although with some unusual features';
+                }
+
+                narrative += `<p>${hisHer} overall performance on a test of verbal list learning (CVLT-3) was in the ${totalRecallRange} (Total Recall Index = ${data.totalRecall})${unusualNote}.</p>`;
+            }
+
+            // 2. First Learning Trial and Learning Slope
+            if (data.trial1 && data.trial1Scaled && data.trial5) {
+                const trial1Range = getScaledInterpretationFromDB(data.trial1Scaled);
+                
+                // Learning slope interpretation
+                let learningSlopeRange = 'Average';
+                if (data.learningSlopeScaled) {
+                    learningSlopeRange = getScaledInterpretationFromDB(data.learningSlopeScaled);
+                } else {
+                    // Calculate learning slope if not provided
+                    const improvementItems = data.trial5 - data.trial1;
+                    if (improvementItems >= 7) {
+                        learningSlopeRange = 'Above Average';
+                    } else if (improvementItems >= 4) {
+                        learningSlopeRange = 'Average';
+                    } else {
+                        learningSlopeRange = 'Below Average';
+                    }
+                }
+
+                narrative += `<p>${heShe} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${trial1Range} (ss=${data.trial1Scaled}). ${heShe} showed ${learningSlopeRange.includes('Average') ? 'an' : 'a'} ${learningSlopeRange} learning slope, attaining ${data.trial5} items by the fifth trial.</p>`;
+            }
+
+            return narrative;
+        }
+
+        function generateScoreTable(data) {
+            const scoreTable = [
+                ['Test Component', 'Raw Score', 'Scaled Score/Index', 'Range']
+            ];
+            
+            // Add completed tests to score table
+            if (data.totalRecall) {
+                scoreTable.push(['Total Recall Index', '--', data.totalRecall, getIndexInterpretationFromDB(data.totalRecall)]);
+            }
+            if (data.trial1 && data.trial1Scaled) {
+                scoreTable.push(['Trial 1', data.trial1, `${data.trial1Scaled} (ss)`, getScaledInterpretationFromDB(data.trial1Scaled)]);
+            }
+            if (data.trial5 && data.trial5Scaled) {
+                scoreTable.push(['Trial 5', data.trial5, `${data.trial5Scaled} (ss)`, getScaledInterpretationFromDB(data.trial5Scaled)]);
+            }
+            
+            return scoreTable;
         }
 
         function completeTest() {
