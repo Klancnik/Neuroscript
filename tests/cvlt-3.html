@@ -466,14 +466,7 @@
                 // Index scores summary (optional - add before main paragraph if present)
                 if (data.trials15Total || data.delayedIndex || data.totalRecall) {
                     if (data.trials15Total) {
-                        learningSection += `<p>Overall verbal learning abilities across initial trials (Trials 1-5 Total Index = ${data.trials15Total}) were in the ${getIndexInterpretationFromDB(data.trials15Total)}.</p>\n`;
-                    }
-                    if (data.delayedIndex) {
-                        learningSection += `<p>Overall delayed memory abilities (Delayed Recall Correct Index = ${data.delayedIndex}) were in the ${getIndexInterpretationFromDB(data.delayedIndex)}.</p>\n`;
-                    }
-                    if (data.totalRecall) {
-                        learningSection += `<p>Overall recall performance across all trials (Total Recall Correct Index = ${data.totalRecall}) was in the ${getIndexInterpretationFromDB(data.totalRecall)}.</p>\n`;
-                    }
+                        
                 }
                 let learningParagraph = '';
 
