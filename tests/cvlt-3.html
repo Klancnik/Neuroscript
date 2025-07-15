@@ -262,7 +262,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.5</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.6</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <!-- Demographics Section -->
@@ -703,13 +703,15 @@
             const hisHer = data.gender === 'Male' ? 'His' : 'Her';
             const himHer = data.gender === 'Male' ? 'him' : 'her';
 
+            // Start single paragraph narrative
+            narrative += '<p>';
+
             // 1. Overall Performance Statement (Total Recall Index)
             if (data.totalRecall) {
                 const totalRecallRange = getIndexInterpretationFromDB(data.totalRecall);
                 
                 // Check for unusual features
                 let unusualFeatures = false;
-                let unusualNote = '';
                 
                 // Check if performance is inconsistent across measures
                 if (data.trials15Total && data.delayedIndex) {
@@ -728,11 +730,8 @@
                     unusualFeatures = true;
                 }
 
-                if (unusualFeatures) {
-                    unusualNote = ', although with some unusual features';
-                }
-
-                narrative += `<p>${hisHer} overall performance on a test of verbal list learning (CVLT-3) was in the ${totalRecallRange} (Total Recall Index = ${data.totalRecall})${unusualNote}.</p>`;
+                const unusualNote = unusualFeatures ? ', although with some unusual features' : '';
+                narrative += `${hisHer} overall performance on a test of verbal list learning (CVLT-3) was in the ${totalRecallRange} (Total Recall Index = ${data.totalRecall})${unusualNote}. `;
             }
 
             // 2. First Learning Trial and Learning Slope
@@ -755,8 +754,46 @@
                     }
                 }
 
-                narrative += `<p>${heShe} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${trial1Range} (ss=${data.trial1Scaled}). ${heShe} showed ${learningSlopeRange.includes('Average') ? 'an' : 'a'} ${learningSlopeRange} learning slope, attaining ${data.trial5} items by the fifth trial.</p>`;
+                narrative += `${heShe} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${trial1Range} (ss=${data.trial1Scaled}). ${heShe} showed ${learningSlopeRange.includes('Average') ? 'an' : 'a'} ${learningSlopeRange} learning slope, attaining ${data.trial5} items by the fifth trial. `;
             }
+
+            // 3. Retention Statement (Short and Long Delay)
+            if (data.shortFree && data.shortFreeScaled && data.longFree && data.longFreeScaled) {
+                const shortDelayRange = getScaledInterpretationFromDB(data.shortFreeScaled);
+                const longDelayRange = getScaledInterpretationFromDB(data.longFreeScaled);
+                
+                narrative += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}) and ${data.longFree} after a longer delay (${longDelayRange}). `;
+            } else if (data.shortFree && data.shortFreeScaled) {
+                const shortDelayRange = getScaledInterpretationFromDB(data.shortFreeScaled);
+                narrative += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}). `;
+            } else if (data.longFree && data.longFreeScaled) {
+                const longDelayRange = getScaledInterpretationFromDB(data.longFreeScaled);
+                narrative += `${heShe} was able to retain ${data.longFree} items after a longer delay (${longDelayRange}). `;
+            }
+
+            // 4. Cuing Benefit Statement
+            if (data.longFree && data.longCued && data.longCued > data.longFree) {
+                narrative += 'Delayed recall was improved by cuing. ';
+            }
+
+            // 5. Semantic Clustering Strategy
+            if (data.clusteringScaled) {
+                let strategyQuality;
+                if (data.clusteringScaled >= 13) {
+                    strategyQuality = 'excellent';
+                } else if (data.clusteringScaled >= 10) {
+                    strategyQuality = 'good';
+                } else if (data.clusteringScaled >= 8) {
+                    strategyQuality = 'adequate';
+                } else {
+                    strategyQuality = 'poor';
+                }
+                
+                narrative += `${heShe} made ${strategyQuality} use of a strategy of organizing words by meaning for better learning. `;
+            }
+
+            // Close paragraph
+            narrative += '</p>';
 
             return narrative;
         }
