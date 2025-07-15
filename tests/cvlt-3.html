@@ -144,8 +144,8 @@
         }
         .vertical-item {
             display: grid;
-            grid-template-columns: 1fr 120px;
-            gap: 15px;
+            grid-template-columns: 1fr 100px;
+            gap: 10px;
             align-items: center;
             padding: 10px;
             background: #f8f9fa;
@@ -168,8 +168,8 @@
         /* Special styling for validity items with longer labels */
         .validity-item {
             display: grid;
-            grid-template-columns: 1fr 120px;
-            gap: 15px;
+            grid-template-columns: 1fr 100px;
+            gap: 10px;
             align-items: center;
             padding: 12px;
             background: #f8f9fa;
@@ -192,7 +192,21 @@
             font-size: 14px;
         }
         
-        /* Buttons */
+        /* Test Data Button */
+        .test-data-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 15px;
+        }
+        .test-data-btn:hover {
+            background: #545b62;
+        }
         .generate-btn {
             background: #007bff;
             color: white;
@@ -390,6 +404,9 @@
             </div>
         </div>
 
+        <!-- Test Data Button for Debugging -->
+        <button class="test-data-btn" onclick="loadTestData()">🧪 Load Test Data</button>
+        
         <button class="generate-btn" onclick="generateCVLTText()">Generate CVLT-3 Report</button>
         <button class="complete-btn" onclick="completeTest()">Complete Test</button>
 
@@ -400,6 +417,59 @@
         // Store current narrative and score table for completion
         let currentNarrative = '';
         let currentScoreTable = [];
+
+        // Load test data for debugging (REMOVE WHEN DONE DEBUGGING)
+        function loadTestData() {
+            // Demographics
+            document.getElementById('age').value = 45;
+            document.getElementById('gender').value = 'Male';
+            document.getElementById('education').value = 12;
+            document.getElementById('readingLevel').value = 11.5;
+            
+            // Core scores - Raw scores
+            document.getElementById('trial1').value = 5;
+            document.getElementById('trial2').value = 7;
+            document.getElementById('trial3').value = 9;
+            document.getElementById('trial4').value = 11;
+            document.getElementById('trial5').value = 12;
+            document.getElementById('listB').value = 6;
+            document.getElementById('shortFree').value = 10;
+            document.getElementById('longFree').value = 9;
+            document.getElementById('longCued').value = 11;
+            document.getElementById('recogHits').value = 14;
+            document.getElementById('forcedChoice').value = 15;
+            
+            // Core scores - Scaled scores (5-13 range for testing)
+            document.getElementById('trial1Scaled').value = 7;
+            document.getElementById('trial2Scaled').value = 8;
+            document.getElementById('trial3Scaled').value = 9;
+            document.getElementById('trial4Scaled').value = 11;
+            document.getElementById('trial5Scaled').value = 12;
+            document.getElementById('listBScaled').value = 8;
+            document.getElementById('shortFreeScaled').value = 10;
+            document.getElementById('longFreeScaled').value = 9;
+            
+            // Composite indices (70-120 range for testing)
+            document.getElementById('trials15Total').value = 95;
+            document.getElementById('delayedIndex').value = 105;
+            document.getElementById('totalRecall').value = 100;
+            
+            // Process scores (5-13 range for testing)
+            document.getElementById('clusteringScaled').value = 11;
+            document.getElementById('primacyScaled').value = 8;
+            document.getElementById('recencyScaled').value = 13;
+            document.getElementById('learningSlopeScaled').value = 10;
+            
+            // Error analysis
+            document.getElementById('intrusionsScaled').value = 9;
+            document.getElementById('repetitions').value = 3;
+            
+            // Validity indicators
+            document.getElementById('fcRecalledMissed').value = 1;
+            document.getElementById('fcYesNoMissed').value = 0;
+            
+            console.log('Test data loaded successfully');
+        }
 
         // Listen for client data from master dashboard
         window.addEventListener('message', function(event) {
