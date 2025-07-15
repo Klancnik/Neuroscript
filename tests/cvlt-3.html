@@ -262,7 +262,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.6</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.8</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <!-- Demographics Section -->
@@ -325,7 +325,7 @@
             <input type="number" id="listB" class="table-input" min="0" max="16" placeholder="0-16">
             <input type="number" id="listBScaled" class="table-input" min="1" max="19" placeholder="1-19">
             
-            <div class="table-subheader">Delayed Recall & Recognition</div>
+            <div class="table-subheader">Delayed Recall</div>
             
             <div class="table-row-label">Short Delay Free Recall</div>
             <input type="number" id="shortFree" class="table-input" min="0" max="16" placeholder="0-16">
@@ -337,15 +337,23 @@
             
             <div class="table-row-label">Long Delay Cued Recall</div>
             <input type="number" id="longCued" class="table-input" min="0" max="16" placeholder="0-16">
-            <div class="table-input" style="background: #f8f9fa; color: #6c757d;">—</div>
+            <input type="number" id="longCuedScaled" class="table-input" min="1" max="19" placeholder="1-19">
             
-            <div class="table-row-label">Recognition Hits</div>
+            <div class="table-subheader">Yes/No Recognition</div>
+            
+            <div class="table-row-label">Total Hits</div>
             <input type="number" id="recogHits" class="table-input" min="0" max="16" placeholder="0-16">
+            <input type="number" id="recogHitsScaled" class="table-input" min="1" max="19" placeholder="1-19">
+            
+            <div class="table-row-label">False Positives</div>
+            <input type="number" id="falsePositives" class="table-input" min="0" max="50" placeholder="0-50">
             <div class="table-input" style="background: #f8f9fa; color: #6c757d;">—</div>
             
-            <div class="table-row-label">Forced Choice</div>
+            <div class="table-subheader">Forced Choice Recognition</div>
+            
+            <div class="table-row-label">Total Hits</div>
             <input type="number" id="forcedChoice" class="table-input" min="0" max="16" placeholder="0-16">
-            <div class="table-input" style="background: #f8f9fa; color: #6c757d;">—</div>
+            <input type="number" id="forcedChoiceScaled" class="table-input" min="1" max="19" placeholder="1-19">
         </div>
 
         <!-- Composite Index Scores -->
@@ -426,7 +434,7 @@
         let currentNarrative = '';
         let currentScoreTable = [];
 
-        // Load test data for debugging (REMOVE WHEN DONE DEBUGGING)
+                    // Load test data for debugging (REMOVE WHEN DONE DEBUGGING)
         function loadTestData() {
             // Demographics
             document.getElementById('age').value = 45;
@@ -445,6 +453,7 @@
             document.getElementById('longFree').value = 9;
             document.getElementById('longCued').value = 11;
             document.getElementById('recogHits').value = 14;
+            document.getElementById('falsePositives').value = 3;
             document.getElementById('forcedChoice').value = 15;
             
             // Core scores - Scaled scores (5-13 range for testing)
@@ -456,6 +465,9 @@
             document.getElementById('listBScaled').value = 8;
             document.getElementById('shortFreeScaled').value = 10;
             document.getElementById('longFreeScaled').value = 9;
+            document.getElementById('longCuedScaled').value = 11;
+            document.getElementById('recogHitsScaled').value = 8;
+            document.getElementById('forcedChoiceScaled').value = 12;
             
             // Composite indices (70-120 range for testing)
             document.getElementById('trials15Total').value = 95;
@@ -637,8 +649,12 @@
                     longFree: parseInt(document.getElementById('longFree').value),
                     longFreeScaled: parseInt(document.getElementById('longFreeScaled').value),
                     longCued: parseInt(document.getElementById('longCued').value),
+                    longCuedScaled: parseInt(document.getElementById('longCuedScaled').value),
                     recogHits: parseInt(document.getElementById('recogHits').value),
+                    recogHitsScaled: parseInt(document.getElementById('recogHitsScaled').value),
+                    falsePositives: parseInt(document.getElementById('falsePositives').value),
                     forcedChoice: parseInt(document.getElementById('forcedChoice').value),
+                    forcedChoiceScaled: parseInt(document.getElementById('forcedChoiceScaled').value),
                     
                     // Composite indices
                     trials15Total: parseInt(document.getElementById('trials15Total').value),
@@ -790,6 +806,78 @@
                 }
                 
                 narrative += `${heShe} made ${strategyQuality} use of a strategy of organizing words by meaning for better learning. `;
+            }
+
+            // 6. Primacy vs Recency Comparison
+            if (data.primacyScaled && data.recencyScaled && data.primacyScaled !== data.recencyScaled) {
+                if (data.recencyScaled > data.primacyScaled) {
+                    narrative += `${heShe} was better able to remember items from the end of the list than the beginning of the list. `;
+                } else {
+                    narrative += `${heShe} was better able to remember items from the beginning of the list than the end of the list. `;
+                }
+            }
+
+            // 7. Yes/No Recognition Performance
+            if (data.recogHits !== null && data.recogHits !== undefined) {
+                if (data.recogHits === 16) {
+                    narrative += 'Performance on yes/no recognition memory trials was flawless. ';
+                } else {
+                    narrative += `On yes/no recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} correctly identified ${data.recogHits} of 16 words`;
+                    
+                    // Add false positive information if available
+                    if (data.falsePositives !== null && data.falsePositives !== undefined && data.falsePositives > 0) {
+                        const fpScaledScore = data.recogHitsScaled ? ` (ss=${data.recogHitsScaled})` : '';
+                        narrative += `${fpScaledScore} and made ${data.falsePositives} false positive error${data.falsePositives === 1 ? '' : 's'}`;
+                    }
+                    
+                    narrative += '. ';
+                }
+            }
+
+            // 8. Forced Choice Recognition Performance
+            if (data.forcedChoice !== null && data.forcedChoice !== undefined) {
+                if (data.forcedChoice < 16) {
+                    const errors = 16 - data.forcedChoice;
+                    if (errors === 1) {
+                        narrative += `On forced choice recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} made 1 error, which is unusual. `;
+                    } else {
+                        narrative += `On forced choice recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} made ${errors} errors, which is unusual. `;
+                    }
+                }
+            }
+
+            // 9. Validity Concerns
+            let validityConcerns = [];
+            
+            // Check yes/no recognition errors (significant = less than 14 correct?)
+            if (data.recogHits !== null && data.recogHits !== undefined && data.recogHits < 14) {
+                validityConcerns.push('significant errors on yes/no recognition');
+            }
+            
+            // Check forced choice errors
+            if (data.forcedChoice !== null && data.forcedChoice !== undefined && data.forcedChoice < 16) {
+                validityConcerns.push('errors on forced choice recognition trials');
+            }
+            
+            // Check validity indicators (2 or more total errors)
+            const fcRecalledMissed = data.fcRecalledMissed || 0;
+            const fcYesNoMissed = data.fcYesNoMissed || 0;
+            const totalValidityErrors = fcRecalledMissed + fcYesNoMissed;
+            
+            if (totalValidityErrors >= 2) {
+                validityConcerns.push('inconsistencies between recall and recognition performance');
+            }
+            
+            // Add validity statement if concerns exist
+            if (validityConcerns.length > 0) {
+                if (validityConcerns.length === 1) {
+                    narrative += `There were validity concerns arising from ${validityConcerns[0]}. `;
+                } else if (validityConcerns.length === 2) {
+                    narrative += `There were validity concerns arising from ${validityConcerns[0]} and ${validityConcerns[1]}. `;
+                } else {
+                    const lastConcern = validityConcerns.pop();
+                    narrative += `There were validity concerns arising from ${validityConcerns.join(', ')}, and ${lastConcern}. `;
+                }
             }
 
             // Close paragraph
