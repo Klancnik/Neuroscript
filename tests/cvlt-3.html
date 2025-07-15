@@ -144,8 +144,8 @@
         }
         .vertical-item {
             display: grid;
-            grid-template-columns: 1fr 100px;
-            gap: 10px;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
             align-items: center;
             padding: 10px;
             background: #f8f9fa;
@@ -158,18 +158,25 @@
             margin: 0;
         }
         .vertical-item input {
+            width: 90px;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             text-align: center;
             font-size: 14px;
         }
-        
-        /* Special styling for validity items with longer labels */
+        .validity-item input {
+            width: 90px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
         .validity-item {
             display: grid;
-            grid-template-columns: 1fr 100px;
-            gap: 10px;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
             align-items: center;
             padding: 12px;
             background: #f8f9fa;
@@ -185,6 +192,7 @@
             line-height: 1.3;
         }
         .validity-item input {
+            width: 90px;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
