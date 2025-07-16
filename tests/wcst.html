@@ -380,14 +380,14 @@
                 const data = window.NeuroscriptDB.getByTScore(tScore);
                 let interpretation = data.aacn; // Use AACN labels as default
                 
-                // Add Heaton impairment level for T<40
+                // Add Heaton impairment level for T<40 using correct language
                 if (tScore < 40) {
                     if (data.percentile <= 2) {
-                        interpretation += ` range, indicating a moderately to severely impaired level of impairment`;
+                        interpretation += ` range, indicating a moderate to severe level of impairment`;
                     } else if (data.percentile <= 9) {
-                        interpretation += ` range, indicating a mild to moderately impaired level of impairment`;
+                        interpretation += ` range, indicating a mild to moderate level of impairment`;
                     } else if (data.percentile <= 16) {
-                        interpretation += ` range, indicating a mildly impaired level of impairment`;
+                        interpretation += ` range, indicating a mild level of impairment`;
                     }
                 } else {
                     interpretation += ' range';
@@ -647,7 +647,9 @@
                     }
                     if (persevErrorsT < 40) {
                         const persevInterpretation = getClinicalInterpretationFromDB(persevErrorsT);
-                        narrativeParts.push(`${pronoun} showed a significant degree of perseveration, (repetition of incorrect response strategies), ${persevInterpretation}.`);
+                        // Extract just the impairment part (everything after "indicating")
+                        const impairmentPart = persevInterpretation.split('indicating ')[1] || persevInterpretation;
+                        narrativeParts.push(`${pronoun} showed a significant degree of perseveration, (repetition of incorrect response strategies), indicating ${impairmentPart}.`);
                     }
                 }
 
