@@ -78,64 +78,16 @@
             font-weight: bold;
             width: 40%;
         }
-        .data-entry-table td:nth-child(2), .data-entry-table td:nth-child(3) {
-            width: 30%;
-            text-align: center;
-        }
-        .t-score-input {
-            background-color: #e8f4fd;
-            border-color: #6c757d;
-        }
         .percentile-select {
             width: 120px;
             padding: 6px;
-            border: 2px solid #6c757d;
+            border: 2px solid #bdc3c7;
             border-radius: 4px;
             font-size: 14px;
-            background-color: #fff3e0;
         }
         .percentile-select:focus {
             outline: none;
             border-color: #3498db;
-        }
-        .na-cell {
-            color: #6c757d;
-            font-style: italic;
-        }
-        .calculated-cell {
-            background-color: #f8f9fa;
-            color: #495057;
-            font-weight: bold;
-            font-style: italic;
-            text-align: center;
-            padding: 8px;
-        }
-        .section-divider {
-            background-color: #e9ecef;
-            font-weight: bold;
-        }
-        .section-divider td {
-            padding: 10px 8px;
-            border-top: 2px solid #dee2e6;
-        }
-        .validation-messages {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            display: none;
-        }
-        .validation-messages.show {
-            display: block;
-        }
-        .validation-messages ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-        .validation-messages li {
-            color: #856404;
-            margin: 5px 0;
         }
         .btn {
             background-color: #3498db;
@@ -143,17 +95,23 @@
             padding: 12px 24px;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
             font-size: 16px;
+            cursor: pointer;
             margin: 10px 5px;
             transition: background-color 0.3s;
         }
-        .btn:hover {
+        .btn:hover:not(:disabled) {
             background-color: #2980b9;
         }
         .btn:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
+        }
+        .btn.load-test-data {
+            background-color: #e67e22;
+        }
+        .btn.load-test-data:hover {
+            background-color: #d35400;
         }
         .report-section {
             margin-top: 30px;
@@ -166,142 +124,118 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            background-color: white;
+            font-size: 14px;
         }
         .score-table th, .score-table td {
             border: 1px solid #ddd;
-            padding: 12px;
+            padding: 8px;
             text-align: left;
         }
         .score-table th {
             background-color: #3498db;
             color: white;
-            font-weight: bold;
         }
         .score-table tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f9f9f9;
         }
         .interpretation {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #e8f5e8;
+            background-color: white;
+            padding: 20px;
             border-radius: 5px;
-            border-left: 4px solid #27ae60;
+            margin-top: 20px;
+            line-height: 1.8;
         }
-        .warning {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            color: #856404;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 5px;
+        .interpretation h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .validation-messages {
+            margin-top: 10px;
+            color: #e74c3c;
+            font-weight: bold;
         }
         .debug {
-            margin: 10px 0;
+            background-color: #ffe6e6;
+            border: 1px solid #ff9999;
             padding: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
+            margin: 10px 0;
+            border-radius: 4px;
             font-family: monospace;
-            font-size: 12px;
-            color: #495057;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Wisconsin Card Sorting Test (WCST)</h1>
-            <p>Computerized Scoring and Interpretation</p>
+            <h1>Wisconsin Card Sorting Test (WCST) <span style="font-size: 0.6em; color: #6c757d;">v2.0</span></h1>
+            <p>Executive Function Assessment</p>
         </div>
 
         <div class="input-section">
-            <h3>WCST Computerized Printout - Test Results Section</h3>
-            <p><em>Enter scores exactly as they appear on the computerized WCST printout:</em></p>
-            
-            <div class="printout-table">
+            <h3>Client Demographics</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div>
+                    <label for="age"><strong>Age:</strong></label>
+                    <input type="number" id="age" min="16" max="100" placeholder="Age">
+                </div>
+                <div>
+                    <label for="gender"><strong>Gender:</strong></label>
+                    <select id="gender">
+                        <option value="">Select...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="education"><strong>Education (years):</strong></label>
+                    <input type="number" id="education" min="6" max="20" placeholder="Years">
+                </div>
+                <div>
+                    <label for="readingLevel"><strong>Reading Level:</strong></label>
+                    <select id="readingLevel">
+                        <option value="">Select...</option>
+                        <option value="4">Grade 4 or below</option>
+                        <option value="5">Grade 5-8</option>
+                        <option value="9">Grade 9-11</option>
+                        <option value="12">Grade 12+</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3>WCST Performance Data</h3>
                 <table class="data-entry-table">
                     <thead>
                         <tr>
                             <th>Measure</th>
                             <th>Raw Score</th>
-                            <th>T-Score / Percentile Range</th>
+                            <th>T-Score</th>
+                            <th>Percentile Range</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Raw scores only -->
-                        <tr>
-                            <td>Trials Administered</td>
-                            <td><input type="number" id="trialsAdministered" min="60" max="128" placeholder=""></td>
-                            <td class="na-cell">--</td>
-                        </tr>
-                        <tr>
-                            <td>Total Correct</td>
-                            <td><input type="number" id="totalCorrect" min="0" max="128" placeholder=""></td>
-                            <td class="na-cell">--</td>
-                        </tr>
-                        
-                        <!-- Raw scores + T-scores -->
-                        <tr class="section-divider">
-                            <td colspan="3"><strong>Measures with T-Scores</strong></td>
-                        </tr>
                         <tr>
                             <td>Total Errors</td>
-                            <td><input type="number" id="totalErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="totalErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>% Errors</td>
-                            <td class="calculated-cell" id="percentErrorsDisplay">--</td>
-                            <td><input type="number" id="percentErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>Perseverative Responses</td>
-                            <td><input type="number" id="perseverativeResponses" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="perseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>% Perseverative Responses</td>
-                            <td class="calculated-cell" id="percentPerseverativeResponsesDisplay">--</td>
-                            <td><input type="number" id="percentPerseverativeResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                            <td><input type="number" id="totalErrors" min="0" max="128" step="1" placeholder=""></td>
+                            <td><input type="number" id="totalErrorsT" min="20" max="80" step="0.01" placeholder=""></td>
+                            <td>--</td>
                         </tr>
                         <tr>
                             <td>Perseverative Errors</td>
-                            <td><input type="number" id="perseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="perseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>% Perseverative Errors</td>
-                            <td class="calculated-cell" id="percentPerseverativeErrorsDisplay">--</td>
-                            <td><input type="number" id="percentPerseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
+                            <td><input type="number" id="perseverativeErrors" min="0" max="128" step="1" placeholder=""></td>
+                            <td><input type="number" id="perseverativeErrorsT" min="20" max="80" step="0.01" placeholder=""></td>
+                            <td>--</td>
                         </tr>
                         <tr>
                             <td>Non-Perseverative Errors</td>
-                            <td><input type="number" id="nonperseverativeErrors" min="0" max="128" placeholder=""></td>
-                            <td><input type="number" id="nonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>% Non-Perseverative Errors</td>
-                            <td class="calculated-cell" id="percentNonperseverativeErrorsDisplay">--</td>
-                            <td><input type="number" id="percentNonperseverativeErrorsT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        <tr>
-                            <td>Conceptual Level Responses</td>
-                            <td><input type="number" id="conceptualLevelResponses" min="0" max="128" placeholder=""></td>
-                            <td class="na-cell">--</td>
-                        </tr>
-                        <tr>
-                            <td>% Conceptual Level Responses</td>
-                            <td class="calculated-cell" id="percentConceptualLevelResponsesDisplay">--</td>
-                            <td><input type="number" id="percentConceptualLevelResponsesT" min="20" max="80" placeholder="T-score" class="t-score-input"></td>
-                        </tr>
-                        
-                        <!-- Raw scores + Percentile ranges -->
-                        <tr class="section-divider">
-                            <td colspan="3"><strong>Measures with Percentile Ranges</strong></td>
+                            <td><input type="number" id="nonPerseverativeErrors" min="0" max="128" step="1" placeholder=""></td>
+                            <td><input type="number" id="nonPerseverativeErrorsT" min="20" max="80" step="0.01" placeholder=""></td>
+                            <td>--</td>
                         </tr>
                         <tr>
                             <td>Categories Completed</td>
-                            <td><input type="number" id="categoriesCompleted" min="0" max="6" placeholder=""></td>
+                            <td><input type="number" id="categoriesCompleted" min="0" max="6" step="1" placeholder=""></td>
+                            <td>--</td>
                             <td>
                                 <select id="categoriesCompletedPercentile" class="percentile-select">
                                     <option value="">Select range...</option>
@@ -315,9 +249,10 @@
                         </tr>
                         <tr>
                             <td>Trials to Complete First Category</td>
-                            <td><input type="number" id="trialsToFirstCategory" min="0" max="128" placeholder=""></td>
+                            <td><input type="number" id="trialsFirstCategory" min="10" max="128" step="1" placeholder=""></td>
+                            <td>--</td>
                             <td>
-                                <select id="trialsToFirstCategoryPercentile" class="percentile-select">
+                                <select id="trialsFirstCategoryPercentile" class="percentile-select">
                                     <option value="">Select range...</option>
                                     <option value="<=1%">≤1%</option>
                                     <option value="2-5%">2-5%</option>
@@ -329,7 +264,8 @@
                         </tr>
                         <tr>
                             <td>Failure to Maintain Set</td>
-                            <td><input type="number" id="failureToMaintainSet" min="0" max="6" placeholder=""></td>
+                            <td><input type="number" id="failureToMaintainSet" min="0" max="6" step="1" placeholder=""></td>
+                            <td>--</td>
                             <td>
                                 <select id="failureToMaintainSetPercentile" class="percentile-select">
                                     <option value="">Select range...</option>
@@ -343,7 +279,8 @@
                         </tr>
                         <tr>
                             <td>Learning to Learn</td>
-                            <td><input type="number" id="learningToLearn" min="-5" max="15" step="0.01" placeholder=""></td>
+                            <td><input type="number" id="learningToLearn" min="-20" max="20" step="0.01" placeholder=""></td>
+                            <td>--</td>
                             <td>
                                 <select id="learningToLearnPercentile" class="percentile-select">
                                     <option value="">Select range...</option>
@@ -364,6 +301,7 @@
 
         <div id="debugInfo" class="debug" style="display: none;"></div>
 
+        <button class="btn load-test-data" onclick="loadTestData()">Load Test Data</button>
         <button class="btn" onclick="generateReport()">Generate Report</button>
         <button class="btn" onclick="completeTest()" id="completeBtn" disabled>Complete Test</button>
 
@@ -388,6 +326,33 @@
             <select id="readingLevel"><option value="12" selected>12</option></select>
         `;
         document.body.appendChild(hiddenClientInputs);
+
+        // Load test data for debugging
+        function loadTestData() {
+            // Demographics
+            document.getElementById('age').value = 45;
+            document.getElementById('gender').value = 'male';
+            document.getElementById('education').value = 16;
+            document.getElementById('readingLevel').value = '12';
+            
+            // WCST scores with some below normal limits for testing
+            document.getElementById('totalErrors').value = 45;
+            document.getElementById('totalErrorsT').value = 35; // Below normal
+            document.getElementById('perseverativeErrors').value = 28;
+            document.getElementById('perseverativeErrorsT').value = 38; // Below normal
+            document.getElementById('nonPerseverativeErrors').value = 17;
+            document.getElementById('nonPerseverativeErrorsT').value = 42;
+            document.getElementById('categoriesCompleted').value = 3;
+            document.getElementById('categoriesCompletedPercentile').value = '6-10%'; // Below 16%
+            document.getElementById('trialsFirstCategory').value = 35;
+            document.getElementById('trialsFirstCategoryPercentile').value = '2-5%'; // Very slow
+            document.getElementById('failureToMaintainSet').value = 2;
+            document.getElementById('failureToMaintainSetPercentile').value = '6-10%'; // Mild difficulty
+            document.getElementById('learningToLearn').value = -3.2;
+            document.getElementById('learningToLearnPercentile').value = '11-16%';
+            
+            console.log('Test data loaded successfully');
+        }
 
         // Database availability check
         function checkDatabaseAvailability() {
@@ -435,233 +400,101 @@
             }
         }
 
-        // Auto-calculate percentages and update display
-        function updateCalculatedValues() {
-            const trialsAdmin = parseInt(document.getElementById('trialsAdministered').value) || 0;
-            
-            if (trialsAdmin > 0) {
-                // Calculate and display % Errors
-                const totalErrors = parseInt(document.getElementById('totalErrors').value) || 0;
-                const percentErrors = ((totalErrors / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentErrorsDisplay').textContent = percentErrors + '%';
+        // Listen for client data from master dashboard
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                const clientData = event.data.data;
+                console.log('Received client data:', clientData);
                 
-                // Calculate and display % Perseverative Responses
-                const persevResponses = parseInt(document.getElementById('perseverativeResponses').value) || 0;
-                const percentPersevResponses = ((persevResponses / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentPerseverativeResponsesDisplay').textContent = percentPersevResponses + '%';
+                // Populate demographics - handle multiple field name conventions
+                if (clientData.age || clientData.clientAge) {
+                    document.getElementById('age').value = clientData.age || clientData.clientAge;
+                }
                 
-                // Calculate and display % Perseverative Errors
-                const persevErrors = parseInt(document.getElementById('perseverativeErrors').value) || 0;
-                const percentPersevErrors = ((persevErrors / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentPerseverativeErrorsDisplay').textContent = percentPersevErrors + '%';
+                if (clientData.gender || clientData.clientGender) {
+                    const genderValue = (clientData.gender || clientData.clientGender).toLowerCase();
+                    document.getElementById('gender').value = genderValue;
+                }
                 
-                // Calculate and display % Non-Perseverative Errors
-                const nonPersevErrors = parseInt(document.getElementById('nonperseverativeErrors').value) || 0;
-                const percentNonPersevErrors = ((nonPersevErrors / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentNonperseverativeErrorsDisplay').textContent = percentNonPersevErrors + '%';
+                if (clientData.education || clientData.clientEducation) {
+                    document.getElementById('education').value = clientData.education || clientData.clientEducation;
+                }
                 
-                // Calculate and display % Conceptual Level Responses
-                const conceptualResponses = parseInt(document.getElementById('conceptualLevelResponses').value) || 0;
-                const percentConceptual = ((conceptualResponses / trialsAdmin) * 100).toFixed(1);
-                document.getElementById('percentConceptualLevelResponsesDisplay').textContent = percentConceptual + '%';
-            } else {
-                // Reset displays if no trials administered
-                document.getElementById('percentErrorsDisplay').textContent = '--';
-                document.getElementById('percentPerseverativeResponsesDisplay').textContent = '--';
-                document.getElementById('percentPerseverativeErrorsDisplay').textContent = '--';
-                document.getElementById('percentNonperseverativeErrorsDisplay').textContent = '--';
-                document.getElementById('percentConceptualLevelResponsesDisplay').textContent = '--';
+                if (clientData.readingLevel || clientData.clientReadingLevel) {
+                    document.getElementById('readingLevel').value = clientData.readingLevel || clientData.clientReadingLevel;
+                }
             }
-        }
+        });
 
-        // Enhanced validation with new field structure
-        function validateInput(elementId, min, max, customValidation = null) {
-            const element = document.getElementById(elementId);
-            if (!element) return { valid: true, message: '' };
+        // Input validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    
+                    if (this.value && (isNaN(value) || value < min || value > max)) {
+                        this.style.border = '2px solid red';
+                        this.style.backgroundColor = '#ffe6e6';
+                    } else {
+                        this.style.border = '1px solid #ddd';
+                        this.style.backgroundColor = 'white';
+                    }
+                });
+            });
+        });
+
+        function validateInputs() {
+            const requiredFields = [
+                'age', 'gender', 'education', 'readingLevel',
+                'totalErrors', 'totalErrorsT', 'perseverativeErrors', 'perseverativeErrorsT',
+                'nonPerseverativeErrors', 'nonPerseverativeErrorsT', 'categoriesCompleted',
+                'categoriesCompletedPercentile', 'trialsFirstCategory', 'trialsFirstCategoryPercentile',
+                'failureToMaintainSet', 'failureToMaintainSetPercentile', 'learningToLearn', 'learningToLearnPercentile'
+            ];
             
-            const value = parseFloat(element.value);
-            
+            const messages = [];
             let isValid = true;
-            let errorMessage = '';
-            
-            if (isNaN(value)) {
-                element.classList.remove('invalid');
-                return { valid: true, message: '' }; // Allow empty fields
-            }
-            
-            if (value < min || value > max) {
-                isValid = false;
-                errorMessage = `${elementId.replace(/([A-Z])/g, ' $1')} must be between ${min}-${max}`;
-            } else if (customValidation) {
-                const customResult = customValidation(value);
-                if (!customResult.valid) {
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value) {
+                    messages.push(`${fieldId.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} is required`);
                     isValid = false;
-                    errorMessage = customResult.message;
                 }
-            }
-            
-            if (isValid) {
-                element.classList.remove('invalid');
-            } else {
-                element.classList.add('invalid');
-            }
-            
-            return { valid: isValid, message: errorMessage };
-        }
-
-        function validateAllInputs() {
-            let allValid = true;
-            let errorMessages = [];
-            
-            // Trials administered
-            const trialsResult = validateInput('trialsAdministered', 60, 128);
-            if (!trialsResult.valid) errorMessages.push(trialsResult.message);
-            allValid &= trialsResult.valid;
-            
-            const trialsAdmin = parseInt(document.getElementById('trialsAdministered').value) || 128;
-            
-            // Total correct
-            const correctResult = validateInput('totalCorrect', 0, trialsAdmin, (value) => {
-                return value <= trialsAdmin ? {valid: true} : {valid: false, message: 'Total correct cannot exceed trials administered'};
             });
-            if (!correctResult.valid) errorMessages.push(correctResult.message);
-            allValid &= correctResult.valid;
-            
-            // Total errors
-            const errorsResult = validateInput('totalErrors', 0, trialsAdmin, (value) => {
-                const totalCorrect = parseInt(document.getElementById('totalCorrect').value) || 0;
-                return (value + totalCorrect <= trialsAdmin) ? {valid: true} : {valid: false, message: 'Total correct + total errors cannot exceed trials administered'};
-            });
-            if (!errorsResult.valid) errorMessages.push(errorsResult.message);
-            allValid &= errorsResult.valid;
-            
-            // Display validation messages
-            const validationDiv = document.getElementById('validationMessages');
-            if (errorMessages.length > 0) {
-                validationDiv.innerHTML = '<strong>Please correct the following:</strong><ul>' + 
-                    errorMessages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
-                validationDiv.classList.add('show');
-            } else {
-                validationDiv.classList.remove('show');
-            }
-            
-            return allValid;
+
+            document.getElementById('validationMessages').innerHTML = messages.join('<br>');
+            return isValid;
         }
 
-        function generateReport() {
-            if (!checkDatabaseAvailability()) {
-                alert('Database not available. Cannot generate report.');
-                return;
-            }
-
-            if (!validateAllInputs()) {
-                alert('Please correct all validation errors before generating the report.');
-                return;
-            }
-
-            const data = collectData();
-            if (!data) return;
-
-            // Generate score table
-            currentScoreTable = generateScoreTable(data);
-            
-            // Generate narrative
-            currentNarrative = generateNarrative(data);
-            
-            // Display results
-            document.getElementById('scoreTable').innerHTML = currentScoreTable;
-            document.getElementById('narrative').innerHTML = currentNarrative;
-            document.getElementById('reportContent').style.display = 'block';
-            document.getElementById('completeBtn').disabled = false;
-        }
-
-        function collectData() {
-            const requiredRawFields = [
-                'trialsAdministered', 'totalCorrect', 'totalErrors', 'perseverativeResponses',
-                'perseverativeErrors', 'nonperseverativeErrors', 'conceptualLevelResponses',
-                'categoriesCompleted', 'trialsToFirstCategory', 'failureToMaintainSet', 'learningToLearn'
-            ];
-
-            const tScoreFields = [
-                'totalErrorsT', 'percentErrorsT', 'perseverativeResponsesT', 'percentPerseverativeResponsesT',
-                'perseverativeErrorsT', 'percentPerseverativeErrorsT', 'nonperseverativeErrorsT', 
-                'percentNonperseverativeErrorsT', 'percentConceptualLevelResponsesT'
-            ];
-
-            const percentileFields = [
-                'categoriesCompletedPercentile', 'trialsToFirstCategoryPercentile', 
-                'failureToMaintainSetPercentile', 'learningToLearnPercentile'
-            ];
-
-            const data = {};
-            
-            // Collect raw scores
-            for (const field of requiredRawFields) {
-                const element = document.getElementById(field);
-                if (!element) {
-                    console.log(`Element ${field} not found`);
-                    continue;
-                }
-                const value = parseFloat(element.value);
-                if (isNaN(value)) {
-                    alert(`Please enter a value for ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
-                    return null;
-                }
-                data[field] = value;
-            }
-
-            // Collect T-scores (only for measures that have them)
-            for (const field of tScoreFields) {
-                const element = document.getElementById(field);
-                if (element) {
-                    const value = parseFloat(element.value);
-                    if (isNaN(value)) {
-                        alert(`Please enter the T-score for ${field.replace(/([A-Z])/g, ' $1').replace('T', '').toLowerCase()}`);
-                        return null;
-                    }
-                    data[field] = value;
-                }
-            }
-
-            // Collect percentile ranges (for measures that have them)
-            for (const field of percentileFields) {
-                const element = document.getElementById(field);
-                if (element) {
-                    const value = element.value;
-                    if (!value) {
-                        alert(`Please select the percentile range for ${field.replace(/([A-Z])/g, ' $1').replace('Percentile', '').toLowerCase()}`);
-                        return null;
-                    }
-                    data[field] = value;
-                }
-            }
-
-            // Client demographics (from hidden inputs)
-            data.age = parseInt(document.getElementById('clientAge').value) || 25;
-            data.gender = document.getElementById('clientGender').value || 'male';
-            data.education = parseInt(document.getElementById('clientEducation').value) || 12;
-            data.readingLevel = document.getElementById('readingLevel').value || '12';
-
-            // Add calculated percentages to data
-            data.percentErrors = parseFloat(document.getElementById('percentErrorsDisplay').textContent.replace('%', '')) || 0;
-            data.percentPerseverativeResponses = parseFloat(document.getElementById('percentPerseverativeResponsesDisplay').textContent.replace('%', '')) || 0;
-            data.percentPerseverativeErrors = parseFloat(document.getElementById('percentPerseverativeErrorsDisplay').textContent.replace('%', '')) || 0;
-            data.percentNonperseverativeErrors = parseFloat(document.getElementById('percentNonperseverativeErrorsDisplay').textContent.replace('%', '')) || 0;
-            data.percentConceptualLevelResponses = parseFloat(document.getElementById('percentConceptualLevelResponsesDisplay').textContent.replace('%', '')) || 0;
-
-            return data;
+        function collectFormData() {
+            return {
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                education: parseInt(document.getElementById('education').value),
+                readingLevel: document.getElementById('readingLevel').value,
+                totalErrors: parseInt(document.getElementById('totalErrors').value),
+                totalErrorsT: parseFloat(document.getElementById('totalErrorsT').value),
+                perseverativeErrors: parseInt(document.getElementById('perseverativeErrors').value),
+                perseverativeErrorsT: parseFloat(document.getElementById('perseverativeErrorsT').value),
+                nonPerseverativeErrors: parseInt(document.getElementById('nonPerseverativeErrors').value),
+                nonPerseverativeErrorsT: parseFloat(document.getElementById('nonPerseverativeErrorsT').value),
+                categoriesCompleted: parseInt(document.getElementById('categoriesCompleted').value),
+                categoriesCompletedPercentile: document.getElementById('categoriesCompletedPercentile').value,
+                trialsFirstCategory: parseInt(document.getElementById('trialsFirstCategory').value),
+                trialsFirstCategoryPercentile: document.getElementById('trialsFirstCategoryPercentile').value,
+                failureToMaintainSet: parseInt(document.getElementById('failureToMaintainSet').value),
+                failureToMaintainSetPercentile: document.getElementById('failureToMaintainSetPercentile').value,
+                learningToLearn: parseFloat(document.getElementById('learningToLearn').value),
+                learningToLearnPercentile: document.getElementById('learningToLearnPercentile').value
+            };
         }
 
         function generateScoreTable(data) {
-            // Get T-scores from the input fields (entered from printout)
             const scores = [
-                {
-                    measure: 'Categories Completed',
-                    raw: data.categoriesCompleted,
-                    tScore: null,
-                    percentileRange: data.categoriesCompletedPercentile,
-                    interpretation: data.categoriesCompletedPercentile
-                },
                 {
                     measure: 'Total Errors',
                     raw: data.totalErrors,
@@ -674,6 +507,41 @@
                     raw: data.perseverativeErrors,
                     tScore: data.perseverativeErrorsT,
                     percentileRange: null,
+                    interpretation: ''
+                },
+                {
+                    measure: 'Non-Perseverative Errors',
+                    raw: data.nonPerseverativeErrors,
+                    tScore: data.nonPerseverativeErrorsT,
+                    percentileRange: null,
+                    interpretation: ''
+                },
+                {
+                    measure: 'Categories Completed',
+                    raw: data.categoriesCompleted,
+                    tScore: null,
+                    percentileRange: data.categoriesCompletedPercentile,
+                    interpretation: ''
+                },
+                {
+                    measure: 'Trials to Complete First Category',
+                    raw: data.trialsFirstCategory,
+                    tScore: null,
+                    percentileRange: data.trialsFirstCategoryPercentile,
+                    interpretation: ''
+                },
+                {
+                    measure: 'Failure to Maintain Set',
+                    raw: data.failureToMaintainSet,
+                    tScore: null,
+                    percentileRange: data.failureToMaintainSetPercentile,
+                    interpretation: ''
+                },
+                {
+                    measure: 'Learning to Learn',
+                    raw: data.learningToLearn,
+                    tScore: null,
+                    percentileRange: data.learningToLearnPercentile,
                     interpretation: ''
                 }
             ];
@@ -724,90 +592,131 @@
             const possessive = data.gender === 'female' ? 'her' : 'his';
             const pronoun_cap = data.gender === 'female' ? 'She' : 'He';
 
-            // Use T-scores from the printout (not calculated)
-            const totalErrorsT = data.totalErrorsT || 50;
-            const persevErrorsT = data.perseverativeErrorsT || 50;
+            // Check if all measures are average or better (T>=40 for error measures)
+            const totalErrorsT = data.totalErrorsT;
+            const persevErrorsT = data.perseverativeErrorsT;
+            const nonPersevErrorsT = data.nonPerseverativeErrorsT;
+            
+            const allMeasuresNormal = (totalErrorsT >= 40 && persevErrorsT >= 40 && nonPersevErrorsT >= 40);
 
-            // Get clinical interpretations using database
-            const totalErrorsRange = getClinicalInterpretationFromDB(totalErrorsT);
-            const persevErrorsRange = getClinicalInterpretationFromDB(persevErrorsT);
+            let narrative = '';
 
-            let narrative = `
+            if (allMeasuresNormal) {
+                // Pattern 1: All measures average or better
+                narrative = `${pronoun_cap} had no difficulty with a novel concept formation task that required sorting cards according to unstated rules, with verbal feedback on whether placements were correct. ${pronoun_cap} was quick to solve the initial sorting rule, and ${pronoun} was able to deduce all subsequent rules. The total number of errors and the number of both perseverative or repetitive errors and non-perseverative errors was within Average limits relative to age- and education-matched peers.`;
+            } else {
+                // Pattern 2: Some measures below normal limits
+                const narrativeParts = [];
+
+                // 2.1 Total Errors Statement (if T<40)
+                if (totalErrorsT < 40) {
+                    const totalErrorsInterpretation = getClinicalInterpretationFromDB(totalErrorsT);
+                    narrativeParts.push(`${pronoun_cap} scored in the ${totalErrorsInterpretation} (Total Errors T=${totalErrorsT}) on a non-verbal test of conceptualization and mental flexibility that required ${possessive} to sort cards to changing criteria, with immediate feedback as to error (WCST).`);
+                }
+
+                // 2.2 Speed of Initial Solution
+                const trialsFirstPercentile = data.trialsFirstCategoryPercentile;
+                if (trialsFirstPercentile === '>16%') {
+                    narrativeParts.push(`${pronoun_cap} was quick to solve the initial sorting condition.`);
+                } else if (trialsFirstPercentile === '6-10%' || trialsFirstPercentile === '11-16%') {
+                    narrativeParts.push(`${pronoun} was somewhat slow in determining the initial solution to visual reasoning problem.`);
+                } else if (trialsFirstPercentile === '<=1%' || trialsFirstPercentile === '2-5%') {
+                    narrativeParts.push(`${pronoun} was very slow in determining the initial solution to visual reasoning problem.`);
+                }
+
+                // 2.3 Categories Completed
+                const categoriesPercentile = data.categoriesCompletedPercentile;
+                const categoriesCompleted = data.categoriesCompleted;
+                if (categoriesCompleted === 0) {
+                    narrativeParts.push(`${pronoun_cap} was unable to complete any of the 6 categories.`);
+                } else if (categoriesPercentile === '>16%') {
+                    narrativeParts.push(`${pronoun_cap} was able to complete ${categoriesCompleted} out of 6 categories.`);
+                } else {
+                    narrativeParts.push(`${pronoun_cap} was only able to complete ${categoriesCompleted} out of 6 categories.`);
+                }
+
+                // 2.4 Failure to Maintain Set + Perseveration
+                const fmsPercentile = data.failureToMaintainSetPercentile;
+                const persevErrorsT = data.perseverativeErrorsT;
+                
+                if (fmsPercentile === '>16%' && persevErrorsT >= 40) {
+                    narrativeParts.push(`${pronoun} had no difficulty maintaining or switching mental set as appropriate.`);
+                } else {
+                    if (fmsPercentile === '6-10%' || fmsPercentile === '11-16%') {
+                        narrativeParts.push(`${pronoun_cap} had mild difficulty maintaining mental set.`);
+                    }
+                    if (persevErrorsT < 40) {
+                        const persevInterpretation = getClinicalInterpretationFromDB(persevErrorsT);
+                        narrativeParts.push(`${pronoun} showed a significant degree of perseveration, (repetition of incorrect response strategies), ${persevInterpretation}.`);
+                    }
+                }
+
+                narrative = narrativeParts.join(' ');
+            }
+
+            return `
                 <div class="interpretation">
                     <h4>Wisconsin Card Sorting Test (WCST) Results</h4>
-                    
-                    <p>The client completed ${data.categoriesCompleted} out of 6 possible categories (${data.categoriesCompletedPercentile} percentile range), indicating ${possessive} level of conceptual reasoning and ability to identify abstract sorting principles. ${pronoun_cap} made ${data.totalErrors} total errors (T=${totalErrorsT}), which falls in the ${totalErrorsRange}. ${pronoun_cap} made ${data.perseverativeErrors} perseverative errors (T=${persevErrorsT}), representing ${data.percentPerseverativeErrors}% of total responses, which is in the ${persevErrorsRange}. Overall, these results suggest ${
-                        data.categoriesCompleted >= 4 && totalErrorsT >= 45 ? 
-                        'adequate executive functioning with good cognitive flexibility' :
-                        data.categoriesCompleted <= 2 || totalErrorsT < 35 ?
-                        'evidence of executive dysfunction with difficulties in cognitive flexibility' :
-                        'mixed executive functioning with some areas of relative difficulty'
-                    }.</p>
+                    <p>${narrative}</p>
                 </div>
             `;
+        }
 
-            return narrative;
+        function generateReport() {
+            if (!checkDatabaseAvailability()) {
+                alert('Database not loaded. Please refresh the page and try again.');
+                return;
+            }
+
+            if (!validateInputs()) {
+                alert('Please fill in all required fields before generating the report.');
+                return;
+            }
+
+            const data = collectFormData();
+            
+            // Generate score table and narrative
+            currentScoreTable = generateScoreTable(data);
+            currentNarrative = generateNarrative(data);
+            
+            // Display results
+            document.getElementById('scoreTable').innerHTML = currentScoreTable;
+            document.getElementById('narrative').innerHTML = currentNarrative;
+            document.getElementById('reportContent').style.display = 'block';
+            
+            // Enable complete test button
+            document.getElementById('completeBtn').disabled = false;
+            
+            // Scroll to results
+            document.getElementById('reportContent').scrollIntoView({ behavior: 'smooth' });
         }
 
         function completeTest() {
             if (!currentNarrative) {
-                alert('Please generate the report first.');
+                alert('Please generate the report first before completing the test.');
                 return;
             }
-
+            
             const results = {
                 narrative: currentNarrative,
                 scoreTable: currentScoreTable,
-                testName: 'Wisconsin Card Sorting Test',
+                testName: 'Wisconsin Card Sorting Test (WCST)',
                 completedAt: new Date().toISOString()
             };
-
+            
+            // Send to master dashboard
             window.parent.postMessage({
                 type: 'testComplete',
                 testName: 'wcst',
                 results: results
             }, '*');
+            
+            alert('WCST completed successfully! Returning to dashboard...');
         }
 
-        // Listen for client info from parent
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'clientInfo') {
-                const clientInfo = event.data.data;
-
-                if (clientInfo.clientAge) {
-                    document.getElementById('clientAge').value = clientInfo.clientAge;
-                }
-
-                if (clientInfo.clientGender) {
-                    document.getElementById('clientGender').value = clientInfo.clientGender;
-                }
-
-                if (clientInfo.clientEducation) {
-                    document.getElementById('clientEducation').value = clientInfo.clientEducation;
-                }
-
-                if (clientInfo.readingLevel) {
-                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
-                }
-            }
-        });
-
-        // Auto-validate and update calculations on input changes
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input[type="number"], select');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    updateCalculatedValues();
-                    validateAllInputs();
-                });
-                input.addEventListener('change', function() {
-                    updateCalculatedValues();
-                    validateAllInputs();
-                });
-            });
-            
-            // Check database on load
-            setTimeout(checkDatabaseAvailability, 500);
+        // Initialize database check on page load
+        window.addEventListener('load', function() {
+            checkDatabaseAvailability();
         });
     </script>
 </body>
