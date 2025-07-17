@@ -161,7 +161,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Wisconsin Card Sorting Test (WCST) <span style="font-size: 0.6em; color: #6c757d;">v2.1</span></h1>
+            <h1>Wisconsin Card Sorting Test (WCST) <span style="font-size: 0.6em; color: #6c757d;">v2.3</span></h1>
             <p>Executive Function Assessment</p>
         </div>
 
@@ -586,23 +586,82 @@
             const possessive = data.gender === 'female' ? 'her' : 'his';
             const pronoun_cap = data.gender === 'female' ? 'She' : 'He';
 
-            // Use T-scores from the printout (not calculated)
+            // Get T-scores from input
             const totalErrorsT = data.totalErrorsT || 50;
             const persevErrorsT = data.perseverativeErrorsT || 50;
+            const nonPersevErrorsT = data.nonPerseverativeErrorsT || 50;
+            
+            // Check if all measures are average or better (T>=40 for error measures)
+            const allMeasuresNormal = (totalErrorsT >= 40 && persevErrorsT >= 40 && nonPersevErrorsT >= 40);
 
-            // Get clinical interpretations using database
-            const totalErrorsRange = getClinicalInterpretationFromDB(totalErrorsT);
-            const persevErrorsRange = getClinicalInterpretationFromDB(persevErrorsT);
+            let narrative = '';
 
-            let narrative = `
+            if (allMeasuresNormal) {
+                // Pattern 1: All measures average or better - use your exact language
+                narrative = `${pronoun_cap} had no difficulty with a novel concept formation task that required sorting cards according to unstated rules, with verbal feedback on whether placements were correct. ${pronoun_cap} was quick to solve the initial sorting rule, and ${pronoun} was able to deduce all subsequent rules. The total number of errors and the number of both perseverative or repetitive errors and non-perseverative errors was within Average limits relative to age- and education-matched peers.`;
+            } else {
+                // Pattern 2: Some measures below normal limits - follow your exact sequence
+                const narrativeParts = [];
+
+                // 2.1 Total Errors Statement (if T<40)
+                if (totalErrorsT < 40) {
+                    const totalErrorsInterpretation = getClinicalInterpretationFromDB(totalErrorsT);
+                    // Extract just the impairment part for proper grammar
+                    const impairmentPart = totalErrorsInterpretation.includes('indicating') ? 
+                        totalErrorsInterpretation.split('indicating ')[1] : totalErrorsInterpretation;
+                    narrativeParts.push(`${pronoun_cap} scored in the ${totalErrorsInterpretation.split(',')[0]} range, indicating ${impairmentPart} (Total Errors T=${totalErrorsT}) on a non-verbal test of conceptualization and mental flexibility that required ${possessive} to sort cards to changing criteria, with immediate feedback as to error (WCST).`);
+                }
+
+                // 2.2 Speed of Initial Solution
+                const trialsFirstPercentile = data.trialsFirstCategoryPercentile;
+                if (trialsFirstPercentile === '>16%') {
+                    narrativeParts.push(`${pronoun_cap} was quick to solve the initial sorting condition.`);
+                } else if (trialsFirstPercentile === '6-10%' || trialsFirstPercentile === '11-16%') {
+                    narrativeParts.push(`${pronoun} was somewhat slow in determining the initial solution to visual reasoning problem.`);
+                } else if (trialsFirstPercentile === '<=1%' || trialsFirstPercentile === '2-5%') {
+                    narrativeParts.push(`${pronoun} was very slow in determining the initial solution to visual reasoning problem.`);
+                }
+
+                // 2.3 Categories Completed
+                const categoriesPercentile = data.categoriesCompletedPercentile;
+                const categoriesCompleted = data.categoriesCompleted;
+                if (categoriesCompleted === 0) {
+                    narrativeParts.push(`${pronoun_cap} was unable to complete any of the 6 categories.`);
+                } else if (categoriesPercentile === '>16%') {
+                    narrativeParts.push(`${pronoun_cap} was able to complete ${categoriesCompleted} out of 6 categories.`);
+                } else {
+                    narrativeParts.push(`${pronoun_cap} was only able to complete ${categoriesCompleted} out of 6 categories.`);
+                }
+
+                // 2.4 Failure to Maintain Set + Perseveration (Combined Logic)
+                const fmsPercentile = data.failureToMaintainSetPercentile;
+                const persevErrorsT = data.perseverativeErrorsT;
+                
+                if (fmsPercentile === '>16%' && persevErrorsT >= 40) {
+                    narrativeParts.push(`${pronoun} had no difficulty maintaining or switching mental set as appropriate.`);
+                } else {
+                    if (fmsPercentile === '6-10%' || fmsPercentile === '11-16%') {
+                        narrativeParts.push(`${pronoun_cap} had mild difficulty maintaining mental set.`);
+                    }
+                    if (persevErrorsT < 40) {
+                        const persevInterpretation = getClinicalInterpretationFromDB(persevErrorsT);
+                        // Extract just the impairment descriptor
+                        const impairmentPart = persevInterpretation.includes('indicating') ? 
+                            persevInterpretation.split('indicating ')[1] : 
+                            persevInterpretation.split(' range')[0] + ' level of impairment';
+                        narrativeParts.push(`${pronoun} showed a significant degree of perseveration, (repetition of incorrect response strategies), indicating ${impairmentPart}.`);
+                    }
+                }
+
+                narrative = narrativeParts.join(' ');
+            }
+
+            return `
                 <div class="interpretation">
                     <h4>Wisconsin Card Sorting Test (WCST) Results</h4>
-                    
-                    <p>The client completed ${data.categoriesCompleted} out of 6 possible categories (${data.categoriesCompletedPercentile} percentile range), indicating ${possessive} level of conceptual reasoning and ability to identify abstract sorting principles. ${pronoun_cap} made ${data.totalErrors} total errors (T=${totalErrorsT}), which falls in the ${totalErrorsRange}. Of these errors, ${data.perseverativeErrors} were perseverative responses (T=${persevErrorsT}), falling in the ${persevErrorsRange}.</p>
+                    <p>${narrative}</p>
                 </div>
             `;
-
-            return narrative;
         }
 
         function generateReport() {
