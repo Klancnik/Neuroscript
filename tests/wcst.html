@@ -321,6 +321,33 @@
         `;
         document.body.appendChild(hiddenClientInputs);
 
+        // Load test data for debugging
+        function loadTestData() {
+            // Demographics
+            document.getElementById('age').value = 45;
+            document.getElementById('gender').value = 'male';
+            document.getElementById('education').value = 16;
+            document.getElementById('readingLevel').value = '12';
+            
+            // WCST scores with some below normal limits for testing
+            document.getElementById('totalErrors').value = 45;
+            document.getElementById('totalErrorsT').value = 35; // Below normal
+            document.getElementById('perseverativeErrors').value = 28;
+            document.getElementById('perseverativeErrorsT').value = 38; // Below normal
+            document.getElementById('nonPerseverativeErrors').value = 17;
+            document.getElementById('nonPerseverativeErrorsT').value = 42;
+            document.getElementById('categoriesCompleted').value = 3;
+            document.getElementById('categoriesCompletedPercentile').value = '6-10%'; // Below 16%
+            document.getElementById('trialsFirstCategory').value = 35;
+            document.getElementById('trialsFirstCategoryPercentile').value = '2-5%'; // Very slow
+            document.getElementById('failureToMaintainSet').value = 2;
+            document.getElementById('failureToMaintainSetPercentile').value = '6-10%'; // Mild difficulty
+            document.getElementById('learningToLearn').value = -3.2;
+            document.getElementById('learningToLearnPercentile').value = '11-16%';
+            
+            console.log('Test data loaded successfully');
+        }
+
         // Database availability check
         function checkDatabaseAvailability() {
             const debug = document.getElementById('debugInfo');
