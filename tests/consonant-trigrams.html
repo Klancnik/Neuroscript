@@ -541,33 +541,33 @@
 
         // Use external database for AACN ranges
         function getPerformanceRange(percentile) {
-            if (window.NeuroscriptDB) {
+            if (window.NeuroscriptDB && window.NeuroscriptDB.conversionTable) {
                 let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
                     Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
                 );
                 return closest.aacn;
             }
             
-            // Fallback
+            // AACN-compliant fallback (exact same ranges as database)
             if (percentile >= 98) return 'Exceptionally High';
             if (percentile >= 91) return 'High';
             if (percentile >= 75) return 'High Average';
             if (percentile >= 25) return 'Average';
             if (percentile >= 9) return 'Below Average';
-            if (percentile >= 2) return 'Low';
+            if (percentile >= 2) return 'Exceptionally Low';
             return 'Exceptionally Low';
         }
 
         // Use external database for Heaton impairment levels
         function getHeatonLevel(percentile) {
-            if (window.NeuroscriptDB) {
+            if (window.NeuroscriptDB && window.NeuroscriptDB.conversionTable) {
                 let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
                     Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
                 );
                 return closest.heaton !== 'Normal' ? closest.heaton : null;
             }
             
-            // Fallback
+            // Heaton-compliant fallback (exact same ranges as database)
             if (percentile <= 2) return 'severe level of impairment';
             if (percentile <= 9) return 'moderate to severe level of impairment';
             if (percentile <= 16) return 'mild to moderate level of impairment';
