@@ -541,21 +541,36 @@
 
         // Use external database for AACN ranges
         function getPerformanceRange(percentile) {
+            console.log(`Getting range for percentile: ${percentile}`);
+            
             if (window.NeuroscriptDB && window.NeuroscriptDB.conversionTable) {
+                console.log('Using external database for AACN range');
                 let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
                     Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
                 );
-                return closest.aacn;
+                console.log(`Database returned: ${closest.aacn} for percentile ${percentile}`);
+                
+                // Ensure AACN compliance - map any non-AACN terms to proper AACN terms
+                let aacnRange = closest.aacn;
+                if (aacnRange === 'Low') {
+                    aacnRange = 'Exceptionally Low';
+                    console.log(`Mapped "Low" to "Exceptionally Low"`);
+                }
+                return aacnRange;
             }
             
+            console.log('Using fallback AACN ranges');
             // AACN-compliant fallback (exact same ranges as database)
-            if (percentile >= 98) return 'Exceptionally High';
-            if (percentile >= 91) return 'High';
-            if (percentile >= 75) return 'High Average';
-            if (percentile >= 25) return 'Average';
-            if (percentile >= 9) return 'Below Average';
-            if (percentile >= 2) return 'Exceptionally Low';
-            return 'Exceptionally Low';
+            let range;
+            if (percentile >= 98) range = 'Exceptionally High';
+            else if (percentile >= 91) range = 'High';
+            else if (percentile >= 75) range = 'High Average';
+            else if (percentile >= 25) range = 'Average';
+            else if (percentile >= 9) range = 'Below Average';
+            else range = 'Exceptionally Low';
+            
+            console.log(`Fallback returned: ${range} for percentile ${percentile}`);
+            return range;
         }
 
         // Use external database for Heaton impairment levels
