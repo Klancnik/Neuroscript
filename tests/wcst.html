@@ -161,7 +161,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Wisconsin Card Sorting Test (WCST) <span style="font-size: 0.6em; color: #6c757d;">v2.3</span></h1>
+            <h1>Wisconsin Card Sorting Test (WCST) <span style="font-size: 0.6em; color: #6c757d;">v2.4</span></h1>
             <p>Executive Function Assessment</p>
         </div>
 
@@ -323,29 +323,29 @@
 
         // Load test data for debugging
         function loadTestData() {
-            // Demographics
-            document.getElementById('age').value = 45;
-            document.getElementById('gender').value = 'male';
-            document.getElementById('education').value = 16;
+            // Demographics - Different profile
+            document.getElementById('age').value = 32;
+            document.getElementById('gender').value = 'female';
+            document.getElementById('education').value = 12;
             document.getElementById('readingLevel').value = '12';
             
-            // WCST scores with some below normal limits for testing
-            document.getElementById('totalErrors').value = 45;
-            document.getElementById('totalErrorsT').value = 35; // Below normal
-            document.getElementById('perseverativeErrors').value = 28;
-            document.getElementById('perseverativeErrorsT').value = 38; // Below normal
-            document.getElementById('nonPerseverativeErrors').value = 17;
-            document.getElementById('nonPerseverativeErrorsT').value = 42;
-            document.getElementById('categoriesCompleted').value = 3;
-            document.getElementById('categoriesCompletedPercentile').value = '6-10%'; // Below 16%
-            document.getElementById('trialsFirstCategory').value = 35;
-            document.getElementById('trialsFirstCategoryPercentile').value = '2-5%'; // Very slow
-            document.getElementById('failureToMaintainSet').value = 2;
-            document.getElementById('failureToMaintainSetPercentile').value = '6-10%'; // Mild difficulty
-            document.getElementById('learningToLearn').value = -3.2;
-            document.getElementById('learningToLearnPercentile').value = '11-16%';
+            // Different test pattern: More severe impairments
+            document.getElementById('totalErrors').value = 68;
+            document.getElementById('totalErrorsT').value = 28; // More severe impairment
+            document.getElementById('perseverativeErrors').value = 45;
+            document.getElementById('perseverativeErrorsT').value = 32; // Moderate to severe
+            document.getElementById('nonPerseverativeErrors').value = 23;
+            document.getElementById('nonPerseverativeErrorsT').value = 44; // Normal
+            document.getElementById('categoriesCompleted').value = 1;
+            document.getElementById('categoriesCompletedPercentile').value = '2-5%'; // Very low
+            document.getElementById('trialsFirstCategory').value = 55;
+            document.getElementById('trialsFirstCategoryPercentile').value = '<=1%'; // Very slow
+            document.getElementById('failureToMaintainSet').value = 4;
+            document.getElementById('failureToMaintainSetPercentile').value = '2-5%'; // Significant difficulty
+            document.getElementById('learningToLearn').value = -8.1;
+            document.getElementById('learningToLearnPercentile').value = '<=1%';
             
-            console.log('Test data loaded successfully');
+            console.log('Test data loaded successfully - Pattern: More severe deficits');
         }
 
         // Database availability check
@@ -605,11 +605,20 @@
 
                 // 2.1 Total Errors Statement (if T<40)
                 if (totalErrorsT < 40) {
-                    const totalErrorsInterpretation = getClinicalInterpretationFromDB(totalErrorsT);
-                    // Extract just the impairment part for proper grammar
-                    const impairmentPart = totalErrorsInterpretation.includes('indicating') ? 
-                        totalErrorsInterpretation.split('indicating ')[1] : totalErrorsInterpretation;
-                    narrativeParts.push(`${pronoun_cap} scored in the ${totalErrorsInterpretation.split(',')[0]} range, indicating ${impairmentPart} (Total Errors T=${totalErrorsT}) on a non-verbal test of conceptualization and mental flexibility that required ${possessive} to sort cards to changing criteria, with immediate feedback as to error (WCST).`);
+                    const dbResult = window.NeuroscriptDB.getByTScore(totalErrorsT);
+                    const aacnLabel = dbResult.aacn; // Get AACN label directly
+                    
+                    // Build impairment descriptor if T<40
+                    let impairmentText = '';
+                    if (dbResult.percentile <= 2) {
+                        impairmentText = 'a moderate to severe level of impairment';
+                    } else if (dbResult.percentile <= 9) {
+                        impairmentText = 'a mild to moderate level of impairment';
+                    } else if (dbResult.percentile <= 16) {
+                        impairmentText = 'a mild level of impairment';
+                    }
+                    
+                    narrativeParts.push(`${pronoun_cap} scored in the ${aacnLabel} range, indicating ${impairmentText} (Total Errors T=${totalErrorsT}) on a non-verbal test of conceptualization and mental flexibility that required ${possessive} to sort cards to changing criteria, with immediate feedback as to error (WCST).`);
                 }
 
                 // 2.2 Speed of Initial Solution
@@ -644,12 +653,19 @@
                         narrativeParts.push(`${pronoun_cap} had mild difficulty maintaining mental set.`);
                     }
                     if (persevErrorsT < 40) {
-                        const persevInterpretation = getClinicalInterpretationFromDB(persevErrorsT);
-                        // Extract just the impairment descriptor
-                        const impairmentPart = persevInterpretation.includes('indicating') ? 
-                            persevInterpretation.split('indicating ')[1] : 
-                            persevInterpretation.split(' range')[0] + ' level of impairment';
-                        narrativeParts.push(`${pronoun} showed a significant degree of perseveration, (repetition of incorrect response strategies), indicating ${impairmentPart}.`);
+                        const dbResult = window.NeuroscriptDB.getByTScore(persevErrorsT);
+                        
+                        // Build impairment descriptor
+                        let impairmentText = '';
+                        if (dbResult.percentile <= 2) {
+                            impairmentText = 'a moderate to severe level of impairment';
+                        } else if (dbResult.percentile <= 9) {
+                            impairmentText = 'a mild to moderate level of impairment';
+                        } else if (dbResult.percentile <= 16) {
+                            impairmentText = 'a mild level of impairment';
+                        }
+                        
+                        narrativeParts.push(`${pronoun} showed a significant degree of perseveration, (repetition of incorrect response strategies), indicating ${impairmentText}.`);
                     }
                 }
 
