@@ -347,6 +347,13 @@
 
         // Retention percentage range function
         function getRetentionRange(percentage) {
+            console.log('getRetentionRange called with:', percentage);
+            
+            if (typeof percentage !== 'number' || isNaN(percentage)) {
+                console.warn('Invalid percentage passed to getRetentionRange:', percentage);
+                return "Average";
+            }
+            
             if (percentage >= 95) return "Exceptionally High";
             if (percentage >= 90) return "Above Average";
             if (percentage >= 75) return "High Average";
@@ -360,10 +367,9 @@
         function getIndexInterpretationFromDB(score) {
             if (!window.NeuroscriptDB || !score) return "Average range";
             
-            const range = window.NeuroscriptDB.getRange(score, 'standard');
             const data = window.NeuroscriptDB.getByStandardScore(score);
             
-            let interpretation = range + " range";
+            let interpretation = data.aacn + " range";
             
             // Add Heaton impairment levels for low scores based on percentile
             if (data.percentile <= 16) {
@@ -402,13 +408,18 @@
         }
 
         function generateWMSReport() {
+            console.log('WMS-III generateWMSReport called...');
+            
             try {
                 // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
+                    console.error('External database not loaded!');
                     document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please refresh the page.</p>`;
                     document.getElementById('output').style.display = 'block';
                     return;
                 }
+
+                console.log('Database loaded successfully, collecting data...');
 
                 // Collect all data
                 const data = {
