@@ -4,55 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CPT-II Clinical Report Generator</title>
+    <script src="../neuroscript-norms.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
+            line-height: 1.6;
+            margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f4f4f4;
         }
         .container {
+            max-width: 1000px;
+            margin: 0 auto;
             background: white;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
         }
         .input-section {
             background: #f8f9fa;
             padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
         .input-group {
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
         }
-        label {
-            display: block;
+        .input-group label {
+            min-width: 180px;
             font-weight: bold;
-            margin-bottom: 5px;
+            color: #333;
         }
-        input[type="number"] {
-            width: 80px;
-            padding: 5px;
+        .input-group input, .input-group select {
+            flex: 1;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 3px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .section-header {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 20px 0 15px 0;
+            font-weight: bold;
         }
         .score-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-top: 15px;
+            margin-bottom: 20px;
         }
-        .section-header {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
+        .score-grid > div {
+            display: flex;
+            align-items: center;
+        }
+        .score-grid label {
+            min-width: 150px;
             font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            color: #333;
         }
-        .generate-btn {
+        .score-grid input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .generate-btn, .complete-btn, .load-data-btn {
             background: #007bff;
             color: white;
             padding: 12px 24px;
@@ -60,29 +88,22 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: bold;
+            margin-right: 10px;
         }
-        .generate-btn:hover {
+        .generate-btn:hover, .complete-btn:hover, .load-data-btn:hover {
             background: #0056b3;
         }
-        .complete-btn {
+        .load-data-btn {
             background: #28a745;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 10px;
         }
-        .complete-btn:hover {
+        .load-data-btn:hover {
             background: #1e7e34;
         }
         .output-section {
             background: white;
-            border: 2px solid #dee2e6;
-            padding: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
             margin-top: 30px;
             font-family: 'Times New Roman', serif;
             line-height: 1.6;
@@ -92,11 +113,43 @@
             border-bottom: 2px solid #007bff;
             padding-bottom: 5px;
         }
+        .validation-error {
+            border: 2px solid red !important;
+            background-color: #ffe6e6 !important;
+        }
+        .printout-layout {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+            margin-bottom: 20px;
+        }
+        .measure-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .measure-row:last-child {
+            border-bottom: none;
+        }
+        .measure-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .measure-input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator</h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.0</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -121,35 +174,52 @@
                 <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
             </div>
 
-            <div class="section-header">CPT-II T-Scores</div>
-            <div class="score-grid">
-                <div>
-                    <label>Omissions T-Score:</label>
-                    <input type="number" id="omissions" value="" placeholder="30-90">
+            <div class="printout-layout">
+                <div class="section-header">CPT-II T-Scores (From CPT-II Printout)</div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 10px; font-weight: bold; background: #e9ecef; padding: 8px; border-radius: 4px;">
+                    <div>Measure</div>
+                    <div style="text-align: center;">T-Score</div>
+                    <div style="text-align: center;">Range</div>
                 </div>
-                <div>
-                    <label>Commissions T-Score:</label>
-                    <input type="number" id="commissions" value="" placeholder="30-90">
+                
+                <div class="measure-row">
+                    <div class="measure-label">Omissions</div>
+                    <input type="number" id="omissions" class="measure-input" placeholder="30-90" min="30" max="90">
+                    <div id="omissionsRange" style="text-align: center; font-size: 12px; color: #666;">—</div>
                 </div>
-                <div>
-                    <label>Hit RT T-Score:</label>
-                    <input type="number" id="hitRT" value="" placeholder="30-90">
+                
+                <div class="measure-row">
+                    <div class="measure-label">Commissions</div>
+                    <input type="number" id="commissions" class="measure-input" placeholder="30-90" min="30" max="90">
+                    <div id="commissionsRange" style="text-align: center; font-size: 12px; color: #666;">—</div>
                 </div>
-                <div>
-                    <label>Hit RT SE T-Score:</label>
-                    <input type="number" id="hitRTSE" value="" placeholder="30-90">
+                
+                <div class="measure-row">
+                    <div class="measure-label">Hit RT</div>
+                    <input type="number" id="hitRT" class="measure-input" placeholder="30-90" min="30" max="90">
+                    <div id="hitRTRange" style="text-align: center; font-size: 12px; color: #666;">—</div>
                 </div>
-                <div>
-                    <label>Variability T-Score:</label>
-                    <input type="number" id="variability" value="" placeholder="30-90">
+                
+                <div class="measure-row">
+                    <div class="measure-label">Hit RT SE</div>
+                    <input type="number" id="hitRTSE" class="measure-input" placeholder="30-90" min="30" max="90">
+                    <div id="hitRTSERange" style="text-align: center; font-size: 12px; color: #666;">—</div>
                 </div>
-                <div>
-                    <label>Detectability T-Score:</label>
-                    <input type="number" id="detectability" value="" placeholder="30-90">
+                
+                <div class="measure-row">
+                    <div class="measure-label">Variability</div>
+                    <input type="number" id="variability" class="measure-input" placeholder="30-90" min="30" max="90">
+                    <div id="variabilityRange" style="text-align: center; font-size: 12px; color: #666;">—</div>
+                </div>
+                
+                <div class="measure-row">
+                    <div class="measure-label">Detectability (d')</div>
+                    <input type="number" id="detectability" class="measure-input" placeholder="30-90" min="30" max="90">
+                    <div id="detectabilityRange" style="text-align: center; font-size: 12px; color: #666;">—</div>
                 </div>
             </div>
 
-            <div class="section-header">Response Style (Optional)</div>
+            <div class="section-header">Additional Measures (Optional)</div>
             <div class="score-grid">
                 <div>
                     <label>Response Style β:</label>
@@ -161,6 +231,7 @@
                 </div>
             </div>
 
+            <button class="load-data-btn" onclick="loadTestData()">Load Test Data</button>
             <button class="generate-btn" onclick="generateCPTReport()">Generate CPT-II Report</button>
             <button class="complete-btn" onclick="completeTest()">Complete Test</button>
         </div>
@@ -175,35 +246,174 @@
         let currentNarrative = '';
         let currentScoreTable = '';
 
-        function getTScoreRange(tScore) {
-            if (tScore >= 65) return "Significantly Atypical";
-            if (tScore >= 60) return "Mildly Atypical";
-            if (tScore >= 55) return "Slightly Atypical";
-            if (tScore >= 45) return "Typical";
-            if (tScore >= 40) return "Slightly Better";
-            return "Much Better";
+        // Load external database check
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('CPT-II v2.0 loaded');
+            console.log('Database check:', typeof window.NeuroscriptDB);
+            
+            if (typeof window.NeuroscriptDB === 'undefined') {
+                console.error('External database not loaded!');
+                document.getElementById('output').innerHTML = '<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;"><h4>⚠️ Database Error</h4><p>External normative database not loaded. Please refresh the page.</p></div>';
+                document.getElementById('output').style.display = 'block';
+            }
+
+            // Add input validation
+            setupInputValidation();
+        });
+
+        function loadTestData() {
+            // Demographics
+            document.getElementById('age').value = 54;
+            document.getElementById('gender').value = 'Female';
+            document.getElementById('education').value = 16;
+            document.getElementById('readingLevel').value = 12;
+            
+            // CPT-II scores - realistic example from printout
+            document.getElementById('omissions').value = 65;
+            document.getElementById('commissions').value = 58;
+            document.getElementById('hitRT').value = 52;
+            document.getElementById('hitRTSE').value = 62;
+            document.getElementById('variability').value = 59;
+            document.getElementById('detectability').value = 48;
+            document.getElementById('responseStyle').value = 0.87;
+            document.getElementById('perseverations').value = 2;
+            
+            console.log('Test data loaded successfully');
+            
+            // Update range displays
+            updateRangeDisplays();
         }
 
-        function getPercentileFromT(tScore) {
-            // Approximate T-score to percentile conversion
-            const percentiles = {
-                30: 2, 35: 7, 40: 16, 45: 31, 50: 50, 55: 69, 60: 84, 65: 93, 70: 98, 75: 99, 80: 99.5
-            };
+        function setupInputValidation() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateInput(this);
+                    updateRangeDisplays();
+                });
+            });
+        }
+
+        function validateInput(input) {
+            const value = parseFloat(input.value);
+            const min = parseFloat(input.min);
+            const max = parseFloat(input.max);
             
-            // Find closest T-score
-            const keys = Object.keys(percentiles).map(Number).sort((a, b) => a - b);
-            let closest = keys[0];
-            let minDiff = Math.abs(tScore - closest);
+            if (input.value && (isNaN(value) || (min && value < min) || (max && value > max))) {
+                input.classList.add('validation-error');
+            } else {
+                input.classList.remove('validation-error');
+            }
+        }
+
+        function updateRangeDisplays() {
+            const measures = ['omissions', 'commissions', 'hitRT', 'hitRTSE', 'variability', 'detectability'];
             
-            for (let key of keys) {
-                const diff = Math.abs(tScore - key);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    closest = key;
+            measures.forEach(measure => {
+                const input = document.getElementById(measure);
+                const rangeDiv = document.getElementById(measure + 'Range');
+                
+                if (input.value && !input.classList.contains('validation-error')) {
+                    const tScore = parseInt(input.value);
+                    const range = getCPTRange(tScore);
+                    rangeDiv.textContent = range;
+                    rangeDiv.style.color = tScore >= 60 ? '#dc3545' : '#28a745';
+                } else {
+                    rangeDiv.textContent = '—';
+                    rangeDiv.style.color = '#666';
                 }
+            });
+        }
+
+        // Use external database for CPT range conversion with INVERTED SCORING
+        function getCPTRange(tScore) {
+            if (!window.NeuroscriptDB) {
+                // Fallback if database not loaded - CPT-II INVERTED ranges
+                if (tScore >= 65) return "Significantly Atypical";
+                if (tScore >= 60) return "Mildly Atypical";
+                if (tScore >= 55) return "Slightly Atypical";
+                if (tScore >= 45) return "Typical";
+                if (tScore >= 40) return "Slightly Better";
+                return "Much Better";
+            }
+
+            // CPT-II INVERTED SCORING: Convert to conventional T-score first
+            const conventionalT = 100 - tScore;
+            
+            // Find closest conventional T-score in database
+            let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
+                Math.abs(curr.tScore - conventionalT) < Math.abs(prev.tScore - conventionalT) ? curr : prev
+            );
+            
+            return closest.aacn;
+        }
+
+        // Use external database for AACN ranges and Heaton descriptors with CPT-II INVERTED SCORING
+        function getPerformanceRange(percentile) {
+            if (!window.NeuroscriptDB) {
+                console.error('Database not available for range conversion');
+                return 'Database Error';
             }
             
-            return percentiles[closest];
+            let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
+                Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
+            );
+            
+            return closest.aacn;
+        }
+
+        function getHeatonLevel(percentile) {
+            if (!window.NeuroscriptDB) {
+                return null;
+            }
+            
+            let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
+                Math.abs(curr.percentile - percentile) < Math.abs(prev.percentile - percentile) ? curr : prev
+            );
+            
+            return closest.heaton !== 'Normal' ? closest.heaton : null;
+        }
+
+        function formatPerformanceDescription(percentile, range, heaton) {
+            if (heaton) {
+                return `${range} range (${percentile}th percentile), indicating ${heaton}`;
+            } else {
+                return `${range} range (${percentile}th percentile)`;
+            }
+        }
+
+        function convertTScoreToPercentile(tScore) {
+            if (!window.NeuroscriptDB) {
+                // Fallback conversion with CPT-II INVERTED SCORING
+                const conventionalT = 100 - tScore;
+                const percentiles = {
+                    30: 2, 35: 7, 40: 16, 45: 31, 50: 50, 55: 69, 60: 84, 65: 93, 70: 98, 75: 99, 80: 99.5
+                };
+                
+                const keys = Object.keys(percentiles).map(Number).sort((a, b) => a - b);
+                let closest = keys[0];
+                let minDiff = Math.abs(conventionalT - closest);
+                
+                for (let key of keys) {
+                    const diff = Math.abs(conventionalT - key);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closest = key;
+                    }
+                }
+                
+                return percentiles[closest];
+            }
+
+            // CPT-II INVERTED SCORING: Convert to conventional T-score first
+            const conventionalT = 100 - tScore;
+            
+            // Use external database for precise conversion
+            let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
+                Math.abs(curr.tScore - conventionalT) < Math.abs(prev.tScore - conventionalT) ? curr : prev
+            );
+            
+            return closest.percentile;
         }
 
         function getCPTInterpretation(measure, tScore) {
@@ -292,13 +502,44 @@
             return warnings;
         }
 
+        function checkValidation() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            let hasErrors = false;
+            
+            inputs.forEach(input => {
+                if (input.classList.contains('validation-error')) {
+                    hasErrors = true;
+                }
+            });
+            
+            if (hasErrors) {
+                alert('Please correct the highlighted fields before generating the report.');
+                return false;
+            }
+            
+            return true;
+        }
+
         function generateCPTReport() {
+            if (!checkValidation()) {
+                return;
+            }
+
+            console.log("Generate CPT-II Report function called");
+
+            // Check if external database is loaded
+            if (!window.NeuroscriptDB) {
+                document.getElementById('output').innerHTML = '<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;"><h4>⚠️ Database Error</h4><p>External normative database not loaded. Please refresh the page.</p></div>';
+                document.getElementById('output').style.display = 'block';
+                return;
+            }
+
             // Check if minimum required fields are filled
             const omissions = document.getElementById('omissions').value;
             const commissions = document.getElementById('commissions').value;
             
             if (!omissions && !commissions) {
-                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                document.getElementById('output').innerHTML = `<div style="background: #fff3cd; padding: 15px; border-radius: 5px;"><p><strong>Note:</strong> Please enter test scores to generate the report.</p></div>`;
                 document.getElementById('output').style.display = 'block';
                 return;
             }
@@ -327,55 +568,183 @@
 
             let report = '';
 
-            // Attention Section
+            // Enhanced Attention Section using step-by-step approach
             report += `<h3><b>Attention</b></h3>\n`;
-            report += `<p>On the Conners' Continuous Performance Test-II (CPT-II), a computerized measure of sustained attention, ${pronounLower} performance was characterized by the following pattern:</p>\n\n`;
+            report += `<p>On the Conners' Continuous Performance Test-II (CPT-II), a computerized measure of sustained attention requiring discrimination between target and non-target letters, ${pronounLower} performance was characterized by the following pattern:</p>\n\n`;
 
-            // Omissions analysis
+            // Step 1: Omissions analysis with external database
             if (data.omissions > 0) {
-                const omissionRange = getTScoreRange(data.omissions);
-                const omissionInterp = getCPTInterpretation('omissions', data.omissions);
-                report += `<p>Omission errors (missing target responses) were in the ${omissionRange} range (T-score: ${data.omissions}), ${omissionInterp}.</p>\n`;
+                const omissionPercentile = convertTScoreToPercentile(data.omissions);
+                const omissionRange = getPerformanceRange(omissionPercentile);
+                const omissionHeaton = getHeatonLevel(omissionPercentile);
+                const omissionDesc = formatPerformanceDescription(omissionPercentile, omissionRange, omissionHeaton);
+                
+                report += `<p>Omission errors (missing target responses) fell within the ${omissionDesc}`;
+                if (data.omissions >= 60) {
+                    report += `, suggesting difficulty sustaining attention and increased inattentiveness`;
+                } else if (data.omissions <= 40) {
+                    report += `, suggesting good sustained attention`;
+                } else {
+                    report += `, indicating typical sustained attention`;
+                }
+                report += `.</p>\n`;
             }
 
-            // Commissions analysis
+            // Step 2: Commissions analysis with external database
             if (data.commissions > 0) {
-                const commissionRange = getTScoreRange(data.commissions);
-                const commissionInterp = getCPTInterpretation('commissions', data.commissions);
-                report += `<p>Commission errors (responding to non-targets) were in the ${commissionRange} range (T-score: ${data.commissions}), ${commissionInterp}.</p>\n`;
+                const commissionPercentile = convertTScoreToPercentile(data.commissions);
+                const commissionRange = getPerformanceRange(commissionPercentile);
+                const commissionHeaton = getHeatonLevel(commissionPercentile);
+                const commissionDesc = formatPerformanceDescription(commissionPercentile, commissionRange, commissionHeaton);
+                
+                report += `<p>Commission errors (responding to non-targets) fell within the ${commissionDesc}`;
+                if (data.commissions >= 60) {
+                    report += `, indicating impulsivity and difficulty inhibiting responses`;
+                } else if (data.commissions <= 40) {
+                    report += `, indicating good response control`;
+                } else {
+                    report += `, suggesting typical response inhibition`;
+                }
+                report += `.</p>\n`;
             }
 
-            // Response time analysis
+            // Step 3: Response time analysis with external database
             if (data.hitRT > 0) {
-                const rtRange = getTScoreRange(data.hitRT);
-                const rtInterp = getCPTInterpretation('hitRT', data.hitRT);
-                report += `<p>Response time was in the ${rtRange} range (T-score: ${data.hitRT}), ${rtInterp}.</p>\n`;
+                const rtPercentile = convertTScoreToPercentile(data.hitRT);
+                const rtRange = getPerformanceRange(rtPercentile);
+                const rtHeaton = getHeatonLevel(rtPercentile);
+                const rtDesc = formatPerformanceDescription(rtPercentile, rtRange, rtHeaton);
+                
+                report += `<p>Response time fell within the ${rtDesc}`;
+                if (data.hitRT >= 60) {
+                    report += `, suggesting slowed processing speed`;
+                } else if (data.hitRT <= 40) {
+                    report += `, suggesting fast response speed`;
+                } else {
+                    report += `, indicating typical response speed`;
+                }
+                report += `.</p>\n`;
             }
 
-            // Variability analysis
+            // Step 4: Variability analysis with external database
             if (data.variability > 0) {
-                const varRange = getTScoreRange(data.variability);
-                const varInterp = getCPTInterpretation('variability', data.variability);
-                report += `<p>Response time variability was in the ${varRange} range (T-score: ${data.variability}), ${varInterp}.</p>\n`;
+                const varPercentile = convertTScoreToPercentile(data.variability);
+                const varRange = getPerformanceRange(varPercentile);
+                const varHeaton = getHeatonLevel(varPercentile);
+                const varDesc = formatPerformanceDescription(varPercentile, varRange, varHeaton);
+                
+                report += `<p>Response time variability fell within the ${varDesc}`;
+                if (data.variability >= 60) {
+                    report += `, suggesting variable attention and inconsistent performance`;
+                } else if (data.variability <= 40) {
+                    report += `, suggesting very consistent attention`;
+                } else {
+                    report += `, indicating consistent attention`;
+                }
+                report += `.</p>\n`;
             }
 
-            report += `\n`;
+            // Step 5: Additional measures
+            if (data.hitRTSE > 0) {
+                const rtsePercentile = convertTScoreToPercentile(data.hitRTSE);
+                const rtseRange = getPerformanceRange(rtsePercentile);
+                const rtseHeaton = getHeatonLevel(rtsePercentile);
+                const rtseDesc = formatPerformanceDescription(rtsePercentile, rtseRange, rtseHeaton);
+                
+                report += `<p>Hit reaction time standard error fell within the ${rtseDesc}`;
+                if (data.hitRTSE >= 60) {
+                    report += `, indicating inconsistent response speed`;
+                } else {
+                    report += `, suggesting consistent response times`;
+                }
+                report += `.</p>\n`;
+            }
+
+            if (data.detectability > 0) {
+                const detPercentile = convertTScoreToPercentile(data.detectability);
+                const detRange = getPerformanceRange(detPercentile);
+                const detHeaton = getHeatonLevel(detPercentile);
+                const detDesc = formatPerformanceDescription(detPercentile, detRange, detHeaton);
+                
+                report += `<p>Perceptual sensitivity (detectability) fell within the ${detDesc}`;
+                if (data.detectability >= 60) {
+                    report += `, indicating good perceptual sensitivity`;
+                } else if (data.detectability <= 40) {
+                    report += `, indicating poor perceptual sensitivity`;
+                } else {
+                    report += `, suggesting typical perceptual sensitivity`;
+                }
+                report += `.</p>\n`;
+            }
+
+            // Step 6: Special handling for perseverations (non-normal distribution)
+            if (data.perseverations > 0) {
+                report += `<p>Perseverative responses were noted (n=${data.perseverations})`;
+                if (data.perseverations >= 3) {
+                    report += `. The number of identified perseverative responses are outside of normal limits. As, on this test, this could be due to a number of different factors, the attending psychologist should review the raw data to make a determination`;
+                }
+                report += `.</p>\n`;
+            }
+
+            // Step 7: Overall performance summary
+            let significantElevations = 0;
+            if (data.omissions >= 60) significantElevations++;
+            if (data.commissions >= 60) significantElevations++;
+            if (data.hitRT >= 60) significantElevations++;
+            if (data.variability >= 60) significantElevations++;
+
+            report += `<p>Overall, `;
+            if (significantElevations >= 3) {
+                report += `the pattern suggests significant attention difficulties with multiple elevated measures`;
+            } else if (significantElevations >= 2) {
+                report += `the pattern suggests some attention concerns with selective elevated measures`;
+            } else if (significantElevations === 1) {
+                report += `the pattern suggests generally adequate attention with one area of concern`;
+            } else {
+                report += `the pattern suggests adequate sustained attention performance`;
+            }
+            report += `.</p>\n`;
 
             // Store for completion
             currentNarrative = report.replace(/<[^>]*>/g, '').trim();
 
-            // Generate score table
+            // Generate score table for master dashboard
             const adminMeasures = [];
-            if (data.omissions) adminMeasures.push(['Omissions', data.omissions, getTScoreRange(data.omissions)]);
-            if (data.commissions) adminMeasures.push(['Commissions', data.commissions, getTScoreRange(data.commissions)]);
-            if (data.hitRT) adminMeasures.push(['Hit RT', data.hitRT, getTScoreRange(data.hitRT)]);
-            if (data.hitRTSE) adminMeasures.push(['Hit RT SE', data.hitRTSE, getTScoreRange(data.hitRTSE)]);
-            if (data.variability) adminMeasures.push(['Variability', data.variability, getTScoreRange(data.variability)]);
-            if (data.detectability) adminMeasures.push(['Detectability', data.detectability, getTScoreRange(data.detectability)]);
+            if (data.omissions) {
+                const omissionPercentile = convertTScoreToPercentile(data.omissions);
+                const omissionRange = getPerformanceRange(omissionPercentile);
+                adminMeasures.push(['Omissions', data.omissions, omissionRange]);
+            }
+            if (data.commissions) {
+                const commissionPercentile = convertTScoreToPercentile(data.commissions);
+                const commissionRange = getPerformanceRange(commissionPercentile);
+                adminMeasures.push(['Commissions', data.commissions, commissionRange]);
+            }
+            if (data.hitRT) {
+                const rtPercentile = convertTScoreToPercentile(data.hitRT);
+                const rtRange = getPerformanceRange(rtPercentile);
+                adminMeasures.push(['Hit RT', data.hitRT, rtRange]);
+            }
+            if (data.hitRTSE) {
+                const rtsePercentile = convertTScoreToPercentile(data.hitRTSE);
+                const rtseRange = getPerformanceRange(rtsePercentile);
+                adminMeasures.push(['Hit RT SE', data.hitRTSE, rtseRange]);
+            }
+            if (data.variability) {
+                const varPercentile = convertTScoreToPercentile(data.variability);
+                const varRange = getPerformanceRange(varPercentile);
+                adminMeasures.push(['Variability', data.variability, varRange]);
+            }
+            if (data.detectability) {
+                const detPercentile = convertTScoreToPercentile(data.detectability);
+                const detRange = getPerformanceRange(detPercentile);
+                adminMeasures.push(['Detectability', data.detectability, detRange]);
+            }
 
             currentScoreTable = `
-                <table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">
-                    <tr style="background-color: #f5f5f5;">
+                <h3>CPT-II Score Summary</h3>
+                <table border="1" style="border-collapse: collapse; width: 100%; margin-top: 15px;">
+                    <tr style="background-color: #f8f9fa;">
                         <th style="padding: 8px; text-align: left;">CPT-II Measure</th>
                         <th style="padding: 8px; text-align: center;">T-Score</th>
                         <th style="padding: 8px; text-align: center;">Range</th>
@@ -394,13 +763,25 @@
             report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
             report += `<h4><b>Technical Details</b></h4>`;
             report += `<p><strong>CPT-II T-Scores:</strong></p>`;
-            if (data.omissions) report += `<p>• Omissions: ${data.omissions} (${getPercentileFromT(data.omissions)}th percentile)</p>`;
-            if (data.commissions) report += `<p>• Commissions: ${data.commissions} (${getPercentileFromT(data.commissions)}th percentile)</p>`;
-            if (data.hitRT) report += `<p>• Hit RT: ${data.hitRT} (${getPercentileFromT(data.hitRT)}th percentile)</p>`;
-            if (data.variability) report += `<p>• Variability: ${data.variability} (${getPercentileFromT(data.variability)}th percentile)</p>`;
+            if (data.omissions) {
+                const omissionPercentile = convertTScoreToPercentile(data.omissions);
+                report += `<p>• Omissions: ${data.omissions} (${omissionPercentile}th percentile)</p>`;
+            }
+            if (data.commissions) {
+                const commissionPercentile = convertTScoreToPercentile(data.commissions);
+                report += `<p>• Commissions: ${data.commissions} (${commissionPercentile}th percentile)</p>`;
+            }
+            if (data.hitRT) {
+                const rtPercentile = convertTScoreToPercentile(data.hitRT);
+                report += `<p>• Hit RT: ${data.hitRT} (${rtPercentile}th percentile)</p>`;
+            }
+            if (data.variability) {
+                const varPercentile = convertTScoreToPercentile(data.variability);
+                report += `<p>• Variability: ${data.variability} (${varPercentile}th percentile)</p>`;
+            }
             if (data.perseverations) report += `<p>• Perseverations: ${data.perseverations}</p>`;
             if (data.responseStyle) report += `<p>• Response Style β: ${data.responseStyle.toFixed(2)}</p>`;
-            report += `<p><strong>Note:</strong> T-scores ≥60 are considered clinically significant</p>`;
+            report += `<p><strong>Note:</strong> T-scores ≥60 are considered clinically significant. Higher T-scores indicate worse performance on the CPT-II.</p>`;
             report += `</div>`;
 
             // Add validation warnings if any
@@ -435,6 +816,8 @@
                 testName: 'cpt-ii',
                 results: results
             }, '*');
+
+            console.log('CPT-II v2.0 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
@@ -454,9 +837,7 @@
                     document.getElementById('education').value = clientInfo.clientEducation;
                 }
                 
-                if (clientInfo.readingLevel) {
-                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
-                }
+                console.log('Client demographics populated from master dashboard');
             }
         });
     </script>
