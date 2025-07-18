@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.5</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.6</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -248,7 +248,7 @@
 
         // Load external database check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II v2.5 loaded - COMPLETE 7-POINT AACN SCALE');
+            console.log('CPT-II v2.6 loaded - NARRATIVE STEPS 1-2 (NORMAL METRIC)');
             console.log('Database check:', typeof window.NeuroscriptDB);
             
             if (typeof window.NeuroscriptDB === 'undefined') {
@@ -398,20 +398,53 @@
             }
         }
 
-        // CPT-II INVERTED SCORING: Custom percentile conversion - v2.2
-        function convertTScoreToPercentile(tScore) {
-            console.log(`Converting CPT-II T-score ${tScore} to percentile`);
+        // NARRATIVE-SPECIFIC: Normal metric conversion (high scores = better performance) - v2.6
+        function convertTScoreToPercentileNarrative(tScore) {
+            console.log(`Converting CPT-II T-score ${tScore} to percentile for NARRATIVE (normal metric)`);
             
-            // CPT-II inverted scoring - higher T = worse performance
-            // Convert to conventional interpretation
-            if (tScore >= 70) return 2;    // Very poor = 2nd percentile
-            if (tScore >= 65) return 7;    // Poor = 7th percentile  
-            if (tScore >= 60) return 16;   // Below average = 16th percentile
-            if (tScore >= 55) return 31;   // Low average = 31st percentile
-            if (tScore >= 45) return 50;   // Average = 50th percentile
-            if (tScore >= 40) return 69;   // High average = 69th percentile
-            if (tScore >= 35) return 84;   // Above average = 84th percentile
-            return 93;                     // Superior = 93rd percentile
+            // For narrative: Use NORMAL scoring interpretation (high = better)
+            // This matches other tests in the system
+            if (tScore >= 70) return 98;   // Excellent = 98th percentile
+            if (tScore >= 65) return 93;   // Superior = 93rd percentile
+            if (tScore >= 60) return 84;   // High Average = 84th percentile  
+            if (tScore >= 55) return 69;   // Average = 69th percentile
+            if (tScore >= 50) return 50;   // Average = 50th percentile
+            if (tScore >= 45) return 31;   // Average = 31st percentile
+            if (tScore >= 40) return 16;   // Below Average = 16th percentile
+            if (tScore >= 35) return 7;    // Low = 7th percentile
+            return 2;                      // Very Low = 2nd percentile
+        }
+
+        // NARRATIVE-SPECIFIC: Normal AACN ranges (high scores = better performance)
+        function getPerformanceRangeNarrative(percentile) {
+            console.log(`Getting NARRATIVE performance range for percentile: ${percentile}`);
+            
+            // Complete 7-point AACN scale for narrative (normal interpretation)
+            if (percentile >= 98) return "Exceptionally High";
+            if (percentile >= 91) return "Above Average";     
+            if (percentile >= 75) return "High Average";
+            if (percentile >= 25) return "Average";
+            if (percentile >= 9) return "Below Average";
+            if (percentile >= 2) return "Low Average";
+            return "Exceptionally Low";
+        }
+
+        function getHeatonLevelNarrative(percentile) {
+            console.log(`Getting Heaton level for NARRATIVE percentile: ${percentile}`);
+            
+            // Heaton impairment descriptors for percentiles ≤16th (normal metric)
+            if (percentile <= 2) return "a severe level of impairment";
+            if (percentile <= 9) return "a moderate to severe level of impairment";
+            if (percentile <= 16) return "a mild to moderate level of impairment";
+            return null; // No impairment descriptor for >16th percentile
+        }
+
+        function formatPerformanceDescriptionNarrative(percentile, range, heaton) {
+            if (heaton) {
+                return `${range} range (${percentile}th percentile), indicating ${heaton}`;
+            } else {
+                return `${range} range (${percentile}th percentile)`;
+            }
         }
 
         // CPT-II COMPLETE 7-POINT AACN scale with inverted logic - v2.5
@@ -591,142 +624,21 @@
 
             let report = '';
 
-            // Enhanced Attention Section using step-by-step approach
+            // NARRATIVE GENERATION with NORMAL METRIC (Steps 1-2) - v2.6
             report += `<h3><b>Attention</b></h3>\n`;
-            report += `<p>On the Conners' Continuous Performance Test-II (CPT-II), a computerized measure of sustained attention requiring discrimination between target and non-target letters, ${pronounLower} performance was characterized by the following pattern:</p>\n\n`;
+            
+            // Step 1: Introduction
+            report += `<p>${heShe} was administered a test of visual vigilance and sustained attention (CPT-II).</p>\n\n`;
 
-            // Step 1: Omissions analysis with external database
-            if (data.omissions > 0) {
-                const omissionPercentile = convertTScoreToPercentile(data.omissions);
-                const omissionRange = getPerformanceRange(omissionPercentile);
-                const omissionHeaton = getHeatonLevel(omissionPercentile);
-                const omissionDesc = formatPerformanceDescription(omissionPercentile, omissionRange, omissionHeaton);
-                
-                report += `<p>Omission errors (missing target responses) fell within the ${omissionDesc}`;
-                if (data.omissions >= 60) {
-                    report += `, suggesting difficulty sustaining attention and increased inattentiveness`;
-                } else if (data.omissions <= 40) {
-                    report += `, suggesting good sustained attention`;
-                } else {
-                    report += `, indicating typical sustained attention`;
-                }
-                report += `.</p>\n`;
-            }
-
-            // Step 2: Commissions analysis with external database
-            if (data.commissions > 0) {
-                const commissionPercentile = convertTScoreToPercentile(data.commissions);
-                const commissionRange = getPerformanceRange(commissionPercentile);
-                const commissionHeaton = getHeatonLevel(commissionPercentile);
-                const commissionDesc = formatPerformanceDescription(commissionPercentile, commissionRange, commissionHeaton);
-                
-                report += `<p>Commission errors (responding to non-targets) fell within the ${commissionDesc}`;
-                if (data.commissions >= 60) {
-                    report += `, indicating impulsivity and difficulty inhibiting responses`;
-                } else if (data.commissions <= 40) {
-                    report += `, indicating good response control`;
-                } else {
-                    report += `, suggesting typical response inhibition`;
-                }
-                report += `.</p>\n`;
-            }
-
-            // Step 3: Response time analysis with external database
-            if (data.hitRT > 0) {
-                const rtPercentile = convertTScoreToPercentile(data.hitRT);
-                const rtRange = getPerformanceRange(rtPercentile);
-                const rtHeaton = getHeatonLevel(rtPercentile);
-                const rtDesc = formatPerformanceDescription(rtPercentile, rtRange, rtHeaton);
-                
-                report += `<p>Response time fell within the ${rtDesc}`;
-                if (data.hitRT >= 60) {
-                    report += `, suggesting slowed processing speed`;
-                } else if (data.hitRT <= 40) {
-                    report += `, suggesting fast response speed`;
-                } else {
-                    report += `, indicating typical response speed`;
-                }
-                report += `.</p>\n`;
-            }
-
-            // Step 4: Variability analysis with external database
-            if (data.variability > 0) {
-                const varPercentile = convertTScoreToPercentile(data.variability);
-                const varRange = getPerformanceRange(varPercentile);
-                const varHeaton = getHeatonLevel(varPercentile);
-                const varDesc = formatPerformanceDescription(varPercentile, varRange, varHeaton);
-                
-                report += `<p>Response time variability fell within the ${varDesc}`;
-                if (data.variability >= 60) {
-                    report += `, suggesting variable attention and inconsistent performance`;
-                } else if (data.variability <= 40) {
-                    report += `, suggesting very consistent attention`;
-                } else {
-                    report += `, indicating consistent attention`;
-                }
-                report += `.</p>\n`;
-            }
-
-            // Step 5: Additional measures
-            if (data.hitRTSE > 0) {
-                const rtsePercentile = convertTScoreToPercentile(data.hitRTSE);
-                const rtseRange = getPerformanceRange(rtsePercentile);
-                const rtseHeaton = getHeatonLevel(rtsePercentile);
-                const rtseDesc = formatPerformanceDescription(rtsePercentile, rtseRange, rtseHeaton);
-                
-                report += `<p>Hit reaction time standard error fell within the ${rtseDesc}`;
-                if (data.hitRTSE >= 60) {
-                    report += `, indicating inconsistent response speed`;
-                } else {
-                    report += `, suggesting consistent response times`;
-                }
-                report += `.</p>\n`;
-            }
-
+            // Step 2: d' (Detectability) score statement  
             if (data.detectability > 0) {
-                const detPercentile = convertTScoreToPercentile(data.detectability);
-                const detRange = getPerformanceRange(detPercentile);
-                const detHeaton = getHeatonLevel(detPercentile);
-                const detDesc = formatPerformanceDescription(detPercentile, detRange, detHeaton);
+                const detPercentileNarrative = convertTScoreToPercentileNarrative(data.detectability);
+                const detRangeNarrative = getPerformanceRangeNarrative(detPercentileNarrative);
+                const detHeatonNarrative = getHeatonLevelNarrative(detPercentileNarrative);
+                const detDescNarrative = formatPerformanceDescriptionNarrative(detPercentileNarrative, detRangeNarrative, detHeatonNarrative);
                 
-                report += `<p>Perceptual sensitivity (detectability) fell within the ${detDesc}`;
-                if (data.detectability >= 60) {
-                    report += `, indicating good perceptual sensitivity`;
-                } else if (data.detectability <= 40) {
-                    report += `, indicating poor perceptual sensitivity`;
-                } else {
-                    report += `, suggesting typical perceptual sensitivity`;
-                }
-                report += `.</p>\n`;
+                report += `<p>On this measure, ${pronounLower} overall ability to discriminate targets from non-targets was within the ${detDescNarrative}.</p>\n\n`;
             }
-
-            // Step 6: Special handling for perseverations (non-normal distribution)
-            if (data.perseverations > 0) {
-                report += `<p>Perseverative responses were noted (n=${data.perseverations})`;
-                if (data.perseverations >= 3) {
-                    report += `. The number of identified perseverative responses are outside of normal limits. As, on this test, this could be due to a number of different factors, the attending psychologist should review the raw data to make a determination`;
-                }
-                report += `.</p>\n`;
-            }
-
-            // Step 7: Overall performance summary
-            let significantElevations = 0;
-            if (data.omissions >= 60) significantElevations++;
-            if (data.commissions >= 60) significantElevations++;
-            if (data.hitRT >= 60) significantElevations++;
-            if (data.variability >= 60) significantElevations++;
-
-            report += `<p>Overall, `;
-            if (significantElevations >= 3) {
-                report += `the pattern suggests significant attention difficulties with multiple elevated measures`;
-            } else if (significantElevations >= 2) {
-                report += `the pattern suggests some attention concerns with selective elevated measures`;
-            } else if (significantElevations === 1) {
-                report += `the pattern suggests generally adequate attention with one area of concern`;
-            } else {
-                report += `the pattern suggests adequate sustained attention performance`;
-            }
-            report += `.</p>\n`;
 
             // Store for completion
             currentNarrative = report.replace(/<[^>]*>/g, '').trim();
@@ -840,7 +752,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v2.5 test completed and sent to master dashboard');
+            console.log('CPT-II v2.6 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
