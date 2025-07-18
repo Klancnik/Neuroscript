@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.6</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.7</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -248,7 +248,7 @@
 
         // Load external database check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II v2.6 loaded - NARRATIVE STEPS 1-2 (NORMAL METRIC)');
+            console.log('CPT-II v2.7 loaded - ERROR HANDLING FIXED');
             console.log('Database check:', typeof window.NeuroscriptDB);
             
             if (typeof window.NeuroscriptDB === 'undefined') {
@@ -583,18 +583,17 @@
 
             console.log("Generate CPT-II Report function called");
 
-            // Check if external database is loaded
+            // Check if external database is loaded (optional for CPT-II)
             if (!window.NeuroscriptDB) {
-                document.getElementById('output').innerHTML = '<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;"><h4>⚠️ Database Error</h4><p>External normative database not loaded. Please refresh the page.</p></div>';
-                document.getElementById('output').style.display = 'block';
-                return;
+                console.warn('External database not loaded - using CPT-II specific conversions');
             }
 
             // Check if minimum required fields are filled
             const omissions = document.getElementById('omissions').value;
             const commissions = document.getElementById('commissions').value;
+            const detectability = document.getElementById('detectability').value;
             
-            if (!omissions && !commissions) {
+            if (!omissions && !commissions && !detectability) {
                 document.getElementById('output').innerHTML = `<div style="background: #fff3cd; padding: 15px; border-radius: 5px;"><p><strong>Note:</strong> Please enter test scores to generate the report.</p></div>`;
                 document.getElementById('output').style.display = 'block';
                 return;
@@ -624,113 +623,113 @@
 
             let report = '';
 
-            // NARRATIVE GENERATION with NORMAL METRIC (Steps 1-2) - v2.6
-            report += `<h3><b>Attention</b></h3>\n`;
-            
-            // Step 1: Introduction
-            report += `<p>${heShe} was administered a test of visual vigilance and sustained attention (CPT-II).</p>\n\n`;
-
-            // Step 2: d' (Detectability) score statement  
-            if (data.detectability > 0) {
-                const detPercentileNarrative = convertTScoreToPercentileNarrative(data.detectability);
-                const detRangeNarrative = getPerformanceRangeNarrative(detPercentileNarrative);
-                const detHeatonNarrative = getHeatonLevelNarrative(detPercentileNarrative);
-                const detDescNarrative = formatPerformanceDescriptionNarrative(detPercentileNarrative, detRangeNarrative, detHeatonNarrative);
+            try {
+                // NARRATIVE GENERATION with NORMAL METRIC (Steps 1-2) - v2.7
+                report += `<h3><b>Attention</b></h3>\n`;
                 
-                report += `<p>On this measure, ${pronounLower} overall ability to discriminate targets from non-targets was within the ${detDescNarrative}.</p>\n\n`;
-            }
+                // Step 1: Introduction
+                report += `<p>${heShe} was administered a test of visual vigilance and sustained attention (CPT-II).</p>\n\n`;
 
-            // Store for completion
-            currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+                // Step 2: d' (Detectability) score statement  
+                if (data.detectability > 0) {
+                    const detPercentileNarrative = convertTScoreToPercentileNarrative(data.detectability);
+                    const detRangeNarrative = getPerformanceRangeNarrative(detPercentileNarrative);
+                    const detHeatonNarrative = getHeatonLevelNarrative(detPercentileNarrative);
+                    const detDescNarrative = formatPerformanceDescriptionNarrative(detPercentileNarrative, detRangeNarrative, detHeatonNarrative);
+                    
+                    report += `<p>On this measure, ${pronounLower} overall ability to discriminate targets from non-targets was within the ${detDescNarrative}.</p>\n\n`;
+                }
 
-            // Generate score table for master dashboard
-            const adminMeasures = [];
-            if (data.omissions) {
-                const omissionPercentile = convertTScoreToPercentile(data.omissions);
-                const omissionRange = getPerformanceRange(omissionPercentile);
-                adminMeasures.push(['Omissions', data.omissions, omissionRange]);
-            }
-            if (data.commissions) {
-                const commissionPercentile = convertTScoreToPercentile(data.commissions);
-                const commissionRange = getPerformanceRange(commissionPercentile);
-                adminMeasures.push(['Commissions', data.commissions, commissionRange]);
-            }
-            if (data.hitRT) {
-                const rtPercentile = convertTScoreToPercentile(data.hitRT);
-                const rtRange = getPerformanceRange(rtPercentile);
-                adminMeasures.push(['Hit RT', data.hitRT, rtRange]);
-            }
-            if (data.hitRTSE) {
-                const rtsePercentile = convertTScoreToPercentile(data.hitRTSE);
-                const rtseRange = getPerformanceRange(rtsePercentile);
-                adminMeasures.push(['Hit RT SE', data.hitRTSE, rtseRange]);
-            }
-            if (data.variability) {
-                const varPercentile = convertTScoreToPercentile(data.variability);
-                const varRange = getPerformanceRange(varPercentile);
-                adminMeasures.push(['Variability', data.variability, varRange]);
-            }
-            if (data.detectability) {
-                const detPercentile = convertTScoreToPercentile(data.detectability);
-                const detRange = getPerformanceRange(detPercentile);
-                adminMeasures.push(['Detectability', data.detectability, detRange]);
-            }
+                // Store for completion
+                currentNarrative = report.replace(/<[^>]*>/g, '').trim();
 
-            currentScoreTable = `
-                <h3>CPT-II Score Summary</h3>
-                <table border="1" style="border-collapse: collapse; width: 100%; margin-top: 15px;">
-                    <tr style="background-color: #f8f9fa;">
-                        <th style="padding: 8px; text-align: left;">CPT-II Measure</th>
-                        <th style="padding: 8px; text-align: center;">T-Score</th>
-                        <th style="padding: 8px; text-align: center;">Range</th>
-                    </tr>
-                    ${adminMeasures.map(measure => `
-                        <tr>
-                            <td style="padding: 8px;">${measure[0]}</td>
-                            <td style="padding: 8px; text-align: center;">${measure[1]}</td>
-                            <td style="padding: 8px; text-align: center;">${measure[2]}</td>
+                // Generate score table for master dashboard using TABLE DISPLAY logic (inverted)
+                const adminMeasures = [];
+                if (data.omissions) {
+                    const omissionRange = getCPTRange(data.omissions);
+                    adminMeasures.push(['Omissions', data.omissions, omissionRange]);
+                }
+                if (data.commissions) {
+                    const commissionRange = getCPTRange(data.commissions);
+                    adminMeasures.push(['Commissions', data.commissions, commissionRange]);
+                }
+                if (data.hitRT) {
+                    const rtRange = getCPTRange(data.hitRT);
+                    adminMeasures.push(['Hit RT', data.hitRT, rtRange]);
+                }
+                if (data.hitRTSE) {
+                    const rtseRange = getCPTRange(data.hitRTSE);
+                    adminMeasures.push(['Hit RT SE', data.hitRTSE, rtseRange]);
+                }
+                if (data.variability) {
+                    const varRange = getCPTRange(data.variability);
+                    adminMeasures.push(['Variability', data.variability, varRange]);
+                }
+                if (data.detectability) {
+                    const detRange = getCPTRange(data.detectability);
+                    adminMeasures.push(['Detectability', data.detectability, detRange]);
+                }
+
+                currentScoreTable = `
+                    <h3>CPT-II Score Summary</h3>
+                    <table border="1" style="border-collapse: collapse; width: 100%; margin-top: 15px;">
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 8px; text-align: left;">CPT-II Measure</th>
+                            <th style="padding: 8px; text-align: center;">T-Score</th>
+                            <th style="padding: 8px; text-align: center;">Range</th>
                         </tr>
-                    `).join('')}
-                </table>
-            `;
+                        ${adminMeasures.map(measure => `
+                            <tr>
+                                <td style="padding: 8px;">${measure[0]}</td>
+                                <td style="padding: 8px; text-align: center;">${measure[1]}</td>
+                                <td style="padding: 8px; text-align: center;">${measure[2]}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                `;
 
-            // Technical details section
-            report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
-            report += `<h4><b>Technical Details</b></h4>`;
-            report += `<p><strong>CPT-II T-Scores:</strong></p>`;
-            if (data.omissions) {
-                const omissionPercentile = convertTScoreToPercentile(data.omissions);
-                report += `<p>• Omissions: ${data.omissions} (${omissionPercentile}th percentile)</p>`;
-            }
-            if (data.commissions) {
-                const commissionPercentile = convertTScoreToPercentile(data.commissions);
-                report += `<p>• Commissions: ${data.commissions} (${commissionPercentile}th percentile)</p>`;
-            }
-            if (data.hitRT) {
-                const rtPercentile = convertTScoreToPercentile(data.hitRT);
-                report += `<p>• Hit RT: ${data.hitRT} (${rtPercentile}th percentile)</p>`;
-            }
-            if (data.variability) {
-                const varPercentile = convertTScoreToPercentile(data.variability);
-                report += `<p>• Variability: ${data.variability} (${varPercentile}th percentile)</p>`;
-            }
-            if (data.perseverations) report += `<p>• Perseverations: ${data.perseverations}</p>`;
-            if (data.responseStyle) report += `<p>• Response Style β: ${data.responseStyle.toFixed(2)}</p>`;
-            report += `<p><strong>Note:</strong> T-scores ≥60 are considered clinically significant. Higher T-scores indicate worse performance on the CPT-II.</p>`;
-            report += `</div>`;
-
-            // Add validation warnings if any
-            if (warnings.length > 0) {
-                report += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
-                report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
-                warnings.forEach(warning => {
-                    report += `<p style="margin: 5px 0;">${warning}</p>`;
-                });
+                // Technical details section
+                report += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                report += `<h4><b>Technical Details</b></h4>`;
+                report += `<p><strong>CPT-II T-Scores:</strong></p>`;
+                if (data.omissions) {
+                    report += `<p>• Omissions: ${data.omissions}</p>`;
+                }
+                if (data.commissions) {
+                    report += `<p>• Commissions: ${data.commissions}</p>`;
+                }
+                if (data.hitRT) {
+                    report += `<p>• Hit RT: ${data.hitRT}</p>`;
+                }
+                if (data.variability) {
+                    report += `<p>• Variability: ${data.variability}</p>`;
+                }
+                if (data.detectability) {
+                    report += `<p>• Detectability: ${data.detectability}</p>`;
+                }
+                if (data.perseverations) report += `<p>• Perseverations: ${data.perseverations}</p>`;
+                if (data.responseStyle) report += `<p>• Response Style β: ${data.responseStyle.toFixed(2)}</p>`;
+                report += `<p><strong>Note:</strong> T-scores ≥60 are considered clinically significant. Higher T-scores indicate worse performance on the CPT-II.</p>`;
                 report += `</div>`;
-            }
 
-            document.getElementById('output').innerHTML = report;
-            document.getElementById('output').style.display = 'block';
+                // Add validation warnings if any
+                if (warnings.length > 0) {
+                    report += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">`;
+                    report += `<h4><b>⚠️ Validation Alerts</b></h4>`;
+                    warnings.forEach(warning => {
+                        report += `<p style="margin: 5px 0;">${warning}</p>`;
+                    });
+                    report += `</div>`;
+                }
+
+                document.getElementById('output').innerHTML = report;
+                document.getElementById('output').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error generating CPT-II report:', error);
+                document.getElementById('output').innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;"><h4>⚠️ Report Generation Error</h4><p>Error generating report: ${error.message}</p><p>Please check console for details.</p></div>`;
+                document.getElementById('output').style.display = 'block';
+            }
         }
 
         function completeTest() {
@@ -752,7 +751,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v2.6 test completed and sent to master dashboard');
+            console.log('CPT-II v2.7 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
