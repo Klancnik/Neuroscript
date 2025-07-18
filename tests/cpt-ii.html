@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.3</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.4</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -403,7 +403,25 @@
             }
         }
 
-        function updateRangeDisplays() {
+        function loadTestData() {
+            console.log('Loading test data...');
+            document.getElementById('age').value = 54;
+            document.getElementById('gender').value = 'Female';
+            document.getElementById('education').value = 16;
+            document.getElementById('readingLevel').value = 12;
+            
+            document.getElementById('omissions').value = 65;
+            document.getElementById('commissions').value = 58;
+            document.getElementById('hitRT').value = 52;
+            document.getElementById('hitRTSE').value = 62;
+            document.getElementById('variability').value = 59;
+            document.getElementById('detectability').value = 48;
+            document.getElementById('responseStyle').value = 0.87;
+            document.getElementById('perseverations').value = 2;
+            
+            updateRangeDisplays();
+            console.log('Test data loaded successfully');
+        }
             const measures = ['omissions', 'commissions', 'hitRT', 'hitRTSE', 'variability', 'detectability'];
             
             measures.forEach(measure => {
@@ -422,7 +440,7 @@
             });
         }
 
-        function setupInputValidation() {
+        function updateRangeDisplays() {
             const inputs = document.querySelectorAll('input[type="number"]');
             inputs.forEach(input => {
                 input.addEventListener('input', function() {
@@ -432,7 +450,7 @@
             });
         }
 
-        function validateInput(input) {
+        function setupInputValidation() {
             const value = parseFloat(input.value);
             const min = parseFloat(input.min);
             const max = parseFloat(input.max);
@@ -444,7 +462,7 @@
             }
         }
 
-        function generateCPTReport() {
+        function validateInput(input) {
             console.log('Generate CPT-II Report function called');
 
             const data = {
@@ -617,7 +635,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v3.3 test completed and sent to master dashboard');
+            console.log('CPT-II v3.4 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
@@ -644,7 +662,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             setupInputValidation();
-            console.log('CPT-II v3.3 initialization complete - FUNCTION ORDER FIXED');
+            console.log('CPT-II v3.4 initialization complete - ALL FUNCTIONS DEFINED FIRST');
         });
     </script>
 </body>
