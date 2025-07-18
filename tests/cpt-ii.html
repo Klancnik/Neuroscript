@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.0</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.1</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -248,13 +248,28 @@
 
         // Load external database check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II v2.0 loaded');
+            console.log('CPT-II v2.1 loaded - INVERTED SCORING DEBUG');
             console.log('Database check:', typeof window.NeuroscriptDB);
             
             if (typeof window.NeuroscriptDB === 'undefined') {
                 console.error('External database not loaded!');
                 document.getElementById('output').innerHTML = '<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;"><h4>⚠️ Database Error</h4><p>External normative database not loaded. Please refresh the page.</p></div>';
                 document.getElementById('output').style.display = 'block';
+            } else {
+                console.log('Database loaded successfully');
+                // Test the conversion with a sample score
+                console.log('Testing CPT-II conversion: T=65 should convert to conventional T=35');
+                const testConventional = 100 - 65;
+                console.log('Conventional T-score:', testConventional);
+                
+                if (window.NeuroscriptDB.conversionTable) {
+                    let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
+                        Math.abs(curr.tScore - testConventional) < Math.abs(prev.tScore - testConventional) ? curr : prev
+                    );
+                    console.log('Closest database match for T=35:', closest);
+                } else {
+                    console.error('Conversion table not found in database!');
+                }
             }
 
             // Add input validation
@@ -325,12 +340,15 @@
             });
         }
 
-        // Use external database for CPT range conversion with INVERTED SCORING
+        // Use external database for CPT range conversion with INVERTED SCORING DEBUG
         function getCPTRange(tScore) {
+            console.log(`getCPTRange called with T-score: ${tScore}`);
+            
             if (!window.NeuroscriptDB) {
+                console.log('Using fallback conversion - database not available');
                 // Fallback if database not loaded - CPT-II INVERTED ranges
                 if (tScore >= 65) return "Significantly Atypical";
-                if (tScore >= 60) return "Mildly Atypical";
+                if (tScore >= 60) return "Mildly Atypical"; 
                 if (tScore >= 55) return "Slightly Atypical";
                 if (tScore >= 45) return "Typical";
                 if (tScore >= 40) return "Slightly Better";
@@ -339,11 +357,15 @@
 
             // CPT-II INVERTED SCORING: Convert to conventional T-score first
             const conventionalT = 100 - tScore;
+            console.log(`CPT-II T=${tScore} converted to conventional T=${conventionalT}`);
             
             // Find closest conventional T-score in database
             let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
                 Math.abs(curr.tScore - conventionalT) < Math.abs(prev.tScore - conventionalT) ? curr : prev
             );
+            
+            console.log(`Database match for conventional T=${conventionalT}:`, closest);
+            console.log(`Returning AACN range: ${closest.aacn}`);
             
             return closest.aacn;
         }
@@ -817,7 +839,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v2.0 test completed and sent to master dashboard');
+            console.log('CPT-II v2.1 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
