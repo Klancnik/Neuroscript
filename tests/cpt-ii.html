@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.1</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.2</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -268,8 +268,55 @@
             console.log('Test data loaded successfully');
         }
 
-        // CPT ERRORS descriptors from statconv file (CORRECTED)
         function getCPTErrorDescriptor(tScore) {
+        // CPT SPEED descriptors from statconv file - v3.2
+        function getCPTSpeedDescriptor(tScore) {
+            console.log(`Getting CPT Speed descriptor for T-score: ${tScore}`);
+            
+            let cptPercentile, descriptor;
+            
+            // CPT SPEED descriptors from statconv with INVERTED percentiles
+            if (tScore >= 77) {
+                cptPercentile = 99;
+                descriptor = "significantly slower than average";
+            } else if (tScore >= 73) {
+                cptPercentile = 95;
+                descriptor = "significantly slower than average";
+            } else if (tScore >= 57) {
+                cptPercentile = 76;
+                descriptor = "slower than average";
+            } else if (tScore >= 45) {
+                cptPercentile = 50;
+                descriptor = "within normal limits";
+            } else if (tScore >= 37) {
+                cptPercentile = 24;
+                descriptor = "slightly faster than average";
+            } else if (tScore >= 30) {
+                cptPercentile = 7;
+                descriptor = "significantly faster than average";
+            } else {
+                cptPercentile = 2;
+                descriptor = "very significantly faster than average";
+            }
+            
+            // Convert to normal metric: 100 - CPT percentile
+            const normalPercentile = 100 - cptPercentile;
+            console.log(`Speed T=${tScore} -> CPT %ile=${cptPercentile} -> Normal %ile=${normalPercentile} -> "${descriptor}"`);
+            
+            return {descriptor: descriptor, percentile: normalPercentile};
+        }
+
+        // Helper function to determine if errors are "higher than average" or higher
+        function isHighErrorLevel(descriptor) {
+            return descriptor.includes("higher than average") || descriptor.includes("significantly higher") || descriptor.includes("very significantly higher");
+        }
+
+        // Helper function to determine if reaction times are slow/fast
+        function getSpeedCategory(descriptor) {
+            if (descriptor.includes("slower")) return "slow";
+            if (descriptor.includes("faster")) return "fast";
+            return "normal";
+        }
             console.log(`Getting CPT Error descriptor for T-score: ${tScore}`);
             
             let cptPercentile, descriptor;
@@ -444,41 +491,88 @@
             // Step 3: Omissions and Commissions statement
             console.log('Checking omissions/commissions:', data.omissions, data.commissions);
             
+            let omissionData = null;
+            let commissionData = null;
+            
             if (data.omissions > 0 || data.commissions > 0) {
                 console.log('Processing omissions/commissions errors statement');
                 
                 if (data.omissions > 0 && data.commissions > 0) {
                     console.log('Both omissions and commissions present');
-                    const omissionData = getCPTErrorDescriptor(data.omissions);
-                    const commissionData = getCPTErrorDescriptor(data.commissions);
+                    omissionData = getCPTErrorDescriptor(data.omissions);
+                    commissionData = getCPTErrorDescriptor(data.commissions);
                     
                     const connector = (Math.abs(omissionData.percentile - commissionData.percentile) > 20) ? "although" : "and";
                     
-                    const errorStatement = `However, ${pronounLower} committed ${omissionData.descriptor} (${omissionData.percentile}th percentile) of errors of omission (not responding when ${pronounLower} should have responded), ${connector} ${commissionData.descriptor} (${commissionData.percentile}th percentile) of errors of commission (responding when ${pronounLower} should not have responded).`;
+                    const errorStatement = `However, ${heShe} committed ${omissionData.descriptor} (${omissionData.percentile}th percentile) of errors of omission (not responding when ${heShe.toLowerCase()} should have responded), ${connector} ${commissionData.descriptor} (${commissionData.percentile}th percentile) of errors of commission (responding when ${heShe.toLowerCase()} should not have responded).`;
                     
                     console.log('Error statement:', errorStatement);
                     report += `<p>${errorStatement}</p>\n\n`;
                     
                 } else if (data.omissions > 0) {
                     console.log('Only omissions present');
-                    const omissionData = getCPTErrorDescriptor(data.omissions);
+                    omissionData = getCPTErrorDescriptor(data.omissions);
                     
-                    const errorStatement = `However, ${pronounLower} committed ${omissionData.descriptor} (${omissionData.percentile}th percentile) of errors of omission (not responding when ${pronounLower} should have responded).`;
+                    const errorStatement = `However, ${heShe} committed ${omissionData.descriptor} (${omissionData.percentile}th percentile) of errors of omission (not responding when ${heShe.toLowerCase()} should have responded).`;
                     
                     console.log('Error statement:', errorStatement);
                     report += `<p>${errorStatement}</p>\n\n`;
                     
                 } else if (data.commissions > 0) {
                     console.log('Only commissions present');
-                    const commissionData = getCPTErrorDescriptor(data.commissions);
+                    commissionData = getCPTErrorDescriptor(data.commissions);
                     
-                    const errorStatement = `However, ${pronounLower} committed ${commissionData.descriptor} (${commissionData.percentile}th percentile) of errors of commission (responding when ${pronounLower} should not have responded).`;
+                    const errorStatement = `However, ${heShe} committed ${commissionData.descriptor} (${commissionData.percentile}th percentile) of errors of commission (responding when ${heShe.toLowerCase()} should not have responded).`;
                     
                     console.log('Error statement:', errorStatement);
                     report += `<p>${errorStatement}</p>\n\n`;
                 }
             } else {
                 console.log('No omissions or commissions to process');
+            }
+
+            // Step 4: Reaction Times statement - v3.2
+            if (data.hitRT > 0) {
+                console.log('Processing reaction times statement');
+                const speedData = getCPTSpeedDescriptor(data.hitRT);
+                
+                const rtStatement = `${pronoun} reaction times were ${speedData.descriptor} (${speedData.percentile}th percentile).`;
+                console.log('RT statement:', rtStatement);
+                report += `<p>${rtStatement}</p>\n\n`;
+            }
+
+            // Step 5: Interpretive statement based on error patterns - v3.2
+            console.log('Processing interpretive statement');
+            
+            const highOmissions = omissionData && isHighErrorLevel(omissionData.descriptor);
+            const highCommissions = commissionData && isHighErrorLevel(commissionData.descriptor);
+            
+            let speedCategory = "normal";
+            if (data.hitRT > 0) {
+                const speedData = getCPTSpeedDescriptor(data.hitRT);
+                speedCategory = getSpeedCategory(speedData.descriptor);
+            }
+            
+            console.log('Pattern analysis:', {highOmissions, highCommissions, speedCategory});
+            
+            if (highOmissions && speedCategory === "slow") {
+                const interpretStatement = `The high number of errors of omission and slow reaction times are indicative of significant inattention.`;
+                console.log('Interpretive statement (omissions + slow):', interpretStatement);
+                report += `<p>${interpretStatement}</p>\n\n`;
+            } else if (highOmissions) {
+                const interpretStatement = `The high number of errors of omission are indicative of significant inattention.`;
+                console.log('Interpretive statement (omissions only):', interpretStatement);
+                report += `<p>${interpretStatement}</p>\n\n`;
+            }
+            
+            if (highCommissions && speedCategory === "fast") {
+                const interpretStatement = `The high number of errors of commission and fast reaction times are indicative of significant impulsivity.`;
+                console.log('Interpretive statement (commissions + fast):', interpretStatement);
+                report += `<p>${interpretStatement}</p>\n\n`;
+            } else if (highCommissions) {
+                const interpretStatement = `The high number of errors of commission are indicative of significant impulsivity.`;
+                console.log('Interpretive statement (commissions only):', interpretStatement);
+                report += `<p>${interpretStatement}</p>\n\n`;
             }
 
             // Store for completion
@@ -523,7 +617,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v3.1 test completed and sent to master dashboard');
+            console.log('CPT-II v3.2 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
@@ -550,7 +644,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             setupInputValidation();
-            console.log('CPT-II v3.1 initialization complete');
+            console.log('CPT-II v3.2 initialization complete - COMPLETE NARRATIVE');
         });
     </script>
 </body>
