@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.3</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.5</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -248,7 +248,7 @@
 
         // Load external database check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II v2.3 loaded - AACN LABELS + INVERTED SCORING FIXED');
+            console.log('CPT-II v2.5 loaded - COMPLETE 7-POINT AACN SCALE');
             console.log('Database check:', typeof window.NeuroscriptDB);
             
             if (typeof window.NeuroscriptDB === 'undefined') {
@@ -325,39 +325,43 @@
             });
         }
 
-        // CPT-II SPECIFIC INVERTED SCORING with AACN LABELS - v2.3 FIX
+        // CPT-II COMPLETE 7-POINT AACN SCALE with INVERTED SCORING - v2.5 FIX
         function getCPTRange(tScore) {
             console.log(`getCPTRange called with CPT-II T-score: ${tScore}`);
             
-            // CPT-II specific AACN ranges with INVERTED scoring
-            // Higher T-scores = worse performance = lower percentile equivalents
+            // CPT-II COMPLETE AACN scale with INVERTED scoring
+            // Higher T-scores = worse performance = lower AACN descriptors
             if (tScore >= 70) {
                 console.log('Returning: Exceptionally Low (T≥70 = very poor performance)');
-                return "Exceptionally Low";  // Very poor performance
+                return "Exceptionally Low";  // Very poor performance (≤2nd percentile equivalent)
             }
             if (tScore >= 65) {
-                console.log('Returning: Low (T≥65 = poor performance)');
-                return "Low";  // Poor performance
+                console.log('Returning: Low Average (T≥65 = poor performance)');
+                return "Low Average";  // Poor performance (3rd-9th percentile equivalent)
             }
             if (tScore >= 60) {
                 console.log('Returning: Below Average (T≥60 = below average performance)');
-                return "Below Average";  // Below average performance
+                return "Below Average";  // Below average performance (10th-25th percentile equivalent)
             }
             if (tScore >= 55) {
                 console.log('Returning: Average (T≥55 = low average performance)');
-                return "Average";  // Low average performance
+                return "Average";  // Low average performance (26th-49th percentile equivalent)
             }
             if (tScore >= 45) {
                 console.log('Returning: Average (T=45-54 = average performance)');
-                return "Average";  // Average performance
+                return "Average";  // Average performance (50th-75th percentile equivalent)
             }
             if (tScore >= 40) {
                 console.log('Returning: High Average (T=40-44 = good performance)');
-                return "High Average";  // Good performance
+                return "High Average";  // Good performance (76th-89th percentile equivalent)
+            }
+            if (tScore >= 35) {
+                console.log('Returning: Above Average (T=35-39 = very good performance)');
+                return "Above Average";  // Very good performance (90th-97th percentile equivalent)
             }
             
-            console.log('Returning: High (T<40 = excellent performance)');
-            return "High";  // Excellent performance
+            console.log('Returning: Exceptionally High (T<35 = excellent performance)');
+            return "Exceptionally High";  // Excellent performance (≥98th percentile equivalent)
         }
 
         // Use external database for AACN ranges and Heaton descriptors with CPT-II INVERTED SCORING
@@ -410,16 +414,18 @@
             return 93;                     // Superior = 93rd percentile
         }
 
-        // Use CPT-II specific AACN ranges with inverted logic
+        // CPT-II COMPLETE 7-POINT AACN scale with inverted logic - v2.5
         function getPerformanceRange(percentile) {
             console.log(`Getting performance range for percentile: ${percentile}`);
             
+            // Complete 7-point AACN scale
             if (percentile <= 2) return "Exceptionally Low";
-            if (percentile <= 9) return "Low";
+            if (percentile <= 9) return "Low Average";      // Added missing label
             if (percentile <= 25) return "Below Average";
-            if (percentile <= 75) return "Average";
-            if (percentile <= 91) return "High Average";
-            if (percentile <= 98) return "High";
+            if (percentile <= 49) return "Average";
+            if (percentile <= 75) return "Average";         // Average spans broader range
+            if (percentile <= 89) return "High Average";
+            if (percentile <= 97) return "Above Average";   // Added missing label
             return "Exceptionally High";
         }
 
@@ -834,7 +840,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v2.3 test completed and sent to master dashboard');
+            console.log('CPT-II v2.5 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
