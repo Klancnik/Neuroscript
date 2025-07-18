@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WMS-III Clinical Report Generator</title>
+    <title>WMS-III Enhanced v3.1</title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -23,10 +23,22 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .header {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .version {
+            font-size: 0.6em;
+            color: #6c757d;
+            font-weight: normal;
+        }
         .input-section {
             background: #f8f9fa;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             margin-bottom: 30px;
         }
         .input-group {
@@ -36,57 +48,84 @@
             display: block;
             font-weight: bold;
             margin-bottom: 5px;
+            color: #34495e;
         }
-        input[type="number"] {
-            width: 80px;
-            padding: 5px;
+        input[type="number"], select {
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 3px;
+            border-radius: 4px;
+            font-size: 14px;
         }
         input[type="number"]:invalid {
             border: 2px solid #ff0000;
             background-color: #ffe6e6;
         }
-        .score-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
         .section-header {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
+            font-size: 18px;
             font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        .score-table th {
+            background-color: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .score-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        .score-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .score-table input {
+            width: 80px;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
         }
         .generate-btn {
-            background: #007bff;
+            background: #3498db;
             color: white;
-            padding: 12px 24px;
+            padding: 12px 30px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
+            margin: 10px 5px;
         }
         .generate-btn:hover {
-            background: #0056b3;
+            background: #2980b9;
         }
         .complete-btn {
-            background: #28a745;
+            background: #27ae60;
             color: white;
-            padding: 12px 24px;
+            padding: 12px 30px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            margin-left: 10px;
+            margin: 10px 5px;
         }
         .complete-btn:hover {
-            background: #1e7e34;
+            background: #229954;
         }
         .load-btn {
             background: #f39c12;
@@ -96,33 +135,29 @@
             border-radius: 5px;
             font-size: 14px;
             cursor: pointer;
-            margin-right: 10px;
+            margin: 10px 5px;
         }
         .load-btn:hover {
             background: #e67e22;
         }
         .output-section {
-            background: white;
-            border: 2px solid #dee2e6;
-            padding: 25px;
             margin-top: 30px;
-            font-family: 'Times New Roman', serif;
-            line-height: 1.6;
-        }
-        h3 {
-            color: #333;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>WMS-III Clinical Report Generator</h1>
-        <p>Enter WMS-III scores to generate clinical narrative text in Neuroscript format</p>
+        <div class="header">
+            <h1>WMS-III Clinical Report Generator <span class="version">v3.1</span></h1>
+            <p>Enter WMS-III scores to generate clinical narrative text in Neuroscript format</p>
+        </div>
 
         <div class="input-section">
-            <h3>Demographics</h3>
+            <div class="section-header">Demographics</div>
             <div class="input-group">
                 <label>Age (years):</label>
                 <input type="number" id="age" value="" placeholder="16-89" min="16" max="89">
@@ -140,144 +175,176 @@
             </div>
 
             <div class="section-header">Primary Indices</div>
-            <div class="score-grid">
-                <div>
-                    <label>Auditory Immediate Index:</label>
-                    <input type="number" id="auditoryImmediate" value="" min="40" max="160" placeholder="40-160">
-                </div>
-                <div>
-                    <label>Visual Immediate Index:</label>
-                    <input type="number" id="visualImmediate" value="" min="40" max="160" placeholder="40-160">
-                </div>
-                <div>
-                    <label>Immediate Memory Index:</label>
-                    <input type="number" id="immediateMemory" value="" min="40" max="160" placeholder="40-160">
-                </div>
-                <div>
-                    <label>Auditory Delayed Index:</label>
-                    <input type="number" id="auditoryDelayed" value="" min="40" max="160" placeholder="40-160">
-                </div>
-                <div>
-                    <label>Visual Delayed Index:</label>
-                    <input type="number" id="visualDelayed" value="" min="40" max="160" placeholder="40-160">
-                </div>
-                <div>
-                    <label>Auditory Recognition Delayed Index:</label>
-                    <input type="number" id="auditoryRecognition" value="" min="40" max="160" placeholder="40-160">
-                </div>
-                <div>
-                    <label>General Memory Index:</label>
-                    <input type="number" id="generalMemory" value="" min="40" max="160" placeholder="40-160">
-                </div>
-                <div>
-                    <label>Working Memory Index:</label>
-                    <input type="number" id="workingMemory" value="" min="40" max="160" placeholder="40-160">
-                </div>
-            </div>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Auditory Immediate</td>
+                        <td><input type="number" id="auditoryImmediate" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                    <tr>
+                        <td>Visual Immediate</td>
+                        <td><input type="number" id="visualImmediate" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                    <tr>
+                        <td>Immediate Memory</td>
+                        <td><input type="number" id="immediateMemory" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                    <tr>
+                        <td>Auditory Delayed</td>
+                        <td><input type="number" id="auditoryDelayed" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                    <tr>
+                        <td>Visual Delayed</td>
+                        <td><input type="number" id="visualDelayed" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                    <tr>
+                        <td>Auditory Recognition Delayed</td>
+                        <td><input type="number" id="auditoryRecognition" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                    <tr>
+                        <td>General Memory</td>
+                        <td><input type="number" id="generalMemory" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                    <tr>
+                        <td>Working Memory</td>
+                        <td><input type="number" id="workingMemory" min="40" max="160" placeholder="40-160"></td>
+                    </tr>
+                </tbody>
+            </table>
 
             <div class="section-header">Primary Subtests</div>
-            <div class="score-grid">
-                <div>
-                    <label>Logical Memory I:</label>
-                    <input type="number" id="logicalMemoryI" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Faces I:</label>
-                    <input type="number" id="facesI" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Verbal Paired Associates I:</label>
-                    <input type="number" id="verbalPairedI" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Family Pictures I:</label>
-                    <input type="number" id="familyPicturesI" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Letter-Number Sequencing:</label>
-                    <input type="number" id="letterNumber" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Spatial Span:</label>
-                    <input type="number" id="spatialSpan" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Logical Memory II:</label>
-                    <input type="number" id="logicalMemoryII" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Faces II:</label>
-                    <input type="number" id="facesII" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Verbal Paired Associates II:</label>
-                    <input type="number" id="verbalPairedII" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Family Pictures II:</label>
-                    <input type="number" id="familyPicturesII" value="" min="1" max="19" placeholder="1-19">
-                </div>
-            </div>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th>Subtest</th>
+                        <th>Scaled Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Logical Memory I</td>
+                        <td><input type="number" id="logicalMemoryI" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Faces I</td>
+                        <td><input type="number" id="facesI" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Verbal Paired Associates I</td>
+                        <td><input type="number" id="verbalPairedI" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Family Pictures I</td>
+                        <td><input type="number" id="familyPicturesI" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Letter-Number Sequencing</td>
+                        <td><input type="number" id="letterNumber" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Spatial Span</td>
+                        <td><input type="number" id="spatialSpan" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Logical Memory II</td>
+                        <td><input type="number" id="logicalMemoryII" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Faces II</td>
+                        <td><input type="number" id="facesII" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Verbal Paired Associates II</td>
+                        <td><input type="number" id="verbalPairedII" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Family Pictures II</td>
+                        <td><input type="number" id="familyPicturesII" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                </tbody>
+            </table>
 
             <div class="section-header">Supplemental Subtests</div>
-            <div class="score-grid">
-                <div>
-                    <label>Information and Orientation:</label>
-                    <input type="number" id="infoOrientation" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>List Learning:</label>
-                    <input type="number" id="listLearning" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>List Recall:</label>
-                    <input type="number" id="listRecall" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>List Recognition:</label>
-                    <input type="number" id="listRecognition" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Visual Reproduction I:</label>
-                    <input type="number" id="visualReproI" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Visual Reproduction II:</label>
-                    <input type="number" id="visualReproII" value="" min="1" max="19" placeholder="1-19">
-                </div>
-                <div>
-                    <label>Digit Span:</label>
-                    <input type="number" id="digitSpan" value="" min="1" max="19" placeholder="1-19">
-                </div>
-            </div>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th>Subtest</th>
+                        <th>Scaled Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Information and Orientation</td>
+                        <td><input type="number" id="infoOrientation" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>List Learning</td>
+                        <td><input type="number" id="listLearning" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>List Recall</td>
+                        <td><input type="number" id="listRecall" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>List Recognition</td>
+                        <td><input type="number" id="listRecognition" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Visual Reproduction I</td>
+                        <td><input type="number" id="visualReproI" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Visual Reproduction II</td>
+                        <td><input type="number" id="visualReproII" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                    <tr>
+                        <td>Digit Span</td>
+                        <td><input type="number" id="digitSpan" min="1" max="19" placeholder="1-19"></td>
+                    </tr>
+                </tbody>
+            </table>
 
             <div class="section-header">Process Scores (Optional)</div>
-            <div class="score-grid">
-                <div>
-                    <label>LM Retention (%):</label>
-                    <input type="number" id="lmRetention" value="" min="0" max="100" placeholder="0-100">
-                </div>
-                <div>
-                    <label>VPA Retention (%):</label>
-                    <input type="number" id="vpaRetention" value="" min="0" max="100" placeholder="0-100">
-                </div>
-                <div>
-                    <label>Faces Retention (%):</label>
-                    <input type="number" id="facesRetention" value="" min="0" max="100" placeholder="0-100">
-                </div>
-                <div>
-                    <label>Family Pictures Retention (%):</label>
-                    <input type="number" id="familyPicRetention" value="" min="0" max="100" placeholder="0-100">
-                </div>
-                <div>
-                    <label>Visual Reproduction Retention (%):</label>
-                    <input type="number" id="visualReproRetention" value="" min="0" max="100" placeholder="0-100">
-                </div>
-                <div>
-                    <label>Word Lists Retention (%):</label>
-                    <input type="number" id="wordListsRetention" value="" min="0" max="100" placeholder="0-100">
-                </div>
-            </div>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th>Process Score</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LM Retention (%)</td>
+                        <td><input type="number" id="lmRetention" min="0" max="100" placeholder="0-100"></td>
+                    </tr>
+                    <tr>
+                        <td>VPA Retention (%)</td>
+                        <td><input type="number" id="vpaRetention" min="0" max="100" placeholder="0-100"></td>
+                    </tr>
+                    <tr>
+                        <td>Faces Retention (%)</td>
+                        <td><input type="number" id="facesRetention" min="0" max="100" placeholder="0-100"></td>
+                    </tr>
+                    <tr>
+                        <td>Family Pictures Retention (%)</td>
+                        <td><input type="number" id="familyPicRetention" min="0" max="100" placeholder="0-100"></td>
+                    </tr>
+                    <tr>
+                        <td>Visual Reproduction Retention (%)</td>
+                        <td><input type="number" id="visualReproRetention" min="0" max="100" placeholder="0-100"></td>
+                    </tr>
+                    <tr>
+                        <td>Word Lists Retention (%)</td>
+                        <td><input type="number" id="wordListsRetention" min="0" max="100" placeholder="0-100"></td>
+                    </tr>
+                </tbody>
+            </table>
 
             <button class="load-btn" onclick="loadTestData()">🧪 Load Test Data</button>
             <button class="generate-btn" onclick="generateWMSReport()">Generate WMS-III Report</button>
@@ -290,13 +357,33 @@
     </div>
 
     <script>
+        console.log('WMS-III Enhanced v3.1 - Initializing...');
+        
         // Data management
         let currentNarrative = '';
         let currentScoreTable = '';
 
+        // Retention percentage range function
+        function getRetentionRange(percentage) {
+            console.log('getRetentionRange v3.1 called with:', percentage);
+            
+            if (typeof percentage !== 'number' || isNaN(percentage)) {
+                console.warn('Invalid percentage passed to getRetentionRange:', percentage);
+                return "Average";
+            }
+            
+            if (percentage >= 95) return "Exceptionally High";
+            if (percentage >= 90) return "Above Average";
+            if (percentage >= 75) return "High Average";
+            if (percentage >= 50) return "Average";
+            if (percentage >= 25) return "Below Average";
+            if (percentage >= 10) return "Low Average";
+            return "Exceptionally Low";
+        }
+
         // Load Test Data Function for Development
         function loadTestData() {
-            console.log('Loading WMS-III test data...');
+            console.log('Loading WMS-III test data v3.1...');
             
             // Demographics
             document.getElementById('age').value = 45;
@@ -342,28 +429,10 @@
             document.getElementById('visualReproRetention').value = 80;
             document.getElementById('wordListsRetention').value = 70;
             
-            console.log('WMS-III test data loaded successfully');
+            console.log('WMS-III test data v3.1 loaded successfully');
         }
 
-        // Retention percentage range function
-        function getRetentionRange(percentage) {
-            console.log('getRetentionRange called with:', percentage);
-            
-            if (typeof percentage !== 'number' || isNaN(percentage)) {
-                console.warn('Invalid percentage passed to getRetentionRange:', percentage);
-                return "Average";
-            }
-            
-            if (percentage >= 95) return "Exceptionally High";
-            if (percentage >= 90) return "Above Average";
-            if (percentage >= 75) return "High Average";
-            if (percentage >= 50) return "Average";
-            if (percentage >= 25) return "Below Average";
-            if (percentage >= 10) return "Low Average";
-            return "Exceptionally Low";
-        }
-
-        // Database utility functions following WAIS-IV pattern
+        // Database utility functions
         function getIndexInterpretationFromDB(score) {
             if (!window.NeuroscriptDB || !score) return "Average range";
             
@@ -388,10 +457,9 @@
         function getSubtestInterpretationFromDB(score) {
             if (!window.NeuroscriptDB || !score) return "Average range";
             
-            const range = window.NeuroscriptDB.getRange(score, 'wechsler');
             const data = window.NeuroscriptDB.getByWechslerScore(score);
             
-            let interpretation = range + " range (ss=" + score + ")";
+            let interpretation = data.aacn + " range (ss=" + score + ")";
             
             // Add Heaton impairment levels for low scores based on percentile
             if (data.percentile <= 16) {
@@ -408,7 +476,7 @@
         }
 
         function generateWMSReport() {
-            console.log('WMS-III generateWMSReport called...');
+            console.log('WMS-III generateWMSReport v3.1 called...');
             
             try {
                 // Check if external database is loaded
@@ -467,7 +535,7 @@
                     wordListsRetention: parseInt(document.getElementById('wordListsRetention').value) || 0
                 };
 
-                console.log('Collected WMS-III data:', data);
+                console.log('Collected WMS-III data v3.1:', data);
 
                 // Basic validation
                 if (data.generalMemory === 0 && data.immediateMemory === 0) {
@@ -482,7 +550,7 @@
                 }
 
                 const gender = data.gender;
-                const pronoun = gender === 'Male' ? 'His' : 'Her';
+                const pronoun = gender === 'Male' ? 'his' : 'her';
                 const heShe = gender === 'Male' ? 'He' : 'She';
 
                 let report = '<h3><b>Memory</b></h3>\n';
@@ -492,7 +560,7 @@
                 // Step 1: WMS-III identification and General Memory Index
                 if (data.generalMemory > 0) {
                     const gmData = window.NeuroscriptDB.getByStandardScore(data.generalMemory);
-                    report += `<p>On the WMS-III, ${pronoun.toLowerCase()} score on the General Memory Index was in the ${gmData.aacn} range.</p>\n`;
+                    report += `<p>On the WMS-III, ${pronoun} score on the General Memory Index was in the ${gmData.aacn} range.</p>\n`;
                 }
 
                 // Step 2: Logical Memory (immediate and delayed with retention)
@@ -576,7 +644,7 @@
                 document.getElementById('output').style.display = 'block';
 
             } catch (error) {
-                console.error('Error generating WMS-III report:', error);
+                console.error('Error generating WMS-III report v3.1:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -632,6 +700,8 @@
 
         // Input validation
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('WMS-III Enhanced v3.1 loaded successfully');
+            
             const inputs = document.querySelectorAll('input[type="number"]');
             inputs.forEach(input => {
                 input.addEventListener('input', function() {
@@ -650,9 +720,9 @@
             });
         });
 
-        // Console logging for debugging (like WAIS-IV)
+        // Console logging for debugging
         window.addEventListener('load', function() {
-            console.log('WMS-III loaded. Checking database...');
+            console.log('WMS-III v3.1 loaded. Checking database...');
             if (window.NeuroscriptDB) {
                 console.log('Database loaded successfully');
             } else {
