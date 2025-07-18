@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.1</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.2</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -248,28 +248,13 @@
 
         // Load external database check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II v2.1 loaded - INVERTED SCORING DEBUG');
+            console.log('CPT-II v2.2 loaded - FIXED INVERTED SCORING');
             console.log('Database check:', typeof window.NeuroscriptDB);
             
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('External database not loaded!');
-                document.getElementById('output').innerHTML = '<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;"><h4>⚠️ Database Error</h4><p>External normative database not loaded. Please refresh the page.</p></div>';
-                document.getElementById('output').style.display = 'block';
+                console.warn('External database not loaded - using CPT-II specific conversions');
             } else {
-                console.log('Database loaded successfully');
-                // Test the conversion with a sample score
-                console.log('Testing CPT-II conversion: T=65 should convert to conventional T=35');
-                const testConventional = 100 - 65;
-                console.log('Conventional T-score:', testConventional);
-                
-                if (window.NeuroscriptDB.conversionTable) {
-                    let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
-                        Math.abs(curr.tScore - testConventional) < Math.abs(prev.tScore - testConventional) ? curr : prev
-                    );
-                    console.log('Closest database match for T=35:', closest);
-                } else {
-                    console.error('Conversion table not found in database!');
-                }
+                console.log('Database loaded, but using CPT-II specific inverted scoring logic');
             }
 
             // Add input validation
@@ -340,34 +325,39 @@
             });
         }
 
-        // Use external database for CPT range conversion with INVERTED SCORING DEBUG
+        // CPT-II SPECIFIC INVERTED SCORING CONVERSION - v2.2 FIX
         function getCPTRange(tScore) {
-            console.log(`getCPTRange called with T-score: ${tScore}`);
+            console.log(`getCPTRange called with CPT-II T-score: ${tScore}`);
             
-            if (!window.NeuroscriptDB) {
-                console.log('Using fallback conversion - database not available');
-                // Fallback if database not loaded - CPT-II INVERTED ranges
-                if (tScore >= 65) return "Significantly Atypical";
-                if (tScore >= 60) return "Mildly Atypical"; 
-                if (tScore >= 55) return "Slightly Atypical";
-                if (tScore >= 45) return "Typical";
-                if (tScore >= 40) return "Slightly Better";
-                return "Much Better";
+            // CPT-II specific ranges based on inverted scoring
+            // Higher T-scores = worse performance, so we need special handling
+            if (tScore >= 70) {
+                console.log('Returning: Exceptionally High (Atypical)');
+                return "Exceptionally High";  // Very poor performance
             }
-
-            // CPT-II INVERTED SCORING: Convert to conventional T-score first
-            const conventionalT = 100 - tScore;
-            console.log(`CPT-II T=${tScore} converted to conventional T=${conventionalT}`);
+            if (tScore >= 65) {
+                console.log('Returning: High (Significantly Atypical)');
+                return "High";  // Poor performance
+            }
+            if (tScore >= 60) {
+                console.log('Returning: High Average (Mildly Atypical)');
+                return "High Average";  // Mildly poor performance
+            }
+            if (tScore >= 55) {
+                console.log('Returning: Average (Slightly Atypical)');
+                return "Average";  // Slightly poor performance
+            }
+            if (tScore >= 45) {
+                console.log('Returning: Average (Typical)');
+                return "Average";  // Normal performance
+            }
+            if (tScore >= 40) {
+                console.log('Returning: Below Average (Good)');
+                return "Below Average";  // Good performance
+            }
             
-            // Find closest conventional T-score in database
-            let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
-                Math.abs(curr.tScore - conventionalT) < Math.abs(prev.tScore - conventionalT) ? curr : prev
-            );
-            
-            console.log(`Database match for conventional T=${conventionalT}:`, closest);
-            console.log(`Returning AACN range: ${closest.aacn}`);
-            
-            return closest.aacn;
+            console.log('Returning: Low (Excellent)');
+            return "Low";  // Excellent performance
         }
 
         // Use external database for AACN ranges and Heaton descriptors with CPT-II INVERTED SCORING
@@ -404,38 +394,43 @@
             }
         }
 
+        // CPT-II INVERTED SCORING: Custom percentile conversion - v2.2
         function convertTScoreToPercentile(tScore) {
-            if (!window.NeuroscriptDB) {
-                // Fallback conversion with CPT-II INVERTED SCORING
-                const conventionalT = 100 - tScore;
-                const percentiles = {
-                    30: 2, 35: 7, 40: 16, 45: 31, 50: 50, 55: 69, 60: 84, 65: 93, 70: 98, 75: 99, 80: 99.5
-                };
-                
-                const keys = Object.keys(percentiles).map(Number).sort((a, b) => a - b);
-                let closest = keys[0];
-                let minDiff = Math.abs(conventionalT - closest);
-                
-                for (let key of keys) {
-                    const diff = Math.abs(conventionalT - key);
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        closest = key;
-                    }
-                }
-                
-                return percentiles[closest];
-            }
+            console.log(`Converting CPT-II T-score ${tScore} to percentile`);
+            
+            // CPT-II inverted scoring - higher T = worse performance
+            // Convert to conventional interpretation
+            if (tScore >= 70) return 2;    // Very poor = 2nd percentile
+            if (tScore >= 65) return 7;    // Poor = 7th percentile  
+            if (tScore >= 60) return 16;   // Below average = 16th percentile
+            if (tScore >= 55) return 31;   // Low average = 31st percentile
+            if (tScore >= 45) return 50;   // Average = 50th percentile
+            if (tScore >= 40) return 69;   // High average = 69th percentile
+            if (tScore >= 35) return 84;   // Above average = 84th percentile
+            return 93;                     // Superior = 93rd percentile
+        }
 
-            // CPT-II INVERTED SCORING: Convert to conventional T-score first
-            const conventionalT = 100 - tScore;
+        // Use CPT-II specific AACN ranges with inverted logic
+        function getPerformanceRange(percentile) {
+            console.log(`Getting performance range for percentile: ${percentile}`);
             
-            // Use external database for precise conversion
-            let closest = window.NeuroscriptDB.conversionTable.reduce((prev, curr) => 
-                Math.abs(curr.tScore - conventionalT) < Math.abs(prev.tScore - conventionalT) ? curr : prev
-            );
+            if (percentile <= 2) return "Exceptionally Low";
+            if (percentile <= 9) return "Low";
+            if (percentile <= 25) return "Below Average";
+            if (percentile <= 75) return "Average";
+            if (percentile <= 91) return "High Average";
+            if (percentile <= 98) return "High";
+            return "Exceptionally High";
+        }
+
+        function getHeatonLevel(percentile) {
+            console.log(`Getting Heaton level for percentile: ${percentile}`);
             
-            return closest.percentile;
+            if (percentile <= 2) return "a severe level of impairment";
+            if (percentile <= 9) return "a moderate to severe level of impairment";
+            if (percentile <= 16) return "a mild to moderate level of impairment";
+            if (percentile <= 25) return "a mild level of impairment";
+            return null; // No impairment descriptor for normal range
         }
 
         function getCPTInterpretation(measure, tScore) {
@@ -839,7 +834,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v2.1 test completed and sent to master dashboard');
+            console.log('CPT-II v2.2 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
