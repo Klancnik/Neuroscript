@@ -345,6 +345,17 @@
             console.log('WMS-III test data loaded successfully');
         }
 
+        // Retention percentage range function
+        function getRetentionRange(percentage) {
+            if (percentage >= 95) return "Exceptionally High";
+            if (percentage >= 90) return "Above Average";
+            if (percentage >= 75) return "High Average";
+            if (percentage >= 50) return "Average";
+            if (percentage >= 25) return "Below Average";
+            if (percentage >= 10) return "Low Average";
+            return "Exceptionally Low";
+        }
+
         // Database utility functions following WAIS-IV pattern
         function getIndexInterpretationFromDB(score) {
             if (!window.NeuroscriptDB || !score) return "Average range";
@@ -465,98 +476,44 @@
 
                 let report = '<h3><b>Memory</b></h3>\n';
 
-                // Add narrative sections based on enhanced WMS-III pattern
+                // Simplified narrative structure for integrated reporting
 
-                // Overall Memory Functioning
+                // Step 1: WMS-III identification and General Memory Index
                 if (data.generalMemory > 0) {
                     const gmData = window.NeuroscriptDB.getByStandardScore(data.generalMemory);
-                    report += `<p>${heShe} obtained a General Memory Index of ${data.generalMemory}, placing ${pronoun.toLowerCase()} within the ${gmData.aacn} range (${gmData.percentile}th percentile) of overall memory functioning.</p>\n`;
+                    report += `<p>On the WMS-III, ${pronoun.toLowerCase()} score on the General Memory Index was in the ${gmData.aacn} range.</p>\n`;
                 }
 
-                // Immediate vs Delayed Memory Comparison
-                if (data.immediateMemory > 0 && data.auditoryDelayed > 0) {
-                    const immData = window.NeuroscriptDB.getByStandardScore(data.immediateMemory);
-                    const delData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
-                    report += `<p>${pronoun} immediate memory abilities fell within the ${immData.aacn} range (${immData.percentile}th percentile), while ${pronoun.toLowerCase()} delayed memory performance was within the ${delData.aacn} range (${delData.percentile}th percentile).</p>\n`;
-                }
-
-                // Auditory Memory
-                if (data.auditoryImmediate > 0 || data.logicalMemoryI > 0 || data.verbalPairedI > 0) {
+                // Step 2: Logical Memory (immediate and delayed with retention)
+                if (data.logicalMemoryI > 0 || data.logicalMemoryII > 0) {
                     report += '<p>';
-                    if (data.auditoryImmediate > 0) {
-                        const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
-                        report += `${pronoun} auditory immediate memory abilities were within the ${audImmData.aacn} range (${audImmData.percentile}th percentile). `;
+                    
+                    if (data.logicalMemoryI > 0 && data.logicalMemoryII > 0) {
+                        const lmIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryI);
+                        const lmIIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryII);
+                        
+                        // Check if ranges are the same
+                        if (lmIData.aacn === lmIIData.aacn) {
+                            report += `Recall of prose passages (WMS-III Logical Memory) was in the ${lmIData.aacn} range under either immediate (ss=${data.logicalMemoryI}) or delayed conditions (ss=${data.logicalMemoryII}).`;
+                        } else {
+                            report += `Recall of prose passages (WMS-III Logical Memory) was in the ${lmIData.aacn} range (ss=${data.logicalMemoryI}) under immediate conditions, and in the ${lmIIData.aacn} range (ss=${data.logicalMemoryII}) under delayed conditions.`;
+                        }
+                        
+                        // Add retention percentage if available
+                        if (data.lmRetention > 0) {
+                            const retentionRange = getRetentionRange(data.lmRetention);
+                            report += ` After the delay, ${heShe.toLowerCase()} was able to recall ${data.lmRetention} percent of the material initially learned, showing retention in the ${retentionRange} range.`;
+                        }
+                        
+                    } else if (data.logicalMemoryI > 0) {
+                        const lmIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryI);
+                        report += `Recall of prose passages under immediate conditions (WMS-III Logical Memory I) was in the ${lmIData.aacn} range (ss=${data.logicalMemoryI}).`;
+                    } else if (data.logicalMemoryII > 0) {
+                        const lmIIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryII);
+                        report += `Recall of prose passages under delayed conditions (WMS-III Logical Memory II) was in the ${lmIIData.aacn} range (ss=${data.logicalMemoryII}).`;
                     }
                     
-                    if (data.logicalMemoryI > 0) {
-                        report += `${pronoun} performance on a test of story memory (WMS-III Logical Memory I) was within the ${getSubtestInterpretationFromDB(data.logicalMemoryI)}. `;
-                    }
-                    
-                    if (data.verbalPairedI > 0) {
-                        report += `${pronoun} performance on a test of verbal paired associate learning (WMS-III Verbal Paired Associates I) was within the ${getSubtestInterpretationFromDB(data.verbalPairedI)}.`;
-                    }
                     report += '</p>\n';
-                }
-
-                // Visual Memory  
-                if (data.visualImmediate > 0 || data.facesI > 0 || data.familyPicturesI > 0) {
-                    report += '<p>';
-                    if (data.visualImmediate > 0) {
-                        const visImmData = window.NeuroscriptDB.getByStandardScore(data.visualImmediate);
-                        report += `${pronoun} visual immediate memory abilities were within the ${visImmData.aacn} range (${visImmData.percentile}th percentile). `;
-                    }
-                    
-                    if (data.facesI > 0) {
-                        report += `${pronoun} performance on a test of face recognition (WMS-III Faces I) was within the ${getSubtestInterpretationFromDB(data.facesI)}. `;
-                    }
-                    
-                    if (data.familyPicturesI > 0) {
-                        report += `${pronoun} performance on a test of visual scene memory (WMS-III Family Pictures I) was within the ${getSubtestInterpretationFromDB(data.familyPicturesI)}.`;
-                    }
-                    report += '</p>\n';
-                }
-
-                // Working Memory
-                if (data.workingMemory > 0 || data.letterNumber > 0 || data.spatialSpan > 0) {
-                    report += '<p>';
-                    if (data.workingMemory > 0) {
-                        const wmData = window.NeuroscriptDB.getByStandardScore(data.workingMemory);
-                        report += `${pronoun} working memory abilities were within the ${wmData.aacn} range (${wmData.percentile}th percentile). `;
-                    }
-                    
-                    if (data.letterNumber > 0) {
-                        report += `${pronoun} performance on a test of auditory working memory (WMS-III Letter-Number Sequencing) was within the ${getSubtestInterpretationFromDB(data.letterNumber)}. `;
-                    }
-                    
-                    if (data.spatialSpan > 0) {
-                        report += `${pronoun} performance on a test of visual-spatial working memory (WMS-III Spatial Span) was within the ${getSubtestInterpretationFromDB(data.spatialSpan)}.`;
-                    }
-                    report += '</p>\n';
-                }
-
-                // Delayed Memory Performance
-                if (data.logicalMemoryII > 0 || data.verbalPairedII > 0 || data.facesII > 0) {
-                    report += '<p>After a delay, ';
-                    const delayedTests = [];
-                    
-                    if (data.logicalMemoryII > 0) {
-                        delayedTests.push(`${pronoun.toLowerCase()} story recall (WMS-III Logical Memory II) was within the ${getSubtestInterpretationFromDB(data.logicalMemoryII)}`);
-                    }
-                    
-                    if (data.verbalPairedII > 0) {
-                        delayedTests.push(`${pronoun.toLowerCase()} verbal paired associate recall (WMS-III Verbal Paired Associates II) was within the ${getSubtestInterpretationFromDB(data.verbalPairedII)}`);
-                    }
-                    
-                    if (data.facesII > 0) {
-                        delayedTests.push(`${pronoun.toLowerCase()} face recognition (WMS-III Faces II) was within the ${getSubtestInterpretationFromDB(data.facesII)}`);
-                    }
-                    
-                    if (delayedTests.length > 1) {
-                        report += delayedTests.slice(0, -1).join(', ') + ', and ' + delayedTests[delayedTests.length - 1];
-                    } else {
-                        report += delayedTests[0];
-                    }
-                    report += '.</p>\n';
                 }
 
                 // Store for completion
