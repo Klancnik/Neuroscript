@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.2</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.3</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -248,7 +248,7 @@
 
         // Load external database check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II v2.2 loaded - FIXED INVERTED SCORING');
+            console.log('CPT-II v2.3 loaded - AACN LABELS + INVERTED SCORING FIXED');
             console.log('Database check:', typeof window.NeuroscriptDB);
             
             if (typeof window.NeuroscriptDB === 'undefined') {
@@ -325,39 +325,39 @@
             });
         }
 
-        // CPT-II SPECIFIC INVERTED SCORING CONVERSION - v2.2 FIX
+        // CPT-II SPECIFIC INVERTED SCORING with AACN LABELS - v2.3 FIX
         function getCPTRange(tScore) {
             console.log(`getCPTRange called with CPT-II T-score: ${tScore}`);
             
-            // CPT-II specific ranges based on inverted scoring
-            // Higher T-scores = worse performance, so we need special handling
+            // CPT-II specific AACN ranges with INVERTED scoring
+            // Higher T-scores = worse performance = lower percentile equivalents
             if (tScore >= 70) {
-                console.log('Returning: Exceptionally High (Atypical)');
-                return "Exceptionally High";  // Very poor performance
+                console.log('Returning: Exceptionally Low (T≥70 = very poor performance)');
+                return "Exceptionally Low";  // Very poor performance
             }
             if (tScore >= 65) {
-                console.log('Returning: High (Significantly Atypical)');
-                return "High";  // Poor performance
+                console.log('Returning: Low (T≥65 = poor performance)');
+                return "Low";  // Poor performance
             }
             if (tScore >= 60) {
-                console.log('Returning: High Average (Mildly Atypical)');
-                return "High Average";  // Mildly poor performance
+                console.log('Returning: Below Average (T≥60 = below average performance)');
+                return "Below Average";  // Below average performance
             }
             if (tScore >= 55) {
-                console.log('Returning: Average (Slightly Atypical)');
-                return "Average";  // Slightly poor performance
+                console.log('Returning: Average (T≥55 = low average performance)');
+                return "Average";  // Low average performance
             }
             if (tScore >= 45) {
-                console.log('Returning: Average (Typical)');
-                return "Average";  // Normal performance
+                console.log('Returning: Average (T=45-54 = average performance)');
+                return "Average";  // Average performance
             }
             if (tScore >= 40) {
-                console.log('Returning: Below Average (Good)');
-                return "Below Average";  // Good performance
+                console.log('Returning: High Average (T=40-44 = good performance)');
+                return "High Average";  // Good performance
             }
             
-            console.log('Returning: Low (Excellent)');
-            return "Low";  // Excellent performance
+            console.log('Returning: High (T<40 = excellent performance)');
+            return "High";  // Excellent performance
         }
 
         // Use external database for AACN ranges and Heaton descriptors with CPT-II INVERTED SCORING
@@ -834,7 +834,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v2.2 test completed and sent to master dashboard');
+            console.log('CPT-II v2.3 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
