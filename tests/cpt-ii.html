@@ -149,7 +149,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.7</span></h1>
+        <h1>CPT-II Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.9</span></h1>
         <p>Enter CPT-II scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -248,7 +248,7 @@
 
         // Load external database check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II v2.7 loaded - ERROR HANDLING FIXED');
+            console.log('CPT-II v2.9 loaded - CORRECT STATCONV CPT ERRORS DESCRIPTORS');
             console.log('Database check:', typeof window.NeuroscriptDB);
             
             if (typeof window.NeuroscriptDB === 'undefined') {
@@ -398,7 +398,13 @@
             }
         }
 
-        // NARRATIVE-SPECIFIC: Normal metric conversion (high scores = better performance) - v2.6
+        function formatPerformanceDescriptionNarrative(percentile, range, heaton) {
+            if (heaton) {
+                return `${range} range (${percentile}th percentile), indicating ${heaton}`;
+            } else {
+                return `${range} range (${percentile}th percentile)`;
+            }
+        }
         function convertTScoreToPercentileNarrative(tScore) {
             console.log(`Converting CPT-II T-score ${tScore} to percentile for NARRATIVE (normal metric)`);
             
@@ -439,12 +445,48 @@
             return null; // No impairment descriptor for >16th percentile
         }
 
-        function formatPerformanceDescriptionNarrative(percentile, range, heaton) {
-            if (heaton) {
-                return `${range} range (${percentile}th percentile), indicating ${heaton}`;
+        // CPT ERRORS descriptors from statconv file (CORRECTED) - v2.9
+        function getCPTErrorDescriptor(tScore) {
+            console.log(`Getting CPT Error descriptor for T-score: ${tScore}`);
+            
+            // EXACT CPT ERRORS descriptors from statconv file with INVERTED percentiles
+            // These percentiles are INVERTED (higher T = worse performance)
+            // For narrative, we convert: 100 - CPT percentile = normal percentile
+            
+            // Map T-scores to CPT percentiles and exact statconv descriptors
+            let cptPercentile, descriptor;
+            
+            if (tScore >= 77) {
+                cptPercentile = 99;
+                descriptor = "a very significantly higher than average number";
+            } else if (tScore >= 73) {
+                cptPercentile = 95;
+                descriptor = "a very significantly higher than average number";
+            } else if (tScore >= 69) {
+                cptPercentile = 91;
+                descriptor = "a significantly higher than average number";
+            } else if (tScore >= 57) {
+                cptPercentile = 76;
+                descriptor = "a higher than average number";
+            } else if (tScore >= 45) {
+                cptPercentile = 50;
+                descriptor = "an average number";
+            } else if (tScore >= 37) {
+                cptPercentile = 24;
+                descriptor = "a fewer than average number";
+            } else if (tScore >= 30) {
+                cptPercentile = 7;
+                descriptor = "a well below average number";
             } else {
-                return `${range} range (${percentile}th percentile)`;
+                cptPercentile = 2;
+                descriptor = "very few";
             }
+            
+            // Convert to normal metric: 100 - CPT percentile
+            const normalPercentile = 100 - cptPercentile;
+            console.log(`CPT percentile: ${cptPercentile}, Normal percentile: ${normalPercentile}, Descriptor: ${descriptor}`);
+            
+            return {descriptor: descriptor, percentile: normalPercentile};
         }
 
         // CPT-II COMPLETE 7-POINT AACN scale with inverted logic - v2.5
@@ -751,7 +793,7 @@
                 results: results
             }, '*');
 
-            console.log('CPT-II v2.7 test completed and sent to master dashboard');
+            console.log('CPT-II v2.9 test completed and sent to master dashboard');
         }
 
         // Listen for client info from parent
