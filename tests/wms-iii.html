@@ -158,7 +158,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>WMS-III Clinical Report Generator <span class="version">v3.4</span></h1>
+            <h1>WMS-III Clinical Report Generator <span class="version">v3.5</span></h1>
             <p>Enter WMS-III scores to generate clinical narrative text in Neuroscript format</p>
         </div>
 
@@ -590,7 +590,103 @@
                     report += `<p>On the WMS-III, ${pronoun} score on the General Memory Index was in the ${gmData.aacn} range.</p>\n`;
                 }
 
-                // Step 2: Logical Memory (immediate and delayed with retention)
+                // Step 2: Auditory Memory Indices (immediate, delayed, recognition)
+                if (data.auditoryImmediate > 0 || data.auditoryDelayed > 0 || data.auditoryRecognition > 0) {
+                    report += '<p>';
+                    
+                    // Handle immediate and delayed auditory memory
+                    if (data.auditoryImmediate > 0 && data.auditoryDelayed > 0) {
+                        const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
+                        const audDelData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
+                        
+                        if (audImmData.aacn === audDelData.aacn) {
+                            report += `${pronoun} scores on overall measures of both immediate and delayed auditory memory were in the ${audImmData.aacn} range.`;
+                        } else {
+                            report += `${pronoun} score was in the ${audImmData.aacn} range on an overall measure of immediate auditory memory, and in the ${audDelData.aacn} range for delayed auditory memory.`;
+                        }
+                    } else if (data.auditoryImmediate > 0) {
+                        const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
+                        report += `${pronoun} score on an overall measure of immediate auditory memory was in the ${audImmData.aacn} range.`;
+                    } else if (data.auditoryDelayed > 0) {
+                        const audDelData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
+                        report += `${pronoun} score on an overall measure of delayed auditory memory was in the ${audDelData.aacn} range.`;
+                    }
+                    
+                    // Add recognition memory if available
+                    if (data.auditoryRecognition > 0) {
+                        const audRecData = window.NeuroscriptDB.getByStandardScore(data.auditoryRecognition);
+                        if (data.auditoryImmediate > 0 || data.auditoryDelayed > 0) {
+                            report += ` Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacn} range.`;
+                        } else {
+                            report += `Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacn} range.`;
+                        }
+                    }
+                    
+                    report += '</p>\n';
+                }
+
+                // Step 7: Faces (immediate and delayed with retention)
+                if (data.facesI > 0 || data.facesII > 0) {
+                    report += '<p>';
+                    
+                    if (data.facesI > 0 && data.facesII > 0) {
+                        const facesIData = window.NeuroscriptDB.getByWechslerScore(data.facesI);
+                        const facesIIData = window.NeuroscriptDB.getByWechslerScore(data.facesII);
+                        
+                        // Check if ranges are the same
+                        if (facesIData.aacn === facesIIData.aacn) {
+                            report += `Recognition memory for pictures of faces was within the ${facesIData.aacn} range under either immediate (ss=${data.facesI}) or delayed conditions (ss=${data.facesII})`;
+                        } else {
+                            report += `Recognition memory for pictures of faces was within the ${facesIData.aacn} range (ss=${data.facesI}) under immediate conditions, and within the ${facesIIData.aacn} range (ss=${data.facesII}) under delayed conditions`;
+                        }
+                        
+                        // Add Heaton impairment for delayed if ≤16th percentile
+                        if (data.facesII <= 6) {
+                            const heatonLevel = getHeatonLevel(data.facesII);
+                            if (heatonLevel) {
+                                report += `, ${heatonLevel}`;
+                            }
+                        }
+                        
+                        report += '.';
+                        
+                        // Add retention percentage if available
+                        if (data.facesRetention > 0) {
+                            const retentionRange = getRetentionRange(data.facesRetention);
+                            report += ` ${heShe} was able to retain ${data.facesRetention} percent of the face recognition information over the delay, showing retention in the ${retentionRange} range.`;
+                        }
+                        
+                    } else if (data.facesI > 0) {
+                        const facesIData = window.NeuroscriptDB.getByWechslerScore(data.facesI);
+                        report += `Recognition memory for pictures of faces under immediate conditions was within the ${facesIData.aacn} range (ss=${data.facesI})`;
+                        
+                        // Add Heaton impairment if ≤16th percentile
+                        if (data.facesI <= 6) {
+                            const heatonLevel = getHeatonLevel(data.facesI);
+                            if (heatonLevel) {
+                                report += `, ${heatonLevel}`;
+                            }
+                        }
+                        report += '.';
+                        
+                    } else if (data.facesII > 0) {
+                        const facesIIData = window.NeuroscriptDB.getByWechslerScore(data.facesII);
+                        report += `Recognition memory for pictures of faces under delayed conditions was within the ${facesIIData.aacn} range (ss=${data.facesII})`;
+                        
+                        // Add Heaton impairment if ≤16th percentile
+                        if (data.facesII <= 6) {
+                            const heatonLevel = getHeatonLevel(data.facesII);
+                            if (heatonLevel) {
+                                report += `, ${heatonLevel}`;
+                            }
+                        }
+                        report += '.';
+                    }
+                    
+                    report += '</p>\n';
+                }
+
+                // Step 3: Logical Memory (immediate and delayed with retention)
                 if (data.logicalMemoryI > 0 || data.logicalMemoryII > 0) {
                     report += '<p>';
                     
@@ -651,7 +747,7 @@
                     report += '</p>\n';
                 }
 
-                // Step 3: Verbal Paired Associates (immediate and delayed with retention)
+                // Step 4: Verbal Paired Associates (immediate and delayed with retention)
                 if (data.verbalPairedI > 0 || data.verbalPairedII > 0) {
                     report += '<p>';
                     
@@ -707,7 +803,31 @@
                     report += '</p>\n';
                 }
 
-                // Step 4: Visual Reproduction (immediate, delayed, retention, and recognition)
+                // Step 5: Visual Memory Indices (immediate and delayed)
+                if (data.visualImmediate > 0 || data.visualDelayed > 0) {
+                    report += '<p>';
+                    
+                    if (data.visualImmediate > 0 && data.visualDelayed > 0) {
+                        const visImmData = window.NeuroscriptDB.getByStandardScore(data.visualImmediate);
+                        const visDelData = window.NeuroscriptDB.getByStandardScore(data.visualDelayed);
+                        
+                        if (visImmData.aacn === visDelData.aacn) {
+                            report += `${pronoun} scores on overall measures of both immediate and delayed visual memory were in the ${visImmData.aacn} range.`;
+                        } else {
+                            report += `${pronoun} score was in the ${visImmData.aacn} range on an overall measure of immediate visual memory, and in the ${visDelData.aacn} range for delayed visual memory.`;
+                        }
+                    } else if (data.visualImmediate > 0) {
+                        const visImmData = window.NeuroscriptDB.getByStandardScore(data.visualImmediate);
+                        report += `${pronoun} score on an overall measure of immediate visual memory was in the ${visImmData.aacn} range.`;
+                    } else if (data.visualDelayed > 0) {
+                        const visDelData = window.NeuroscriptDB.getByStandardScore(data.visualDelayed);
+                        report += `${pronoun} score on an overall measure of delayed visual memory was in the ${visDelData.aacn} range.`;
+                    }
+                    
+                    report += '</p>\n';
+                }
+
+                // Step 6: Visual Reproduction (immediate, delayed, retention, and recognition)
                 if (data.visualReproI > 0 || data.visualReproII > 0) {
                     report += '<p>';
                     
