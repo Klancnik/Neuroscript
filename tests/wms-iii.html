@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WMS-III Enhanced v3.6</title>
+    <title>WMS-III Enhanced v3.7</title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -105,21 +105,7 @@
             border-radius: 3px;
             text-align: center;
         }
-        .generate-btn {
-            background: #3498db;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 10px 5px;
-        }
-        .generate-btn:hover {
-            background: #2980b9;
-        }
-        .complete-btn {
+        .save-btn {
             background: #27ae60;
             color: white;
             padding: 12px 30px;
@@ -130,7 +116,7 @@
             font-weight: bold;
             margin: 10px 5px;
         }
-        .complete-btn:hover {
+        .save-btn:hover {
             background: #229954;
         }
         .load-btn {
@@ -158,7 +144,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>WMS-III Clinical Report Generator <span class="version">v3.6</span></h1>
+            <h1>WMS-III Clinical Report Generator <span class="version">v3.7</span></h1>
             <p>Enter WMS-III scores to generate clinical narrative text in Neuroscript format</p>
         </div>
 
@@ -177,7 +163,7 @@
             </div>
             <div class="input-group">
                 <label>Reading Level (grade):</label>
-                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="20" step="0.1">
             </div>
 
             <div class="section-header">Primary Indices</div>
@@ -191,35 +177,35 @@
                 <tbody>
                     <tr>
                         <td>Auditory Immediate</td>
-                        <td><input type="number" id="auditoryImmediate" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="auditoryImmediate" min="40-160" placeholder="40-160"></td>
                     </tr>
                     <tr>
                         <td>Visual Immediate</td>
-                        <td><input type="number" id="visualImmediate" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="visualImmediate" min="40-160" placeholder="40-160"></td>
                     </tr>
                     <tr>
                         <td>Immediate Memory</td>
-                        <td><input type="number" id="immediateMemory" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="immediateMemory" min="40-160" placeholder="40-160"></td>
                     </tr>
                     <tr>
                         <td>Auditory Delayed</td>
-                        <td><input type="number" id="auditoryDelayed" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="auditoryDelayed" min="40-160" placeholder="40-160"></td>
                     </tr>
                     <tr>
                         <td>Visual Delayed</td>
-                        <td><input type="number" id="visualDelayed" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="visualDelayed" min="40-160" placeholder="40-160"></td>
                     </tr>
                     <tr>
                         <td>Auditory Recognition Delayed</td>
-                        <td><input type="number" id="auditoryRecognition" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="auditoryRecognition" min="40-160" placeholder="40-160"></td>
                     </tr>
                     <tr>
                         <td>General Memory</td>
-                        <td><input type="number" id="generalMemory" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="generalMemory" min="40-160" placeholder="40-160"></td>
                     </tr>
                     <tr>
                         <td>Working Memory</td>
-                        <td><input type="number" id="workingMemory" min="40" max="160" placeholder="40-160"></td>
+                        <td><input type="number" id="workingMemory" min="40-160" placeholder="40-160"></td>
                     </tr>
                 </tbody>
             </table>
@@ -353,8 +339,7 @@
             </table>
 
             <button class="load-btn" onclick="loadTestData()">🧪 Load Test Data</button>
-            <button class="generate-btn" onclick="generateWMSReport()">Generate WMS-III Report</button>
-            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+            <button class="save-btn" onclick="saveTestData()">Save Test Data</button>
         </div>
 
         <div id="output" class="output-section" style="display:none;">
@@ -363,7 +348,7 @@
     </div>
 
     <script>
-        console.log('WMS-III Enhanced v3.6 - Initializing...');
+        console.log('WMS-III Enhanced v3.7 - Initializing...');
         
         // Data management
         let currentNarrative = '';
@@ -371,7 +356,7 @@
 
         // Heaton impairment level function
         function getHeatonLevel(scaledScore) {
-            console.log('getHeatonLevel v3.6 called with scaled score:', scaledScore);
+            console.log('getHeatonLevel v3.7 called with scaled score:', scaledScore);
             
             if (scaledScore > 6) return ""; // No impairment level for scores >16th percentile
             
@@ -392,7 +377,7 @@
 
         // Retention percentage range function
         function getRetentionRange(percentage) {
-            console.log('getRetentionRange v3.6 called with:', percentage);
+            console.log('getRetentionRange v3.7 called with:', percentage);
             
             if (typeof percentage !== 'number' || isNaN(percentage)) {
                 console.warn('Invalid percentage passed to getRetentionRange:', percentage);
@@ -410,7 +395,7 @@
 
         // Load Test Data Function for Development
         function loadTestData() {
-            console.log('Loading WMS-III test data v3.6...');
+            console.log('Loading WMS-III test data v3.7...');
             
             // Demographics
             document.getElementById('age').value = 45;
@@ -451,64 +436,18 @@
             // Process Scores (retention percentages)
             document.getElementById('lmRetention').value = 85;
             document.getElementById('vpaRetention').value = 75;
-            document.getElementById('facesRetention').value = 95;
-            document.getElementById('familyPicRetention').value = 90;
-            document.getElementById('visualReproRetention').value = 80;
-            document.getElementById('wordListsRetention').value = 70;
-            
-            console.log('WMS-III test data v3.6 loaded successfully');
+            document.getElementById('facesRetention').value = 90;
+            document.getElementById('familyPicRetention').value = 88;
+            document.getElementById('visualReproRetention').value = 82;
+            document.getElementById('wordListsRetention').value = 78;
         }
 
-        // Database utility functions
-        function getIndexInterpretationFromDB(score) {
-            if (!window.NeuroscriptDB || !score) return "Average range";
-            
-            const data = window.NeuroscriptDB.getByStandardScore(score);
-            
-            let interpretation = data.aacn + " range";
-            
-            // Add Heaton impairment levels for low scores based on percentile
-            if (data.percentile <= 16) {
-                if (data.percentile <= 2) {
-                    interpretation += ", indicating a severely impaired level of impairment";
-                } else if (data.percentile <= 7) {
-                    interpretation += ", indicating a mildly to moderately impaired level of impairment";
-                } else if (data.percentile <= 16) {
-                    interpretation += ", indicating a mildly impaired level of impairment";
-                }
-            }
-            
-            return interpretation;
-        }
-
-        function getSubtestInterpretationFromDB(score) {
-            if (!window.NeuroscriptDB || !score) return "Average range";
-            
-            const data = window.NeuroscriptDB.getByWechslerScore(score);
-            
-            let interpretation = data.aacn + " range (ss=" + score + ")";
-            
-            // Add Heaton impairment levels for low scores based on percentile
-            if (data.percentile <= 16) {
-                if (data.percentile <= 2) {
-                    interpretation += ", indicating a severely impaired level of impairment";
-                } else if (data.percentile <= 7) {
-                    interpretation += ", indicating a mildly to moderately impaired level of impairment";
-                } else if (data.percentile <= 16) {
-                    interpretation += ", indicating a mildly impaired level of impairment";
-                }
-            }
-            
-            return interpretation;
-        }
-
-        function generateWMSReport() {
-            console.log('WMS-III generateWMSReport v3.6 called...');
+        function saveTestData() {
+            console.log('saveTestData v3.7 called');
             
             try {
-                // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
-                    console.error('External database not loaded!');
+                    console.error('External database not loaded');
                     document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please refresh the page.</p>`;
                     document.getElementById('output').style.display = 'block';
                     return;
@@ -562,11 +501,16 @@
                     wordListsRetention: parseInt(document.getElementById('wordListsRetention').value) || 0
                 };
 
-                console.log('Collected WMS-III data v3.6:', data);
+                console.log('Collected WMS-III data v3.7:', data);
 
                 // Basic validation
+                if (!data.age || !data.gender) {
+                    alert('Please enter age and gender to save test data.');
+                    return;
+                }
+
                 if (data.generalMemory === 0 && data.immediateMemory === 0) {
-                    alert('Please enter at least one memory index score to generate a report.');
+                    alert('Please enter at least one memory index score to save test data.');
                     return;
                 }
 
@@ -588,7 +532,7 @@
                 // Step 1: WMS-III identification and General Memory Index
                 if (data.generalMemory > 0) {
                     const gmData = window.NeuroscriptDB.getByStandardScore(data.generalMemory);
-                    report += `<p>On the WMS-III, ${pronoun} score on the General Memory Index was in the ${gmData.aacn} range.</p>\n`;
+                    report += `<p>On the WMS-III, ${pronoun} score on the General Memory Index was in the ${gmData.aacnRange} range.</p>\n`;
                 }
 
                 // Step 2: Auditory Memory Indices (immediate, delayed, recognition)
@@ -600,26 +544,26 @@
                         const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
                         const audDelData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
                         
-                        if (audImmData.aacn === audDelData.aacn) {
-                            report += `${Pronoun} scores on overall measures of both immediate and delayed auditory memory were in the ${audImmData.aacn} range.`;
+                        if (audImmData.aacnRange === audDelData.aacnRange) {
+                            report += `${Pronoun} scores on overall measures of both immediate and delayed auditory memory were in the ${audImmData.aacnRange} range.`;
                         } else {
-                            report += `${Pronoun} score was in the ${audImmData.aacn} range on an overall measure of immediate auditory memory, and in the ${audDelData.aacn} range for delayed auditory memory.`;
+                            report += `${Pronoun} score was in the ${audImmData.aacnRange} range on an overall measure of immediate auditory memory, and in the ${audDelData.aacnRange} range for delayed auditory memory.`;
                         }
                     } else if (data.auditoryImmediate > 0) {
                         const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
-                        report += `${Pronoun} score on an overall measure of immediate auditory memory was in the ${audImmData.aacn} range.`;
+                        report += `${Pronoun} score on an overall measure of immediate auditory memory was in the ${audImmData.aacnRange} range.`;
                     } else if (data.auditoryDelayed > 0) {
                         const audDelData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
-                        report += `${Pronoun} score on an overall measure of delayed auditory memory was in the ${audDelData.aacn} range.`;
+                        report += `${Pronoun} score on an overall measure of delayed auditory memory was in the ${audDelData.aacnRange} range.`;
                     }
                     
                     // Add recognition memory if available
                     if (data.auditoryRecognition > 0) {
                         const audRecData = window.NeuroscriptDB.getByStandardScore(data.auditoryRecognition);
                         if (data.auditoryImmediate > 0 || data.auditoryDelayed > 0) {
-                            report += ` Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacn} range.`;
+                            report += ` Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacnRange} range.`;
                         } else {
-                            report += `Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacn} range.`;
+                            report += `Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacnRange} range.`;
                         }
                     }
                     
@@ -634,16 +578,16 @@
                         const lmIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryI);
                         const lmIIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryII);
                         
-                        if (lmIData.aacn === lmIIData.aacn) {
-                            report += `Immediate and delayed recall of stories (WMS-III Logical Memory) was in the ${lmIData.aacn} range for both conditions (ss=${data.logicalMemoryI}, ${data.logicalMemoryII})`;
+                        if (lmIData.aacnRange === lmIIData.aacnRange) {
+                            report += `Story recall (WMS-III Logical Memory) was in the ${lmIData.aacnRange} range for both immediate (ss=${data.logicalMemoryI}) and delayed (ss=${data.logicalMemoryII}) conditions`;
                         } else {
-                            report += `Story recall (WMS-III Logical Memory) was in the ${lmIData.aacn} range for immediate recall (ss=${data.logicalMemoryI}) and in the ${lmIIData.aacn} range for delayed recall (ss=${data.logicalMemoryII})`;
+                            report += `Story recall (WMS-III Logical Memory) was in the ${lmIData.aacnRange} range for immediate recall (ss=${data.logicalMemoryI}) and in the ${lmIIData.aacnRange} range for delayed recall (ss=${data.logicalMemoryII})`;
                         }
                         
-                        // Add retention percentage analysis if available
+                        // Add retention percentage if available
                         if (data.lmRetention > 0) {
                             const retentionRange = getRetentionRange(data.lmRetention);
-                            report += `, with ${data.lmRetention}% retention falling in the ${retentionRange} range`;
+                            report += `, with ${data.lmRetention}% retention in the ${retentionRange} range`;
                         }
                         
                         // Add Heaton impairment if either score ≤16th percentile
@@ -658,7 +602,7 @@
                         
                     } else if (data.logicalMemoryI > 0) {
                         const lmIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryI);
-                        report += `Immediate recall of stories (WMS-III Logical Memory I) was in the ${lmIData.aacn} range (ss=${data.logicalMemoryI})`;
+                        report += `Immediate recall of stories (WMS-III Logical Memory I) was in the ${lmIData.aacnRange} range (ss=${data.logicalMemoryI})`;
                         
                         // Add Heaton impairment if ≤16th percentile
                         if (data.logicalMemoryI <= 6) {
@@ -671,7 +615,7 @@
                         
                     } else if (data.logicalMemoryII > 0) {
                         const lmIIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryII);
-                        report += `Delayed recall of stories (WMS-III Logical Memory II) was in the ${lmIIData.aacn} range (ss=${data.logicalMemoryII})`;
+                        report += `Delayed recall of stories (WMS-III Logical Memory II) was in the ${lmIIData.aacnRange} range (ss=${data.logicalMemoryII})`;
                         
                         // Add Heaton impairment if ≤16th percentile
                         if (data.logicalMemoryII <= 6) {
@@ -694,10 +638,10 @@
                         const vpaIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedI);
                         const vpaIIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedII);
                         
-                        if (vpaIData.aacn === vpaIIData.aacn) {
-                            report += `Learning and retention of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacn} range for both immediate (ss=${data.verbalPairedI}) and delayed (ss=${data.verbalPairedII}) conditions`;
+                        if (vpaIData.aacnRange === vpaIIData.aacnRange) {
+                            report += `Learning and retention of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacnRange} range for both immediate (ss=${data.verbalPairedI}) and delayed (ss=${data.verbalPairedII}) conditions`;
                         } else {
-                            report += `Learning of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacn} range for immediate recall (ss=${data.verbalPairedI}) and in the ${vpaIIData.aacn} range for delayed recall (ss=${data.verbalPairedII})`;
+                            report += `Learning of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacnRange} range for immediate recall (ss=${data.verbalPairedI}) and in the ${vpaIIData.aacnRange} range for delayed recall (ss=${data.verbalPairedII})`;
                         }
                         
                         // Add retention percentage if available
@@ -718,7 +662,7 @@
                         
                     } else if (data.verbalPairedI > 0) {
                         const vpaIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedI);
-                        report += `Learning of word associations (WMS-III Verbal Paired Associates I) was in the ${vpaIData.aacn} range (ss=${data.verbalPairedI})`;
+                        report += `Immediate learning of word pairs (WMS-III Verbal Paired Associates I) was in the ${vpaIData.aacnRange} range (ss=${data.verbalPairedI})`;
                         
                         // Add Heaton impairment if ≤16th percentile
                         if (data.verbalPairedI <= 6) {
@@ -731,7 +675,7 @@
                         
                     } else if (data.verbalPairedII > 0) {
                         const vpaIIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedII);
-                        report += `Retention of word associations following a delay (WMS-III Verbal Paired Associates II) was in the ${vpaIIData.aacn} range (ss=${data.verbalPairedII})`;
+                        report += `Delayed recall of word pairs (WMS-III Verbal Paired Associates II) was in the ${vpaIIData.aacnRange} range (ss=${data.verbalPairedII})`;
                         
                         // Add Heaton impairment if ≤16th percentile
                         if (data.verbalPairedII <= 6) {
@@ -754,17 +698,17 @@
                         const visImmData = window.NeuroscriptDB.getByStandardScore(data.visualImmediate);
                         const visDelData = window.NeuroscriptDB.getByStandardScore(data.visualDelayed);
                         
-                        if (visImmData.aacn === visDelData.aacn) {
-                            report += `${Pronoun} scores on overall measures of both immediate and delayed visual memory were in the ${visImmData.aacn} range.`;
+                        if (visImmData.aacnRange === visDelData.aacnRange) {
+                            report += `${Pronoun} scores on overall measures of both immediate and delayed visual memory were in the ${visImmData.aacnRange} range.`;
                         } else {
-                            report += `${Pronoun} score was in the ${visImmData.aacn} range on an overall measure of immediate visual memory, and in the ${visDelData.aacn} range for delayed visual memory.`;
+                            report += `${Pronoun} score was in the ${visImmData.aacnRange} range on an overall measure of immediate visual memory, and in the ${visDelData.aacnRange} range for delayed visual memory.`;
                         }
                     } else if (data.visualImmediate > 0) {
                         const visImmData = window.NeuroscriptDB.getByStandardScore(data.visualImmediate);
-                        report += `${Pronoun} score on an overall measure of immediate visual memory was in the ${visImmData.aacn} range.`;
+                        report += `${Pronoun} score on an overall measure of immediate visual memory was in the ${visImmData.aacnRange} range.`;
                     } else if (data.visualDelayed > 0) {
                         const visDelData = window.NeuroscriptDB.getByStandardScore(data.visualDelayed);
-                        report += `${Pronoun} score on an overall measure of delayed visual memory was in the ${visDelData.aacn} range.`;
+                        report += `${Pronoun} score on an overall measure of delayed visual memory was in the ${visDelData.aacnRange} range.`;
                     }
                     
                     report += '</p>\n';
@@ -778,10 +722,10 @@
                         const vrIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproI);
                         const vrIIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproII);
                         
-                        if (vrIData.aacn === vrIIData.aacn) {
-                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacn} range for both immediate (ss=${data.visualReproI}) and delayed (ss=${data.visualReproII}) conditions`;
+                        if (vrIData.aacnRange === vrIIData.aacnRange) {
+                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacnRange} range for both immediate (ss=${data.visualReproI}) and delayed (ss=${data.visualReproII}) conditions`;
                         } else {
-                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacn} range for immediate reproduction (ss=${data.visualReproI}) and in the ${vrIIData.aacn} range for delayed reproduction (ss=${data.visualReproII})`;
+                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacnRange} range for immediate reproduction (ss=${data.visualReproI}) and in the ${vrIIData.aacnRange} range for delayed reproduction (ss=${data.visualReproII})`;
                         }
                         
                         // Add retention percentage if available
@@ -802,7 +746,7 @@
                         
                     } else if (data.visualReproI > 0) {
                         const vrIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproI);
-                        report += `Immediate drawing of simple geometric designs (WMS-III Visual Reproduction I) was in the ${vrIData.aacn} range (ss=${data.visualReproI})`;
+                        report += `Immediate drawing of simple geometric designs (WMS-III Visual Reproduction I) was in the ${vrIData.aacnRange} range (ss=${data.visualReproI})`;
                         
                         // Add Heaton impairment if ≤16th percentile
                         if (data.visualReproI <= 6) {
@@ -815,7 +759,7 @@
                         
                     } else if (data.visualReproII > 0) {
                         const vrIIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproII);
-                        report += `Delayed recall of simple geometric drawings (WMS-III Visual Reproduction II) was in the ${vrIIData.aacn} range (ss=${data.visualReproII})`;
+                        report += `Delayed recall of simple geometric drawings (WMS-III Visual Reproduction II) was in the ${vrIIData.aacnRange} range (ss=${data.visualReproII})`;
                         
                         // Add Heaton impairment if ≤16th percentile
                         if (data.visualReproII <= 6) {
@@ -878,37 +822,42 @@
 
                 document.getElementById('output').style.display = 'block';
 
+                // Send to master dashboard
+                const results = {
+                    narrative: currentNarrative,
+                    scoreTable: currentScoreTable,
+                    testName: 'WMS-III',
+                    completedAt: new Date().toISOString()
+                };
+
+                try {
+                    window.parent.postMessage({
+                        type: 'testComplete',
+                        testName: 'wms-iii',
+                        results: results
+                    }, '*');
+                    console.log('WMS-III test data saved successfully to dashboard v3.7');
+                } catch (e) {
+                    console.log('Could not communicate with parent window:', e);
+                }
+
             } catch (error) {
-                console.error('Error generating WMS-III report v3.6:', error);
-                document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p>`;
+                console.error('Error saving test data v3.7:', error);
+                document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
         }
 
-        function completeTest() {
-            if (!currentNarrative) {
-                alert('Please generate the report first before completing the test.');
-                return;
-            }
-
-            const results = {
-                narrative: currentNarrative,
-                scoreTable: currentScoreTable,
-                testName: 'WMS-III',
-                completedAt: new Date().toISOString()
-            };
-
-            // Try to communicate with parent window (Neuroscript dashboard)
+        function getIndexInterpretationFromDB(score) {
             try {
-                window.parent.postMessage({
-                    type: 'testComplete',
-                    testName: 'wms-iii',
-                    results: results
-                }, '*');
-                alert('WMS-III test completed successfully!');
-            } catch (e) {
-                console.log('Could not communicate with parent window:', e);
-                alert('Test completed locally!');
+                if (!window.NeuroscriptDB) {
+                    return 'Database Error';
+                }
+                const data = window.NeuroscriptDB.getByStandardScore(score);
+                return data.aacnRange;
+            } catch (error) {
+                console.error('Error in getIndexInterpretationFromDB:', error);
+                return 'Error';
             }
         }
 
@@ -929,7 +878,7 @@
 
         // Database loading check
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WMS-III v3.6 DOM loaded. Checking database...');
+            console.log('WMS-III v3.7 DOM loaded. Checking database...');
             if (window.NeuroscriptDB) {
                 console.log('Database loaded successfully');
             } else {
