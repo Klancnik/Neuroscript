@@ -601,9 +601,9 @@
                         const audDelData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
                         
                         if (audImmData.aacn === audDelData.aacn) {
-                            report += `${pronoun} scores on overall measures of both immediate and delayed auditory memory were in the ${audImmData.aacn} range.`;
+                            report += `${Pronoun} scores on overall measures of both immediate and delayed auditory memory were in the ${audImmData.aacn} range.`;
                         } else {
-                            report += `${pronoun} score was in the ${audImmData.aacn} range on an overall measure of immediate auditory memory, and in the ${audDelData.aacn} range for delayed auditory memory.`;
+                            report += `${Pronoun} score was in the ${audImmData.aacn} range on an overall measure of immediate auditory memory, and in the ${audDelData.aacn} range for delayed auditory memory.`;
                         }
                     } else if (data.auditoryImmediate > 0) {
                         const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
