@@ -3,275 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVLT-3 Clinical Report Generator</title>
+    <title>CVLT-3 Enhanced v3.0</title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            background: #f8f9fa;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+            background-color: #f8f9fa;
         }
         
-        /* Header Demographics Section */
-        .demographics-section {
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 20px;
-            margin-bottom: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .demographics-grid {
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .section-header {
+            background-color: #4a5568;
+            color: white;
+            padding: 12px 15px;
+            margin: 20px 0 15px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .demographic-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demographic-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
+        
         .demographic-field {
             display: flex;
             flex-direction: column;
         }
+        
         .demographic-field label {
-            font-weight: bold;
             margin-bottom: 5px;
-            color: #495057;
+            font-weight: 600;
+            color: #2d3748;
         }
+        
         .demographic-field input, .demographic-field select {
-            padding: 8px;
-            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
             border-radius: 4px;
             font-size: 14px;
         }
         
-        /* Section Headers */
-        .section-header {
-            background: #e9ecef;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 12px 15px;
-            margin: 25px 0 15px 0;
-            font-weight: bold;
-            color: #495057;
-            font-size: 16px;
-        }
-        .section-header.core-scores {
-            background: #e8f4f8;
-            border-color: #b8daff;
-        }
-        .section-header.composite-scores {
-            background: #e8f5e8;
-            border-color: #b8e6b8;
-        }
-        .section-header.process-scores {
-            background: #ffeaa7;
-            border-color: #fdcb6e;
-        }
-        .section-header.error-analysis {
-            background: #fab1a0;
-            border-color: #e84393;
-        }
-        .section-header.validity {
-            background: #fd79a8;
-            border-color: #e84393;
-        }
-        
-        /* Core Score Table Layout */
+        /* Core Score Table Styling */
         .core-score-table {
             display: grid;
-            grid-template-columns: 200px 120px 120px;
-            gap: 2px;
-            margin-bottom: 20px;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1px;
+            background-color: #e2e8f0;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
             overflow: hidden;
+            margin-bottom: 20px;
         }
+        
         .table-header {
-            background: #6c757d;
+            background-color: #4a5568;
             color: white;
-            padding: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .table-subheader {
-            background: #495057;
-            color: white;
-            padding: 8px;
-            font-weight: bold;
-            grid-column: span 3;
-        }
-        .table-row-label {
-            background: #f8f9fa;
-            padding: 10px;
-            font-weight: 500;
-            border-right: 1px solid #dee2e6;
-            display: flex;
-            align-items: center;
-        }
-        .table-input {
-            padding: 8px;
-            border: none;
-            background: white;
+            padding: 12px 8px;
+            font-weight: 600;
             text-align: center;
             font-size: 14px;
         }
-        .table-input:focus {
-            outline: 2px solid #007bff;
-            background: #f0f8ff;
+        
+        .table-subheader {
+            background-color: #718096;
+            color: white;
+            padding: 10px 8px;
+            font-weight: 600;
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 13px;
         }
         
-        /* Vertical Layout for All Sections */
-        .vertical-grid {
+        .table-row-label {
+            background-color: #f7fafc;
+            padding: 8px 12px;
+            font-weight: 500;
+            color: #2d3748;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
+            align-items: center;
+            font-size: 13px;
+            border-right: 1px solid #e2e8f0;
         }
+        
+        .table-input {
+            background-color: white;
+            border: none;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+            border-right: 1px solid #e2e8f0;
+        }
+        
+        .table-input:focus {
+            outline: 2px solid #667eea;
+            outline-offset: -2px;
+        }
+        
+        /* Vertical Grid Styling */
+        .vertical-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
         .vertical-item {
             display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 15px;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
             align-items: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
         }
+        
         .vertical-item label {
-            font-weight: bold;
-            color: #495057;
-            margin: 0;
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 14px;
         }
+        
         .vertical-item input {
-            width: 90px;
-            padding: 8px;
-            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
             border-radius: 4px;
-            text-align: center;
             font-size: 14px;
         }
-        .validity-item input {
-            width: 90px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 14px;
-        }
+        
         .validity-item {
             display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 15px;
+            grid-template-columns: 3fr 1fr;
+            gap: 10px;
             align-items: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            margin-bottom: 15px;
         }
+        
         .validity-item label {
-            font-weight: bold;
-            color: #495057;
-            margin: 0;
+            font-weight: 500;
+            color: #2d3748;
             font-size: 14px;
-            line-height: 1.3;
         }
+        
         .validity-item input {
-            width: 90px;
-            padding: 8px;
-            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
             border-radius: 4px;
-            text-align: center;
             font-size: 14px;
         }
         
-        /* Test Data Button */
-        .test-data-btn {
-            background: #6c757d;
+        /* Button Styling */
+        .save-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-right: 10px;
-            margin-bottom: 15px;
-        }
-        .test-data-btn:hover {
-            background: #545b62;
-        }
-        .generate-btn {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
-            cursor: pointer;
+            padding: 12px 24px;
             font-size: 16px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .generate-btn:hover {
-            background: #0056b3;
-        }
-        .complete-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .complete-btn:hover {
-            background: #1e7e34;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        /* Output Section */
+        .save-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .load-btn {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .load-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
         .output-section {
-            background: white;
-            border: 2px solid #dee2e6;
+            background-color: white;
             padding: 25px;
-            margin-top: 30px;
-            font-family: 'Times New Roman', serif;
-            line-height: 1.6;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
         }
         
-        /* Input Validation */
+        .core-scores, .process-scores, .error-analysis, .validity, .composite-scores {
+            position: relative;
+        }
+        
+        /* Input validation styling */
         .invalid-input {
-            border: 2px solid #ff0000 !important;
-            background-color: #ffe6e6 !important;
+            border: 2px solid #e53e3e !important;
+            background-color: #fed7d7 !important;
+        }
+        
+        .warning-text {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v2.9</span></h1>
-        <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
+    <div class="header">
+        <h1>🧠 CVLT-3 California Verbal Learning Test Enhanced v3.0</h1>
+        <p>Professional Neuropsychological Assessment Generator with External Database Integration</p>
+    </div>
 
+    <div class="container">
         <!-- Demographics Section -->
-        <div class="demographics-section">
-            <h3 style="margin-top: 0; color: #495057;">Client Demographics</h3>
-            <div class="demographics-grid">
+        <div class="section-header">👤 Client Information</div>
+        <div class="demographic-section">
+            <div class="demographic-grid">
                 <div class="demographic-field">
-                    <label>Age (years):</label>
-                    <input type="number" id="age" placeholder="16-90" min="16" max="90">
+                    <label>Client Name:</label>
+                    <input type="text" id="clientName" placeholder="Enter client name">
+                </div>
+                <div class="demographic-field">
+                    <label>Age:</label>
+                    <input type="number" id="age" placeholder="16-89" min="16" max="89">
                 </div>
                 <div class="demographic-field">
                     <label>Gender:</label>
@@ -412,155 +413,46 @@
         <div class="vertical-grid">
             <div class="validity-item">
                 <label>Number of Target Words Recalled on Immediate/Delay but Missed on Forced Choice Recognition:</label>
-                <input type="number" id="fcRecalledMissed" min="0" max="16" placeholder="0-16">
-            </div>
-            <div class="validity-item">
-                <label>Number of Hits on Yes/No Recognition but Missed on Forced Choice Recognition:</label>
-                <input type="number" id="fcYesNoMissed" min="0" max="16" placeholder="0-16">
+                <input type="number" id="validityIndicator" min="0" max="16" placeholder="0-16">
             </div>
         </div>
 
-        <!-- Test Data Button for Debugging -->
-        <button class="test-data-btn" onclick="loadTestData()">🧪 Load Test Data</button>
-        
-        <button class="generate-btn" onclick="generateCVLTText()">Generate CVLT-3 Report</button>
-        <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+        <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
+        <button class="save-btn" onclick="saveTestData()">Save Test Data</button>
 
-        <div id="output" class="output-section" style="display: none;"></div>
+        <div id="output" class="output-section" style="display:none;">
+            <!-- Generated report will appear here -->
+        </div>
     </div>
 
     <script>
-        // Store current narrative and score table for completion
+        console.log('CVLT-3 Enhanced v3.0 - Initializing...');
+        
+        // === GLOBAL VARIABLES ===
         let currentNarrative = '';
-        let currentScoreTable = [];
+        let currentScoreTable = '';
 
-                    // Load test data for debugging (REMOVE WHEN DONE DEBUGGING)
-        function loadTestData() {
-            // Demographics
-            document.getElementById('age').value = 45;
-            document.getElementById('gender').value = 'Male';
-            document.getElementById('education').value = 12;
-            document.getElementById('readingLevel').value = 11.5;
+        // === ALL FUNCTION DEFINITIONS FIRST ===
+        
+        function generateCVLTValidationWarnings(data) {
+            console.log('generateCVLTValidationWarnings v3.0 called with data:', data);
             
-            // Core scores - Raw scores
-            document.getElementById('trial1').value = 5;
-            document.getElementById('trial2').value = 7;
-            document.getElementById('trial3').value = 9;
-            document.getElementById('trial4').value = 11;
-            document.getElementById('trial5').value = 12;
-            document.getElementById('listB').value = 6;
-            document.getElementById('shortFree').value = 10;
-            document.getElementById('longFree').value = 9;
-            document.getElementById('longCued').value = 11;
-            document.getElementById('recogHits').value = 14;
-            document.getElementById('falsePositives').value = 3;
-            document.getElementById('forcedChoice').value = 15;
-            
-            // Core scores - Scaled scores (5-13 range for testing)
-            document.getElementById('trial1Scaled').value = 7;
-            document.getElementById('trial2Scaled').value = 8;
-            document.getElementById('trial3Scaled').value = 9;
-            document.getElementById('trial4Scaled').value = 11;
-            document.getElementById('trial5Scaled').value = 12;
-            document.getElementById('listBScaled').value = 8;
-            document.getElementById('shortFreeScaled').value = 10;
-            document.getElementById('longFreeScaled').value = 9;
-            document.getElementById('longCuedScaled').value = 11;
-            document.getElementById('recogHitsScaled').value = 8;
-            document.getElementById('forcedChoiceScaled').value = 12;
-            
-            // Composite indices (70-120 range for testing)
-            document.getElementById('trials15Total').value = 95;
-            document.getElementById('delayedIndex').value = 105;
-            document.getElementById('totalRecall').value = 100;
-            
-            // Process scores (5-13 range for testing)
-            document.getElementById('clusteringScaled').value = 11;
-            document.getElementById('primacyScaled').value = 8;
-            document.getElementById('recencyScaled').value = 13;
-            document.getElementById('learningSlopeScaled').value = 10;
-            
-            // Error analysis
-            document.getElementById('intrusionsScaled').value = 9;
-            document.getElementById('repetitions').value = 3;
-            
-            // Validity indicators
-            document.getElementById('fcRecalledMissed').value = 1;
-            document.getElementById('fcYesNoMissed').value = 0;
-            
-            console.log('Test data loaded successfully');
-        }
-
-        // Listen for client data from master dashboard
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'clientInfo') {
-                const clientData = event.data.data;
-                console.log('Received client data:', clientData);
-                
-                // Populate demographics with multiple field name conventions
-                if (clientData.age || clientData.clientAge) {
-                    document.getElementById('age').value = clientData.age || clientData.clientAge;
-                }
-                if (clientData.gender || clientData.clientGender) {
-                    const genderValue = (clientData.gender || clientData.clientGender);
-                    if (genderValue) {
-                        const formattedGender = genderValue.charAt(0).toUpperCase() + genderValue.slice(1).toLowerCase();
-                        document.getElementById('gender').value = formattedGender;
-                    }
-                }
-                if (clientData.education || clientData.clientEducation) {
-                    document.getElementById('education').value = clientData.education || clientData.clientEducation;
-                }
-                if (clientData.readingLevel || clientData.clientReadingLevel) {
-                    document.getElementById('readingLevel').value = clientData.readingLevel || clientData.clientReadingLevel;
-                }
-            }
-        });
-
-        // Input validation with real-time feedback
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    const value = parseFloat(this.value);
-                    const min = parseFloat(this.min);
-                    const max = parseFloat(this.max);
-                    
-                    if (this.value && (isNaN(value) || value < min || value > max)) {
-                        this.classList.add('invalid-input');
-                    } else {
-                        this.classList.remove('invalid-input');
-                    }
-                });
-            });
-        });
-
-        // Database helper functions
-        function getScaledInterpretationFromDB(score) {
-            if (!score || !window.NeuroscriptDB) return 'Unable to interpret';
-            try {
-                return window.NeuroscriptDB.getRange(score, 'wechsler');
-            } catch (error) {
-                console.error('Database error:', error);
-                return 'Error interpreting score';
-            }
-        }
-
-        function getIndexInterpretationFromDB(score) {
-            if (!score || !window.NeuroscriptDB) return 'Unable to interpret';
-            try {
-                return window.NeuroscriptDB.getRange(score, 'standard');
-            } catch (error) {
-                console.error('Database error:', error);
-                return 'Error interpreting score';
-            }
-        }
-
-        // Validation function (from original CVLT db 9)
-        function validateCVLTData(data) {
             const warnings = [];
             
-            // Range validation for scaled scores
+            // Index score validation (40-160 range)
+            const indexScores = [
+                {score: data.trials15Total, name: 'Trials 1-5 Total Index'},
+                {score: data.delayedIndex, name: 'Delayed Recall Correct Index'},
+                {score: data.totalRecall, name: 'Total Recall Correct Index'}
+            ];
+
+            indexScores.forEach(item => {
+                if (item.score !== null && item.score !== undefined && item.score !== '' && (item.score < 40 || item.score > 160)) {
+                    warnings.push(`⚠️ ${item.name} score (${item.score}) is outside valid range (40-160) - please check data entry`);
+                }
+            });
+            
+            // Scaled score validation (1-19 range)
             const scaledScores = [
                 {score: data.trial1Scaled, name: 'Trial 1 (Scaled)'},
                 {score: data.trial2Scaled, name: 'Trial 2 (Scaled)'},
@@ -568,9 +460,12 @@
                 {score: data.trial4Scaled, name: 'Trial 4 (Scaled)'},
                 {score: data.trial5Scaled, name: 'Trial 5 (Scaled)'},
                 {score: data.listBScaled, name: 'List B (Scaled)'},
-                {score: data.shortFreeScaled, name: 'Short Free Recall (Scaled)'},
-                {score: data.longFreeScaled, name: 'Long Free Recall (Scaled)'},
-                {score: data.clusteringScaled, name: 'Semantic Clustering (Scaled)'},
+                {score: data.shortFreeScaled, name: 'Short Delay Free Recall (Scaled)'},
+                {score: data.longFreeScaled, name: 'Long Delay Free Recall (Scaled)'},
+                {score: data.longCuedScaled, name: 'Long Delay Cued Recall (Scaled)'},
+                {score: data.recogHitsScaled, name: 'Recognition Hits (Scaled)'},
+                {score: data.forcedChoiceScaled, name: 'Forced Choice (Scaled)'},
+                {score: data.clusteringScaled, name: 'Clustering (Scaled)'},
                 {score: data.primacyScaled, name: 'Primacy Effect (Scaled)'},
                 {score: data.recencyScaled, name: 'Recency Effect (Scaled)'},
                 {score: data.learningSlopeScaled, name: 'Learning Slope (Scaled)'},
@@ -619,13 +514,16 @@
             try {
                 // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
-                    document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please refresh the page and try again.</p>`;
+                    document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please refresh the page.</p>`;
                     document.getElementById('output').style.display = 'block';
                     return;
                 }
 
-                // Collect all form data
+                console.log('generateCVLTText v3.0 called');
+                
+                // Get all input values
                 const data = {
+                    clientName: document.getElementById('clientName').value,
                     age: parseInt(document.getElementById('age').value),
                     gender: document.getElementById('gender').value,
                     education: parseInt(document.getElementById('education').value),
@@ -656,261 +554,353 @@
                     forcedChoice: parseInt(document.getElementById('forcedChoice').value),
                     forcedChoiceScaled: parseInt(document.getElementById('forcedChoiceScaled').value),
                     
-                    // Composite indices
+                    // Index scores
                     trials15Total: parseInt(document.getElementById('trials15Total').value),
                     delayedIndex: parseInt(document.getElementById('delayedIndex').value),
                     totalRecall: parseInt(document.getElementById('totalRecall').value),
                     
-                    // Process scores
+                    // Process scores (optional)
                     clusteringScaled: parseInt(document.getElementById('clusteringScaled').value),
                     primacyScaled: parseInt(document.getElementById('primacyScaled').value),
                     recencyScaled: parseInt(document.getElementById('recencyScaled').value),
                     learningSlopeScaled: parseInt(document.getElementById('learningSlopeScaled').value),
                     
-                    // Error analysis
+                    // Error analysis (optional)
                     intrusionsScaled: parseInt(document.getElementById('intrusionsScaled').value),
                     repetitions: parseInt(document.getElementById('repetitions').value),
                     
-                    // Validity indicators
-                    fcRecalledMissed: parseInt(document.getElementById('fcRecalledMissed').value),
-                    fcYesNoMissed: parseInt(document.getElementById('fcYesNoMissed').value)
+                    // Validity indicator
+                    validityIndicator: parseInt(document.getElementById('validityIndicator').value)
                 };
 
-                // Generate professional narrative
-                let narrative = generateCVLTNarrative(data);
+                console.log('Input data collected v3.0:', data);
+
+                // Validation
+                if (!data.clientName) {
+                    alert('Please enter client name');
+                    return;
+                }
+
+                if (!data.age || data.age < 16 || data.age > 89) {
+                    alert('Please enter valid age (16-89)');
+                    return;
+                }
+
+                if (!data.education || data.education < 6 || data.education > 25) {
+                    alert('Please enter valid education years (6-25)');
+                    return;
+                }
+
+                // Check that at least some core scores are entered
+                const hasCoreScores = data.trials15Total || data.delayedIndex || data.totalRecall ||
+                                     data.trial1Scaled || data.trial5Scaled || data.longFreeScaled;
+                
+                if (!hasCoreScores) {
+                    alert('Please enter at least some core CVLT-3 scores (index scores or key scaled scores)');
+                    return;
+                }
+
+                console.log('Validation passed v3.0, generating narrative...');
 
                 // Generate validation warnings
-                const warnings = validateCVLTData(data);
+                const warnings = generateCVLTValidationWarnings(data);
 
-                // Combine narrative and warnings
-                let text = `<h4>Memory</h4>`;
-                text += narrative;
+                // Start building narrative
+                let narrative = `<h2>🧠 CVLT-3 California Verbal Learning Test Results</h2>\n\n`;
 
-                // Add warnings if any
-                if (warnings.length > 0) {
-                    text += `<h4>Validation Warnings</h4>`;
-                    warnings.forEach(warning => {
-                        text += `<p style="color: red;">${warning}</p>`;
-                    });
+                // Introduction
+                narrative += `<h3>Test Overview</h3>\n`;
+                narrative += `The California Verbal Learning Test, Third Edition (CVLT-3) is a comprehensive assessment of verbal learning and memory that evaluates multiple aspects of learning, recall, and recognition processes. `;
+                narrative += `${data.clientName} was administered this measure to assess his verbal learning capacity, retention of learned information, and various memory processes.\n\n`;
+
+                // Index scores section (if available)
+                if (data.trials15Total || data.delayedIndex || data.totalRecall) {
+                    narrative += `<h3>Index Score Performance</h3>\n`;
+                    
+                    if (data.trials15Total) {
+                        const indexResult = window.NeuroscriptDB.getByStandardScore(data.trials15Total);
+                        narrative += `On the Trials 1-5 Total Index, ${data.clientName} achieved a standard score of ${data.trials15Total}, placing his performance in the ${indexResult.aacnRange}`;
+                        if (indexResult.tScore < 40) {
+                            narrative += `, indicating a ${indexResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += ` and ranking at the ${indexResult.percentile} percentile relative to same-age peers. This index reflects his ability to learn verbal information across multiple learning trials.\n\n`;
+                    }
+                    
+                    if (data.delayedIndex) {
+                        const delayedResult = window.NeuroscriptDB.getByStandardScore(data.delayedIndex);
+                        narrative += `His Delayed Recall Correct Index yielded a standard score of ${data.delayedIndex}, falling in the ${delayedResult.aacnRange}`;
+                        if (delayedResult.tScore < 40) {
+                            narrative += `, indicating a ${delayedResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += ` (${delayedResult.percentile} percentile). This index measures his ability to recall previously learned verbal information after a delay.\n\n`;
+                    }
+                    
+                    if (data.totalRecall) {
+                        const totalResult = window.NeuroscriptDB.getByStandardScore(data.totalRecall);
+                        narrative += `The Total Recall Correct Index produced a standard score of ${data.totalRecall}, placing his overall verbal memory performance in the ${totalResult.aacnRange}`;
+                        if (totalResult.tScore < 40) {
+                            narrative += `, indicating a ${totalResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += ` (${totalResult.percentile} percentile).\n\n`;
+                    }
                 }
 
-                // Display output
-                document.getElementById('output').innerHTML = text;
+                // Learning trials analysis (if available)
+                if (data.trial1Scaled && data.trial5Scaled) {
+                    narrative += `<h3>Learning Curve Analysis</h3>\n`;
+                    
+                    const trial1Result = window.NeuroscriptDB.getByWechslerScore(data.trial1Scaled);
+                    const trial5Result = window.NeuroscriptDB.getByWechslerScore(data.trial5Scaled);
+                    
+                    narrative += `${data.clientName}'s initial learning trial (Trial 1) resulted in a scaled score of ${data.trial1Scaled}, placing his immediate verbal span in the ${trial1Result.aacnRange}`;
+                    if (trial1Result.tScore < 40) {
+                        narrative += `, indicating a ${trial1Result.impairmentLevel} level of impairment`;
+                    }
+                    narrative += `. His final learning trial (Trial 5) yielded a scaled score of ${data.trial5Scaled}, falling in the ${trial5Result.aacnRange}`;
+                    if (trial5Result.tScore < 40) {
+                        narrative += `, indicating a ${trial5Result.impairmentLevel} level of impairment`;
+                    }
+                    narrative += `. `;
+                    
+                    // Learning slope analysis
+                    const improvement = data.trial5Scaled - data.trial1Scaled;
+                    if (improvement >= 3) {
+                        narrative += `This represents good learning efficiency with notable improvement across trials.\n\n`;
+                    } else if (improvement >= 1) {
+                        narrative += `This shows modest improvement across learning trials.\n\n`;
+                    } else if (improvement === 0) {
+                        narrative += `This indicates minimal learning across trials, suggesting possible learning difficulties.\n\n`;
+                    } else {
+                        narrative += `This shows declining performance across trials, which is atypical and may suggest attention or motivation factors.\n\n`;
+                    }
+                }
+
+                // Recall performance analysis (if available)
+                if (data.shortFreeScaled || data.longFreeScaled || data.longCuedScaled) {
+                    narrative += `<h3>Recall Performance</h3>\n`;
+                    
+                    if (data.shortFreeScaled) {
+                        const shortResult = window.NeuroscriptDB.getByWechslerScore(data.shortFreeScaled);
+                        narrative += `On short delay free recall, ${data.clientName} achieved a scaled score of ${data.shortFreeScaled}, placing his immediate retention in the ${shortResult.aacnRange}`;
+                        if (shortResult.tScore < 40) {
+                            narrative += `, indicating a ${shortResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += `. `;
+                    }
+                    
+                    if (data.longFreeScaled) {
+                        const longResult = window.NeuroscriptDB.getByWechslerScore(data.longFreeScaled);
+                        narrative += `Long delay free recall resulted in a scaled score of ${data.longFreeScaled}, falling in the ${longResult.aacnRange}`;
+                        if (longResult.tScore < 40) {
+                            narrative += `, indicating a ${longResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += `. `;
+                    }
+                    
+                    if (data.longCuedScaled) {
+                        const cuedResult = window.NeuroscriptDB.getByWechslerScore(data.longCuedScaled);
+                        narrative += `With semantic cues provided, his long delay cued recall yielded a scaled score of ${data.longCuedScaled}, placing performance in the ${cuedResult.aacnRange}`;
+                        if (cuedResult.tScore < 40) {
+                            narrative += `, indicating a ${cuedResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += `.\n\n`;
+                    }
+                }
+
+                // Recognition performance (if available)
+                if (data.recogHitsScaled || data.forcedChoiceScaled) {
+                    narrative += `<h3>Recognition Performance</h3>\n`;
+                    
+                    if (data.recogHitsScaled) {
+                        const recogResult = window.NeuroscriptDB.getByWechslerScore(data.recogHitsScaled);
+                        narrative += `${data.clientName}'s yes/no recognition performance yielded a scaled score of ${data.recogHitsScaled}, placing his recognition ability in the ${recogResult.aacnRange}`;
+                        if (recogResult.tScore < 40) {
+                            narrative += `, indicating a ${recogResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += `. `;
+                    }
+                    
+                    if (data.forcedChoiceScaled) {
+                        const forcedResult = window.NeuroscriptDB.getByWechslerScore(data.forcedChoiceScaled);
+                        narrative += `On forced choice recognition, he achieved a scaled score of ${data.forcedChoiceScaled}, falling in the ${forcedResult.aacnRange}`;
+                        if (forcedResult.tScore < 40) {
+                            narrative += `, indicating a ${forcedResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += `.\n\n`;
+                    }
+                }
+
+                // Process scores analysis (if available)
+                if (data.clusteringScaled || data.primacyScaled || data.recencyScaled || data.learningSlopeScaled) {
+                    narrative += `<h3>Learning Strategy Analysis</h3>\n`;
+                    
+                    if (data.clusteringScaled) {
+                        const clusterResult = window.NeuroscriptDB.getByWechslerScore(data.clusteringScaled);
+                        narrative += `${data.clientName}'s use of semantic clustering strategies resulted in a scaled score of ${data.clusteringScaled}, falling in the ${clusterResult.aacnRange}`;
+                        if (clusterResult.tScore < 40) {
+                            narrative += `, indicating a ${clusterResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += ` for organizational strategy use. `;
+                    }
+                    
+                    if (data.learningSlopeScaled) {
+                        const slopeResult = window.NeuroscriptDB.getByWechslerScore(data.learningSlopeScaled);
+                        narrative += `His learning slope across trials yielded a scaled score of ${data.learningSlopeScaled}, placing his learning efficiency in the ${slopeResult.aacnRange}`;
+                        if (slopeResult.tScore < 40) {
+                            narrative += `, indicating a ${slopeResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += `. `;
+                    }
+                    
+                    narrative += `\n\n`;
+                }
+
+                // Error analysis (if available)
+                if (data.intrusionsScaled || data.repetitions) {
+                    narrative += `<h3>Error Analysis</h3>\n`;
+                    
+                    if (data.intrusionsScaled) {
+                        const intrusionResult = window.NeuroscriptDB.getByWechslerScore(data.intrusionsScaled);
+                        narrative += `${data.clientName} produced intrusion errors that resulted in a scaled score of ${data.intrusionsScaled}, placing his error control in the ${intrusionResult.aacnRange}`;
+                        if (intrusionResult.tScore < 40) {
+                            narrative += `, indicating a ${intrusionResult.impairmentLevel} level of impairment`;
+                        }
+                        narrative += `. `;
+                    }
+                    
+                    if (data.repetitions !== null && data.repetitions !== undefined) {
+                        if (data.repetitions <= 5) {
+                            narrative += `He produced ${data.repetitions} repetitions, which is within normal limits and suggests good response monitoring. `;
+                        } else if (data.repetitions <= 15) {
+                            narrative += `He produced ${data.repetitions} repetitions, which is mildly elevated and may suggest some difficulty with response monitoring. `;
+                        } else {
+                            narrative += `He produced ${data.repetitions} repetitions, which is significantly elevated and suggests difficulty with response monitoring or possible perseverative tendencies. `;
+                        }
+                    }
+                    
+                    narrative += `\n\n`;
+                }
+
+                // Validity considerations
+                if (data.forcedChoice || data.validityIndicator) {
+                    narrative += `<h3>Validity Considerations</h3>\n`;
+                    
+                    if (data.forcedChoice <= 8) {
+                        narrative += `⚠️ ${data.clientName}'s forced choice recognition performance (${data.forcedChoice}/16) was at or below chance level, raising significant concerns about test validity. This pattern is extremely unusual and may suggest insufficient effort, misunderstanding of instructions, or other validity concerns.\n\n`;
+                    } else if (data.validityIndicator && data.validityIndicator > 2) {
+                        narrative += `⚠️ The validity indicator shows ${data.validityIndicator} words that were recalled in immediate/delayed trials but missed on forced choice recognition. This pattern may suggest validity concerns and should be interpreted cautiously.\n\n`;
+                    } else {
+                        narrative += `The validity indicators suggest that the results are likely valid and reflect genuine memory performance.\n\n`;
+                    }
+                }
+
+                // Summary and interpretation
+                narrative += `<h3>Clinical Summary</h3>\n`;
+                narrative += `${data.clientName}'s performance on the CVLT-3 reveals `;
+
+                // Overall performance characterization
+                const keyScores = [data.trials15Total, data.delayedIndex, data.totalRecall].filter(score => score !== null && score !== undefined);
+                if (keyScores.length > 0) {
+                    const avgScore = keyScores.reduce((sum, score) => sum + score, 0) / keyScores.length;
+                    if (avgScore >= 110) {
+                        narrative += `generally strong verbal learning and memory abilities. `;
+                    } else if (avgScore >= 90) {
+                        narrative += `generally adequate verbal learning and memory abilities. `;
+                    } else if (avgScore >= 80) {
+                        narrative += `some mild difficulties with verbal learning and memory. `;
+                    } else if (avgScore >= 70) {
+                        narrative += `notable difficulties with verbal learning and memory that may impact daily functioning. `;
+                    } else {
+                        narrative += `significant impairments in verbal learning and memory that likely impact daily functioning. `;
+                    }
+                }
+
+                narrative += `These results should be interpreted within the context of his overall cognitive profile, educational background, and any relevant medical or psychiatric history. Further evaluation may be warranted if cognitive concerns persist.\n\n`;
+
+                // Validation warnings section
+                if (warnings.length > 0) {
+                    narrative += `<h3>⚠️ Data Validation Warnings</h3>\n`;
+                    warnings.forEach(warning => {
+                        narrative += `${warning}\n`;
+                    });
+                    narrative += `\n`;
+                }
+
+                console.log('CVLT-3 narrative generated successfully v3.0');
+
+                // Generate score table
+                let scoreTable = `<h2>📊 CVLT-3 Score Summary</h2>\n`;
+                scoreTable += `<table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;">\n`;
+                scoreTable += `<tr style="background-color: #f0f0f0;"><th>Measure</th><th>Raw Score</th><th>Scaled/Standard Score</th><th>Percentile</th><th>Range</th></tr>\n`;
+
+                // Index scores
+                if (data.trials15Total) {
+                    const result = window.NeuroscriptDB.getByStandardScore(data.trials15Total);
+                    scoreTable += `<tr><td><strong>Trials 1-5 Total Index</strong></td><td>—</td><td>${data.trials15Total}</td><td>${result.percentile}</td><td>${result.aacnRange}</td></tr>\n`;
+                }
+                
+                if (data.delayedIndex) {
+                    const result = window.NeuroscriptDB.getByStandardScore(data.delayedIndex);
+                    scoreTable += `<tr><td><strong>Delayed Recall Correct Index</strong></td><td>—</td><td>${data.delayedIndex}</td><td>${result.percentile}</td><td>${result.aacnRange}</td></tr>\n`;
+                }
+                
+                if (data.totalRecall) {
+                    const result = window.NeuroscriptDB.getByStandardScore(data.totalRecall);
+                    scoreTable += `<tr><td><strong>Total Recall Correct Index</strong></td><td>—</td><td>${data.totalRecall}</td><td>${result.percentile}</td><td>${result.aacnRange}</td></tr>\n`;
+                }
+
+                // Core scaled scores
+                if (data.trial1Scaled) {
+                    const result = window.NeuroscriptDB.getByWechslerScore(data.trial1Scaled);
+                    scoreTable += `<tr><td>Trial 1 Correct</td><td>${data.trial1 || '—'}</td><td>${data.trial1Scaled}</td><td>${result.percentile}</td><td>${result.aacnRange}</td></tr>\n`;
+                }
+                
+                if (data.trial5Scaled) {
+                    const result = window.NeuroscriptDB.getByWechslerScore(data.trial5Scaled);
+                    scoreTable += `<tr><td>Trial 5 Correct</td><td>${data.trial5 || '—'}</td><td>${data.trial5Scaled}</td><td>${result.percentile}</td><td>${result.aacnRange}</td></tr>\n`;
+                }
+                
+                if (data.longFreeScaled) {
+                    const result = window.NeuroscriptDB.getByWechslerScore(data.longFreeScaled);
+                    scoreTable += `<tr><td>Long Delay Free Recall</td><td>${data.longFree || '—'}</td><td>${data.longFreeScaled}</td><td>${result.percentile}</td><td>${result.aacnRange}</td></tr>\n`;
+                }
+                
+                if (data.forcedChoiceScaled) {
+                    const result = window.NeuroscriptDB.getByWechslerScore(data.forcedChoiceScaled);
+                    scoreTable += `<tr><td>Forced Choice Recognition</td><td>${data.forcedChoice || '—'}</td><td>${data.forcedChoiceScaled}</td><td>${result.percentile}</td><td>${result.aacnRange}</td></tr>\n`;
+                }
+
+                scoreTable += `</table>\n`;
+
+                // Store results globally
+                currentNarrative = narrative;
+                currentScoreTable = scoreTable;
+
+                // Display results
+                document.getElementById('output').innerHTML = narrative + scoreTable;
                 document.getElementById('output').style.display = 'block';
 
-                // Store for completion
-                currentNarrative = text.replace(/<[^>]*>/g, '').trim();
-                currentScoreTable = generateScoreTable(data);
-                
-                console.log('CVLT-3 professional narrative generated successfully');
+                console.log('CVLT-3 v3.0 report generation completed successfully');
 
             } catch (error) {
-                console.error('Error generating CVLT report:', error);
-                document.getElementById('output').innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
+                console.error('Error in generateCVLTText v3.0:', error);
+                document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
         }
 
-        function generateCVLTNarrative(data) {
-            let narrative = '';
+        function saveTestData() {
+            console.log('saveTestData v3.0 called');
             
-            // Gender pronouns
-            const heShe = data.gender === 'Male' ? 'He' : 'She';
-            const hisHer = data.gender === 'Male' ? 'His' : 'Her';
-            const himHer = data.gender === 'Male' ? 'him' : 'her';
-
-            // Start single paragraph narrative
-            narrative += '<p>';
-
-            // 1. Overall Performance Statement (Total Recall Index)
-            if (data.totalRecall) {
-                const totalRecallRange = getIndexInterpretationFromDB(data.totalRecall);
-                
-                // Check for unusual features
-                let unusualFeatures = false;
-                
-                // Check if performance is inconsistent across measures
-                if (data.trials15Total && data.delayedIndex) {
-                    const difference = Math.abs(data.totalRecall - data.trials15Total);
-                    if (difference > 15) {
-                        unusualFeatures = true;
-                    }
-                }
-                
-                // Check for validity concerns
-                if (data.forcedChoice && data.forcedChoice <= 8) {
-                    unusualFeatures = true;
-                }
-                
-                if (data.fcRecalledMissed && data.fcRecalledMissed > 2) {
-                    unusualFeatures = true;
-                }
-
-                const unusualNote = unusualFeatures ? ', although with some unusual features' : '';
-                narrative += `${hisHer} overall performance on a test of verbal list learning (CVLT-3) was in the ${totalRecallRange} (Total Recall Index = ${data.totalRecall})${unusualNote}. `;
-            }
-
-            // 2. First Learning Trial and Learning Slope
-            if (data.trial1 && data.trial1Scaled && data.trial5) {
-                const trial1Range = getScaledInterpretationFromDB(data.trial1Scaled);
-                
-                // Learning slope interpretation
-                let learningSlopeRange = 'Average';
-                if (data.learningSlopeScaled) {
-                    learningSlopeRange = getScaledInterpretationFromDB(data.learningSlopeScaled);
-                } else {
-                    // Calculate learning slope if not provided
-                    const improvementItems = data.trial5 - data.trial1;
-                    if (improvementItems >= 7) {
-                        learningSlopeRange = 'Above Average';
-                    } else if (improvementItems >= 4) {
-                        learningSlopeRange = 'Average';
-                    } else {
-                        learningSlopeRange = 'Below Average';
-                    }
-                }
-
-                narrative += `${heShe} was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the ${trial1Range} (ss=${data.trial1Scaled}). ${heShe} showed ${learningSlopeRange.includes('Average') ? 'an' : 'a'} ${learningSlopeRange} learning slope, attaining ${data.trial5} items by the fifth trial. `;
-            }
-
-            // 3. Retention Statement (Short and Long Delay)
-            if (data.shortFree && data.shortFreeScaled && data.longFree && data.longFreeScaled) {
-                const shortDelayRange = getScaledInterpretationFromDB(data.shortFreeScaled);
-                const longDelayRange = getScaledInterpretationFromDB(data.longFreeScaled);
-                
-                narrative += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}) and ${data.longFree} after a longer delay (${longDelayRange}). `;
-            } else if (data.shortFree && data.shortFreeScaled) {
-                const shortDelayRange = getScaledInterpretationFromDB(data.shortFreeScaled);
-                narrative += `${heShe} was able to retain ${data.shortFree} items after a short delay (${shortDelayRange}). `;
-            } else if (data.longFree && data.longFreeScaled) {
-                const longDelayRange = getScaledInterpretationFromDB(data.longFreeScaled);
-                narrative += `${heShe} was able to retain ${data.longFree} items after a longer delay (${longDelayRange}). `;
-            }
-
-            // 4. Cuing Benefit Statement
-            if (data.longFree && data.longCued && data.longCued > data.longFree) {
-                narrative += 'Delayed recall was improved by cuing. ';
-            }
-
-            // 5. Semantic Clustering Strategy
-            if (data.clusteringScaled) {
-                let strategyQuality;
-                if (data.clusteringScaled >= 13) {
-                    strategyQuality = 'excellent';
-                } else if (data.clusteringScaled >= 10) {
-                    strategyQuality = 'good';
-                } else if (data.clusteringScaled >= 8) {
-                    strategyQuality = 'adequate';
-                } else {
-                    strategyQuality = 'poor';
-                }
-                
-                narrative += `${heShe} made ${strategyQuality} use of a strategy of organizing words by meaning for better learning. `;
-            }
-
-            // 6. Primacy vs Recency Comparison
-            if (data.primacyScaled && data.recencyScaled && data.primacyScaled !== data.recencyScaled) {
-                if (data.recencyScaled > data.primacyScaled) {
-                    narrative += `${heShe} was better able to remember items from the end of the list than the beginning of the list. `;
-                } else {
-                    narrative += `${heShe} was better able to remember items from the beginning of the list than the end of the list. `;
-                }
-            }
-
-            // 7. Yes/No Recognition Performance
-            if (data.recogHits !== null && data.recogHits !== undefined) {
-                if (data.recogHits === 16) {
-                    narrative += 'Performance on yes/no recognition memory trials was flawless. ';
-                } else {
-                    narrative += `On yes/no recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} correctly identified ${data.recogHits} of 16 words`;
-                    
-                    // Add false positive information if available
-                    if (data.falsePositives !== null && data.falsePositives !== undefined && data.falsePositives > 0) {
-                        const fpScaledScore = data.recogHitsScaled ? ` (ss=${data.recogHitsScaled})` : '';
-                        narrative += `${fpScaledScore} and made ${data.falsePositives} false positive error${data.falsePositives === 1 ? '' : 's'}`;
-                    }
-                    
-                    narrative += '. ';
-                }
-            }
-
-            // 8. Forced Choice Recognition Performance
-            if (data.forcedChoice !== null && data.forcedChoice !== undefined) {
-                if (data.forcedChoice < 16) {
-                    const errors = 16 - data.forcedChoice;
-                    if (errors === 1) {
-                        narrative += `On forced choice recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} made 1 error, which is unusual. `;
-                    } else {
-                        narrative += `On forced choice recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} made ${errors} errors, which is unusual. `;
-                    }
-                }
-            }
-
-            // 9. Validity Concerns
-            let validityConcerns = [];
-            
-            // Check yes/no recognition errors (significant = less than 14 correct?)
-            if (data.recogHits !== null && data.recogHits !== undefined && data.recogHits < 14) {
-                validityConcerns.push('significant errors on yes/no recognition');
-            }
-            
-            // Check forced choice errors (can stand alone)
-            let forcedChoiceErrors = false;
-            if (data.forcedChoice !== null && data.forcedChoice !== undefined && data.forcedChoice < 16) {
-                forcedChoiceErrors = true;
-            }
-            
-            // Check validity indicators (2 or more total errors = highly unusual)
-            const fcRecalledMissed = data.fcRecalledMissed || 0;
-            const fcYesNoMissed = data.fcYesNoMissed || 0;
-            const totalValidityErrors = fcRecalledMissed + fcYesNoMissed;
-            
-            // Handle validity concerns with specific language
-            if (totalValidityErrors >= 2) {
-                // Highly unusual inconsistencies - strongest language
-                narrative += 'There were highly unusual inconsistencies between recall and recognition performance, indicating that the results of this test are likely invalid, and suggesting symptom exaggeration. ';
-            } else if (forcedChoiceErrors) {
-                // Forced choice errors can stand alone
-                narrative += 'There were validity concerns arising from errors on forced choice recognition trials. ';
-            } else if (validityConcerns.length > 0) {
-                // Other validity concerns
-                if (validityConcerns.length === 1) {
-                    narrative += `There were validity concerns arising from ${validityConcerns[0]}. `;
-                } else {
-                    const lastConcern = validityConcerns.pop();
-                    narrative += `There were validity concerns arising from ${validityConcerns.join(', ')} and ${lastConcern}. `;
-                }
-            }
-
-            // Close paragraph
-            narrative += '</p>';
-
-            return narrative;
-        }
-
-        function generateScoreTable(data) {
-            const scoreTable = [
-                ['Test Component', 'Raw Score', 'Scaled Score/Index', 'Range']
-            ];
-            
-            // Add completed tests to score table
-            if (data.totalRecall) {
-                scoreTable.push(['Total Recall Index', '--', data.totalRecall, getIndexInterpretationFromDB(data.totalRecall)]);
-            }
-            if (data.trial1 && data.trial1Scaled) {
-                scoreTable.push(['Trial 1', data.trial1, `${data.trial1Scaled} (ss)`, getScaledInterpretationFromDB(data.trial1Scaled)]);
-            }
-            if (data.trial5 && data.trial5Scaled) {
-                scoreTable.push(['Trial 5', data.trial5, `${data.trial5Scaled} (ss)`, getScaledInterpretationFromDB(data.trial5Scaled)]);
-            }
-            
-            return scoreTable;
-        }
-
-        function completeTest() {
+            // Generate the narrative first if not already generated
             if (!currentNarrative) {
-                alert('Please generate the report first before completing the test.');
-                return;
+                generateCVLTText();
+                
+                // Check if generation was successful
+                if (!currentNarrative) {
+                    alert('Please ensure all required fields are completed before saving.');
+                    return;
+                }
             }
             
             const results = {
@@ -920,15 +910,88 @@
                 completedAt: new Date().toISOString()
             };
             
-            // Send to master dashboard
-            window.parent.postMessage({
-                type: 'testComplete',
-                testName: 'cvlt',
-                results: results
-            }, '*');
+            // Send data to parent/master dashboard
+            if (window.parent !== window) {
+                console.log('Sending CVLT-3 results to master dashboard v3.0');
+                window.parent.postMessage({
+                    type: 'testComplete',
+                    testName: 'cvlt-3',
+                    results: results
+                }, '*');
+            }
             
-            console.log('CVLT-3 test completed and sent to dashboard');
+            // Show success message
+            alert('CVLT-3 test data saved successfully!');
+            console.log('CVLT-3 v3.0 test completion sent to master dashboard');
         }
+
+        function loadTestData() {
+            console.log('loadTestData v3.0 called');
+            
+            // Demo data for testing - preserving original values
+            document.getElementById('clientName').value = 'Test Client';
+            document.getElementById('age').value = '45';
+            document.getElementById('gender').value = 'Male';
+            document.getElementById('education').value = '12';
+            document.getElementById('readingLevel').value = '12';
+            
+            // Core scores
+            document.getElementById('trial1').value = '6';
+            document.getElementById('trial1Scaled').value = '9';
+            document.getElementById('trial5').value = '12';
+            document.getElementById('trial5Scaled').value = '11';
+            document.getElementById('longFree').value = '10';
+            document.getElementById('longFreeScaled').value = '10';
+            document.getElementById('forcedChoice').value = '14';
+            document.getElementById('forcedChoiceScaled').value = '12';
+            
+            // Index scores
+            document.getElementById('trials15Total').value = '95';
+            document.getElementById('delayedIndex').value = '92';
+            document.getElementById('totalRecall').value = '94';
+            
+            console.log('CVLT-3 demo data loaded v3.0');
+        }
+
+        // Event listener for client info from master dashboard
+        window.addEventListener('message', function(event) {
+            console.log('CVLT-3 v3.0 received message:', event.data);
+            
+            if (event.data.type === 'clientInfo') {
+                const clientData = event.data.data;
+                console.log('Populating CVLT-3 v3.0 with client data:', clientData);
+                
+                if (clientData.name) document.getElementById('clientName').value = clientData.name;
+                if (clientData.age) document.getElementById('age').value = clientData.age;
+                if (clientData.gender) document.getElementById('gender').value = clientData.gender;
+                if (clientData.education) document.getElementById('education').value = clientData.education;
+                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel;
+            }
+        });
+
+        // Input validation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('CVLT-3 v3.0 DOM loaded, setting up validation');
+            
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    
+                    if (this.value && (isNaN(value) || value < min || value > max)) {
+                        this.style.border = '2px solid red';
+                        this.style.backgroundColor = '#ffe6e6';
+                    } else {
+                        this.style.border = '1px solid #ddd';
+                        this.style.backgroundColor = 'white';
+                    }
+                });
+            });
+        });
+
+        console.log('CVLT-3 Enhanced v3.0 initialization complete');
     </script>
 </body>
 </html>
