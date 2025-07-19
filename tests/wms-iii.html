@@ -580,8 +580,30 @@
                 const pronoun = gender === 'Male' ? 'his' : 'her';
                 const Pronoun = gender === 'Male' ? 'His' : 'Her'; // CAPITALIZED VERSION FOR SENTENCE BEGINNINGS
                 const heShe = gender === 'Male' ? 'He' : 'She';
+                const sheLower = gender === 'Male' ? 'he' : 'she';
 
-                let report = '<h3><b>Memory</b></h3>\n';
+                let report = '';
+
+                // Attention and Concentration Section (for spatial span)
+                if (data.spatialSpan > 0) {
+                    report += '<h3><b>Attention and Concentration</b></h3>\n';
+                    
+                    const spatialData = window.NeuroscriptDB.getByWechslerScore(data.spatialSpan);
+                    report += `<p>On a visual task of immediate memory (WMS-III Spatial Span), ${sheLower} scored in the ${spatialData.aacn} range`;
+                    
+                    // Add Heaton impairment immediately after range if ≤16th percentile
+                    if (data.spatialSpan <= 6) {
+                        const heatonLevel = getHeatonLevel(data.spatialSpan);
+                        if (heatonLevel) {
+                            report += `, ${heatonLevel},`;
+                        }
+                    }
+                    
+                    report += ` (ss=${data.spatialSpan}).</p>\n\n`;
+                }
+
+                // Memory Section
+                report += '<h3><b>Memory</b></h3>\n';
 
                 // Simplified narrative structure for integrated reporting
 
