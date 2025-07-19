@@ -373,8 +373,7 @@
             </table>
 
             <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
-            <button class="generate-btn" onclick="generateReport()">Generate Report</button>
-            <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+            <button class="complete-btn" onclick="saveTestData()">Save Test Data</button>
         </div>
 
         <div id="output" class="output-section" style="display: none;"></div>
@@ -465,10 +464,10 @@
             });
         }
 
-        function generateReport() {
-            console.log('generateReport v5.3 called');
+        function saveTestData() {
+            console.log('saveTestData v5.3 called');
             try {
-                // Check if external database is loaded - matching WAIS 4.9 pattern
+                // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
                     document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please refresh the page and try again.</p>`;
                     document.getElementById('output').style.display = 'block';
@@ -504,9 +503,9 @@
                     cancellation: parseInt(document.getElementById('cancellation').value) || 0
                 };
 
-                // Basic validation
-                if (!data.fsiq || !data.vci || !data.pri || !data.wmi || !data.psi) {
-                    alert('Please enter all composite scores (VCI, PRI, WMI, PSI, FSIQ)');
+                // Basic validation - flexible for WAIS (no required fields beyond demographics)
+                if (!data.age || !data.gender) {
+                    alert('Please enter at least age and gender before saving test data.');
                     return;
                 }
 
@@ -516,12 +515,14 @@
                 const pronoun = data.gender === 'Male' ? 'His' : 'Her';
                 const heShe = data.gender === 'Male' ? 'He' : 'She';
 
-                // Overall cognitive functioning
-                const fsiqData = window.NeuroscriptDB.getByStandardScore(data.fsiq);
-                report += `<h3>Overall Cognitive Functioning</h3>`;
-                report += `<p>${heShe} obtained a Full Scale IQ (FSIQ) of ${data.fsiq}, placing ${data.gender === 'Male' ? 'him' : 'her'} within the ${fsiqData.aacnLabel} range (${fsiqData.percentile}th percentile) of cognitive functioning.</p>`;
+                // Overall cognitive functioning (only if FSIQ available)
+                if (data.fsiq) {
+                    const fsiqData = window.NeuroscriptDB.getByStandardScore(data.fsiq);
+                    report += `<h3>Overall Cognitive Functioning</h3>`;
+                    report += `<p>${heShe} obtained a Full Scale IQ (FSIQ) of ${data.fsiq}, placing ${data.gender === 'Male' ? 'him' : 'her'} within the ${fsiqData.aacnLabel} range (${fsiqData.percentile}th percentile) of cognitive functioning.</p>`;
+                }
 
-                // Index scores
+                // Index scores (only if available)
                 if (data.vci > 0 || data.pri > 0 || data.wmi > 0 || data.psi > 0) {
                     report += '<h3>Cognitive Index Scores</h3>';
                     
@@ -620,36 +621,28 @@
                 // Display the report
                 document.getElementById('output').innerHTML = report;
                 document.getElementById('output').style.display = 'block';
+
+                // Send to master dashboard
+                const results = {
+                    narrative: currentNarrative,
+                    scoreTable: currentScoreTable,
+                    testName: 'WAIS-IV',
+                    completedAt: new Date().toISOString()
+                };
+                
+                window.parent.postMessage({
+                    type: 'testComplete',
+                    testName: 'wais-iv',
+                    results: results
+                }, '*');
+                
+                console.log('WAIS-IV test data saved successfully to dashboard');
                 
             } catch (error) {
-                console.error('Error generating report v5.3:', error);
-                document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p>`;
+                console.error('Error saving test data v5.3:', error);
+                document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
-        }
-
-        function completeTest() {
-            console.log('completeTest v5.3 called');
-            if (!currentNarrative) {
-                alert('Please generate the report first before completing the test.');
-                return;
-            }
-            
-            const results = {
-                narrative: currentNarrative,
-                scoreTable: currentScoreTable,
-                testName: 'WAIS-IV',
-                completedAt: new Date().toISOString()
-            };
-            
-            // Send to master dashboard
-            window.parent.postMessage({
-                type: 'testComplete',
-                testName: 'wais-iv',
-                results: results
-            }, '*');
-            
-            alert('WAIS-IV test completed and saved to dashboard!');
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
