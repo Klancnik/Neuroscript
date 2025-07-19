@@ -636,8 +636,37 @@
                         
                         if (lmIData.aacn === lmIIData.aacn) {
                             report += `Immediate and delayed recall of stories (WMS-III Logical Memory) was in the ${lmIData.aacn} range for both conditions (ss=${data.logicalMemoryI}, ${data.logicalMemoryII})`;
+                            
+                            // Add Heaton impairment immediately after the range if either score ≤16th percentile
+                            if (data.logicalMemoryI <= 6 || data.logicalMemoryII <= 6) {
+                                const worstScore = Math.min(data.logicalMemoryI, data.logicalMemoryII);
+                                const heatonLevel = getHeatonLevel(worstScore);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel}`;
+                                }
+                            }
                         } else {
-                            report += `Story recall (WMS-III Logical Memory) was in the ${lmIData.aacn} range for immediate recall (ss=${data.logicalMemoryI}) and in the ${lmIIData.aacn} range for delayed recall (ss=${data.logicalMemoryII})`;
+                            report += `Story recall (WMS-III Logical Memory) was in the ${lmIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after immediate range if needed
+                            if (data.logicalMemoryI <= 6) {
+                                const heatonLevel = getHeatonLevel(data.logicalMemoryI);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for immediate recall (ss=${data.logicalMemoryI}) and in the ${lmIIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after delayed range if needed
+                            if (data.logicalMemoryII <= 6) {
+                                const heatonLevel = getHeatonLevel(data.logicalMemoryII);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for delayed recall (ss=${data.logicalMemoryII})`;
                         }
                         
                         // Add retention percentage analysis if available
@@ -646,41 +675,35 @@
                             report += `, with ${data.lmRetention}% retention falling in the ${retentionRange} range`;
                         }
                         
-                        // Add Heaton impairment if either score ≤16th percentile
-                        if (data.logicalMemoryI <= 6 || data.logicalMemoryII <= 6) {
-                            const worstScore = Math.min(data.logicalMemoryI, data.logicalMemoryII);
-                            const heatonLevel = getHeatonLevel(worstScore);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
                         report += '.';
                         
                     } else if (data.logicalMemoryI > 0) {
                         const lmIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryI);
-                        report += `Immediate recall of stories (WMS-III Logical Memory I) was in the ${lmIData.aacn} range (ss=${data.logicalMemoryI})`;
+                        report += `Immediate recall of stories (WMS-III Logical Memory I) was in the ${lmIData.aacn} range`;
                         
-                        // Add Heaton impairment if ≤16th percentile
+                        // Add Heaton impairment immediately after range if ≤16th percentile
                         if (data.logicalMemoryI <= 6) {
                             const heatonLevel = getHeatonLevel(data.logicalMemoryI);
                             if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
+                                report += `, ${heatonLevel},`;
                             }
                         }
-                        report += '.';
+                        
+                        report += ` (ss=${data.logicalMemoryI}).`;
                         
                     } else if (data.logicalMemoryII > 0) {
                         const lmIIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryII);
-                        report += `Delayed recall of stories (WMS-III Logical Memory II) was in the ${lmIIData.aacn} range (ss=${data.logicalMemoryII})`;
+                        report += `Delayed recall of stories (WMS-III Logical Memory II) was in the ${lmIIData.aacn} range`;
                         
-                        // Add Heaton impairment if ≤16th percentile
+                        // Add Heaton impairment immediately after range if ≤16th percentile
                         if (data.logicalMemoryII <= 6) {
                             const heatonLevel = getHeatonLevel(data.logicalMemoryII);
                             if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
+                                report += `, ${heatonLevel},`;
                             }
                         }
-                        report += '.';
+                        
+                        report += ` (ss=${data.logicalMemoryII}).`;
                     }
                     
                     report += '</p>\n';
@@ -695,9 +718,40 @@
                         const vpaIIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedII);
                         
                         if (vpaIData.aacn === vpaIIData.aacn) {
-                            report += `Learning and retention of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacn} range for both immediate (ss=${data.verbalPairedI}) and delayed (ss=${data.verbalPairedII}) conditions`;
+                            report += `Learning and retention of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after range if either score ≤16th percentile
+                            if (data.verbalPairedI <= 6 || data.verbalPairedII <= 6) {
+                                const worstScore = Math.min(data.verbalPairedI, data.verbalPairedII);
+                                const heatonLevel = getHeatonLevel(worstScore);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for both immediate (ss=${data.verbalPairedI}) and delayed (ss=${data.verbalPairedII}) conditions`;
                         } else {
-                            report += `Learning of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacn} range for immediate recall (ss=${data.verbalPairedI}) and in the ${vpaIIData.aacn} range for delayed recall (ss=${data.verbalPairedII})`;
+                            report += `Learning of word pairs (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after immediate range if needed
+                            if (data.verbalPairedI <= 6) {
+                                const heatonLevel = getHeatonLevel(data.verbalPairedI);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for immediate recall (ss=${data.verbalPairedI}) and in the ${vpaIIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after delayed range if needed
+                            if (data.verbalPairedII <= 6) {
+                                const heatonLevel = getHeatonLevel(data.verbalPairedII);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for delayed recall (ss=${data.verbalPairedII})`;
                         }
                         
                         // Add retention percentage if available
@@ -706,41 +760,35 @@
                             report += `, with ${data.vpaRetention}% retention in the ${retentionRange} range`;
                         }
                         
-                        // Add Heaton impairment if either score ≤16th percentile
-                        if (data.verbalPairedI <= 6 || data.verbalPairedII <= 6) {
-                            const worstScore = Math.min(data.verbalPairedI, data.verbalPairedII);
-                            const heatonLevel = getHeatonLevel(worstScore);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
                         report += '.';
                         
                     } else if (data.verbalPairedI > 0) {
                         const vpaIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedI);
-                        report += `Learning of word associations (WMS-III Verbal Paired Associates I) was in the ${vpaIData.aacn} range (ss=${data.verbalPairedI})`;
+                        report += `Learning of word associations (WMS-III Verbal Paired Associates I) was in the ${vpaIData.aacn} range`;
                         
-                        // Add Heaton impairment if ≤16th percentile
+                        // Add Heaton impairment immediately after range if ≤16th percentile
                         if (data.verbalPairedI <= 6) {
                             const heatonLevel = getHeatonLevel(data.verbalPairedI);
                             if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
+                                report += `, ${heatonLevel},`;
                             }
                         }
-                        report += '.';
+                        
+                        report += ` (ss=${data.verbalPairedI}).`;
                         
                     } else if (data.verbalPairedII > 0) {
                         const vpaIIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedII);
-                        report += `Retention of word associations following a delay (WMS-III Verbal Paired Associates II) was in the ${vpaIIData.aacn} range (ss=${data.verbalPairedII})`;
+                        report += `Retention of word associations following a delay (WMS-III Verbal Paired Associates II) was in the ${vpaIIData.aacn} range`;
                         
-                        // Add Heaton impairment if ≤16th percentile
+                        // Add Heaton impairment immediately after range if ≤16th percentile
                         if (data.verbalPairedII <= 6) {
                             const heatonLevel = getHeatonLevel(data.verbalPairedII);
                             if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
+                                report += `, ${heatonLevel},`;
                             }
                         }
-                        report += '.';
+                        
+                        report += ` (ss=${data.verbalPairedII}).`;
                     }
                     
                     report += '</p>\n';
@@ -779,9 +827,40 @@
                         const vrIIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproII);
                         
                         if (vrIData.aacn === vrIIData.aacn) {
-                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacn} range for both immediate (ss=${data.visualReproI}) and delayed (ss=${data.visualReproII}) conditions`;
+                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after range if either score ≤16th percentile
+                            if (data.visualReproI <= 6 || data.visualReproII <= 6) {
+                                const worstScore = Math.min(data.visualReproI, data.visualReproII);
+                                const heatonLevel = getHeatonLevel(worstScore);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for both immediate (ss=${data.visualReproI}) and delayed (ss=${data.visualReproII}) conditions`;
                         } else {
-                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacn} range for immediate reproduction (ss=${data.visualReproI}) and in the ${vrIIData.aacn} range for delayed reproduction (ss=${data.visualReproII})`;
+                            report += `Drawing of geometric designs from memory (WMS-III Visual Reproduction) was in the ${vrIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after immediate range if needed
+                            if (data.visualReproI <= 6) {
+                                const heatonLevel = getHeatonLevel(data.visualReproI);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for immediate reproduction (ss=${data.visualReproI}) and in the ${vrIIData.aacn} range`;
+                            
+                            // Add Heaton impairment immediately after delayed range if needed
+                            if (data.visualReproII <= 6) {
+                                const heatonLevel = getHeatonLevel(data.visualReproII);
+                                if (heatonLevel) {
+                                    report += `, ${heatonLevel},`;
+                                }
+                            }
+                            
+                            report += ` for delayed reproduction (ss=${data.visualReproII})`;
                         }
                         
                         // Add retention percentage if available
@@ -790,41 +869,35 @@
                             report += `, with ${data.visualReproRetention}% retention in the ${retentionRange} range`;
                         }
                         
-                        // Add Heaton impairment if either score ≤16th percentile
-                        if (data.visualReproI <= 6 || data.visualReproII <= 6) {
-                            const worstScore = Math.min(data.visualReproI, data.visualReproII);
-                            const heatonLevel = getHeatonLevel(worstScore);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
                         report += '.';
                         
                     } else if (data.visualReproI > 0) {
                         const vrIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproI);
-                        report += `Immediate drawing of simple geometric designs (WMS-III Visual Reproduction I) was in the ${vrIData.aacn} range (ss=${data.visualReproI})`;
+                        report += `Immediate drawing of simple geometric designs (WMS-III Visual Reproduction I) was in the ${vrIData.aacn} range`;
                         
-                        // Add Heaton impairment if ≤16th percentile
+                        // Add Heaton impairment immediately after range if ≤16th percentile
                         if (data.visualReproI <= 6) {
                             const heatonLevel = getHeatonLevel(data.visualReproI);
                             if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
+                                report += `, ${heatonLevel},`;
                             }
                         }
-                        report += '.';
+                        
+                        report += ` (ss=${data.visualReproI}).`;
                         
                     } else if (data.visualReproII > 0) {
                         const vrIIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproII);
-                        report += `Delayed recall of simple geometric drawings (WMS-III Visual Reproduction II) was in the ${vrIIData.aacn} range (ss=${data.visualReproII})`;
+                        report += `Delayed recall of simple geometric drawings (WMS-III Visual Reproduction II) was in the ${vrIIData.aacn} range`;
                         
-                        // Add Heaton impairment if ≤16th percentile
+                        // Add Heaton impairment immediately after range if ≤16th percentile
                         if (data.visualReproII <= 6) {
                             const heatonLevel = getHeatonLevel(data.visualReproII);
                             if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
+                                report += `, ${heatonLevel},`;
                             }
                         }
-                        report += '.';
+                        
+                        report += ` (ss=${data.visualReproII}).`;
                     }
                     
                     report += '</p>\n';
