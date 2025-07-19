@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WMS-III Enhanced v3.1</title>
+    <title>WMS-III Clinical Report Generator</title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -23,22 +23,10 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .header {
-            text-align: center;
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        .version {
-            font-size: 0.6em;
-            color: #6c757d;
-            font-weight: normal;
-        }
         .input-section {
             background: #f8f9fa;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 5px;
             margin-bottom: 30px;
         }
         .input-group {
@@ -48,122 +36,89 @@
             display: block;
             font-weight: bold;
             margin-bottom: 5px;
-            color: #34495e;
         }
-        input[type="number"], select {
-            padding: 8px;
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 3px;
         }
         input[type="number"]:invalid {
             border: 2px solid #ff0000;
             background-color: #ffe6e6;
         }
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
         .section-header {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 25px 0 15px 0;
+            background: #e9ecef;
             padding: 10px;
-            background-color: #3498db;
-            color: white;
             border-radius: 5px;
-            text-align: center;
-        }
-        .score-table {
-            width: 40%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: white;
-        }
-        .score-table th {
-            background-color: #34495e;
-            color: white;
-            padding: 12px;
-            text-align: left;
             font-weight: bold;
-        }
-        .score-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #ddd;
-            vertical-align: middle;
-        }
-        .score-table td:first-child {
-            width: 70%;
-        }
-        .score-table td:last-child {
-            width: 30%;
-        }
-        .score-table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        .score-table input {
-            width: 80px;
-            padding: 6px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
         .generate-btn {
-            background: #3498db;
+            background: #007bff;
             color: white;
-            padding: 12px 30px;
+            padding: 12px 24px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            margin: 10px 5px;
         }
         .generate-btn:hover {
-            background: #2980b9;
+            background: #0056b3;
         }
         .complete-btn {
-            background: #27ae60;
+            background: #28a745;
             color: white;
-            padding: 12px 30px;
+            padding: 12px 24px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            margin: 10px 5px;
+            margin-left: 10px;
         }
         .complete-btn:hover {
-            background: #229954;
-        }
-        .load-btn {
-            background: #f39c12;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-            margin: 10px 5px;
-        }
-        .load-btn:hover {
-            background: #e67e22;
+            background: #1e7e34;
         }
         .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
             margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        h3 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>WMS-III Clinical Report Generator <span class="version">v3.5</span></h1>
-            <p>Enter WMS-III scores to generate clinical narrative text in Neuroscript format</p>
-        </div>
+        <h1>WMS-III Clinical Report Generator</h1>
+        <p>Enter WMS-III scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
-            <div class="section-header">Demographics</div>
+            <h3>Demographics</h3>
             <div class="input-group">
                 <label>Age (years):</label>
                 <input type="number" id="age" value="" placeholder="16-89" min="16" max="89">
@@ -180,179 +135,162 @@
                 <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
             </div>
 
-            <div class="section-header">Primary Indices</div>
-            <table class="score-table">
-                <thead>
-                    <tr>
-                        <th>Index</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Auditory Immediate</td>
-                        <td><input type="number" id="auditoryImmediate" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                    <tr>
-                        <td>Visual Immediate</td>
-                        <td><input type="number" id="visualImmediate" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                    <tr>
-                        <td>Immediate Memory</td>
-                        <td><input type="number" id="immediateMemory" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                    <tr>
-                        <td>Auditory Delayed</td>
-                        <td><input type="number" id="auditoryDelayed" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                    <tr>
-                        <td>Visual Delayed</td>
-                        <td><input type="number" id="visualDelayed" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                    <tr>
-                        <td>Auditory Recognition Delayed</td>
-                        <td><input type="number" id="auditoryRecognition" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                    <tr>
-                        <td>General Memory</td>
-                        <td><input type="number" id="generalMemory" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                    <tr>
-                        <td>Working Memory</td>
-                        <td><input type="number" id="workingMemory" min="40" max="160" placeholder="40-160"></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="section-header">Primary Index Scores (Standard Scores)</div>
+            <div class="score-grid">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audiImmediate_admin">
+                    <label>Auditory Immediate:</label>
+                    <input type="number" id="audiImmediate" value="" placeholder="40-160" min="40" max="160">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="visualImmediate_admin">
+                    <label>Visual Immediate:</label>
+                    <input type="number" id="visualImmediate" value="" placeholder="40-160" min="40" max="160">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="immediateMemory_admin">
+                    <label>Immediate Memory:</label>
+                    <input type="number" id="immediateMemory" value="" placeholder="40-160" min="40" max="160">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audiDelayed_admin">
+                    <label>Auditory Delayed:</label>
+                    <input type="number" id="audiDelayed" value="" placeholder="40-160" min="40" max="160">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="visualDelayed_admin">
+                    <label>Visual Delayed:</label>
+                    <input type="number" id="visualDelayed" value="" placeholder="40-160" min="40" max="160">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="audiRecogDelayed_admin">
+                    <label>Auditory Recognition Delayed:</label>
+                    <input type="number" id="audiRecogDelayed" value="" placeholder="40-160" min="40" max="160">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="generalMemory_admin">
+                    <label>General Memory:</label>
+                    <input type="number" id="generalMemory" value="" placeholder="40-160" min="40" max="160">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="workingMemory_admin">
+                    <label>Working Memory:</label>
+                    <input type="number" id="workingMemory" value="" placeholder="40-160" min="40" max="160">
+                </div>
+            </div>
 
-            <div class="section-header">Primary Subtests</div>
-            <table class="score-table">
-                <thead>
-                    <tr>
-                        <th>Subtest</th>
-                        <th>Scaled Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Logical Memory I</td>
-                        <td><input type="number" id="logicalMemoryI" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Faces I</td>
-                        <td><input type="number" id="facesI" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Verbal Paired Associates I</td>
-                        <td><input type="number" id="verbalPairedI" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Family Pictures I</td>
-                        <td><input type="number" id="familyPicturesI" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Letter-Number Sequencing</td>
-                        <td><input type="number" id="letterNumber" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Spatial Span</td>
-                        <td><input type="number" id="spatialSpan" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Logical Memory II</td>
-                        <td><input type="number" id="logicalMemoryII" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Faces II</td>
-                        <td><input type="number" id="facesII" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Verbal Paired Associates II</td>
-                        <td><input type="number" id="verbalPairedII" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Family Pictures II</td>
-                        <td><input type="number" id="familyPicturesII" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="section-header">Primary Subtest Scores (Scaled Scores 1-19)</div>
+            <div class="score-grid">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="lm1_admin">
+                    <label>Logical Memory I:</label>
+                    <input type="number" id="lm1" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="lm2_admin">
+                    <label>Logical Memory II:</label>
+                    <input type="number" id="lm2" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="vpa1_admin">
+                    <label>Verbal Paired Associates I:</label>
+                    <input type="number" id="vpa1" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="vpa2_admin">
+                    <label>Verbal Paired Associates II:</label>
+                    <input type="number" id="vpa2" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="faces1_admin">
+                    <label>Faces I:</label>
+                    <input type="number" id="faces1" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="faces2_admin">
+                    <label>Faces II:</label>
+                    <input type="number" id="faces2" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="familyPic1_admin">
+                    <label>Family Pictures I:</label>
+                    <input type="number" id="familyPic1" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="familyPic2_admin">
+                    <label>Family Pictures II:</label>
+                    <input type="number" id="familyPic2" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="visualRepro1_admin">
+                    <label>Visual Reproduction I:</label>
+                    <input type="number" id="visualRepro1" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="visualRepro2_admin">
+                    <label>Visual Reproduction II:</label>
+                    <input type="number" id="visualRepro2" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="wordLists1_admin">
+                    <label>Word Lists I:</label>
+                    <input type="number" id="wordLists1" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="wordLists2_admin">
+                    <label>Word Lists II:</label>
+                    <input type="number" id="wordLists2" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="spatialSpan_admin">
+                    <label>Spatial Span:</label>
+                    <input type="number" id="spatialSpan" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="letterNumber_admin">
+                    <label>Letter-Number Sequencing:</label>
+                    <input type="number" id="letterNumber" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="digitSpan_admin">
+                    <label>Digit Span:</label>
+                    <input type="number" id="digitSpan" value="" placeholder="1-19" min="1" max="19">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="mentalControl_admin">
+                    <label>Mental Control:</label>
+                    <input type="number" id="mentalControl" value="" placeholder="1-19" min="1" max="19">
+                </div>
+            </div>
 
-            <div class="section-header">Supplemental Subtests</div>
-            <table class="score-table">
-                <thead>
-                    <tr>
-                        <th>Subtest</th>
-                        <th>Scaled Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Information and Orientation</td>
-                        <td><input type="number" id="infoOrientation" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>List Learning</td>
-                        <td><input type="number" id="listLearning" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>List Recall</td>
-                        <td><input type="number" id="listRecall" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>List Recognition</td>
-                        <td><input type="number" id="listRecognition" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Visual Reproduction I</td>
-                        <td><input type="number" id="visualReproI" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Visual Reproduction II</td>
-                        <td><input type="number" id="visualReproII" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                    <tr>
-                        <td>Digit Span</td>
-                        <td><input type="number" id="digitSpan" min="1" max="19" placeholder="1-19"></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="section-header">Process Scores (Retention %)</div>
+            <div class="score-grid">
+                <div>
+                    <label>LM Retention (%):</label>
+                    <input type="number" id="lmRetention" value="" min="0" max="100" placeholder="0-100">
+                </div>
+                <div>
+                    <label>VPA Retention (%):</label>
+                    <input type="number" id="vpaRetention" value="" min="0" max="100" placeholder="0-100">
+                </div>
+                <div>
+                    <label>Faces Retention (%):</label>
+                    <input type="number" id="facesRetention" value="" min="0" max="100" placeholder="0-100">
+                </div>
+                <div>
+                    <label>Family Pictures Retention (%):</label>
+                    <input type="number" id="familyPicRetention" value="" min="0" max="100" placeholder="0-100">
+                </div>
+                <div>
+                    <label>Visual Reproduction Retention (%):</label>
+                    <input type="number" id="visualReproRetention" value="" min="0" max="100" placeholder="0-100">
+                </div>
+                <div>
+                    <label>Word Lists Retention (%):</label>
+                    <input type="number" id="wordListsRetention" value="" min="0" max="100" placeholder="0-100">
+                </div>
+            </div>
 
-            <div class="section-header">Process Scores (Optional)</div>
-            <table class="score-table">
-                <thead>
-                    <tr>
-                        <th>Process Score</th>
-                        <th>Percentage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>LM Retention (%)</td>
-                        <td><input type="number" id="lmRetention" min="0" max="100" placeholder="0-100"></td>
-                    </tr>
-                    <tr>
-                        <td>VPA Retention (%)</td>
-                        <td><input type="number" id="vpaRetention" min="0" max="100" placeholder="0-100"></td>
-                    </tr>
-                    <tr>
-                        <td>Faces Retention (%)</td>
-                        <td><input type="number" id="facesRetention" min="0" max="100" placeholder="0-100"></td>
-                    </tr>
-                    <tr>
-                        <td>Family Pictures Retention (%)</td>
-                        <td><input type="number" id="familyPicRetention" min="0" max="100" placeholder="0-100"></td>
-                    </tr>
-                    <tr>
-                        <td>Visual Reproduction Retention (%)</td>
-                        <td><input type="number" id="visualReproRetention" min="0" max="100" placeholder="0-100"></td>
-                    </tr>
-                    <tr>
-                        <td>Word Lists Retention (%)</td>
-                        <td><input type="number" id="wordListsRetention" min="0" max="100" placeholder="0-100"></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <button class="load-btn" onclick="loadTestData()">🧪 Load Test Data</button>
             <button class="generate-btn" onclick="generateWMSReport()">Generate WMS-III Report</button>
             <button class="complete-btn" onclick="completeTest()">Complete Test</button>
         </div>
@@ -363,118 +301,27 @@
     </div>
 
     <script>
-        console.log('WMS-III Enhanced v3.2 - Initializing...');
-        
         // Data management
         let currentNarrative = '';
         let currentScoreTable = '';
 
-        // Heaton impairment level function
-        function getHeatonLevel(scaledScore) {
-            console.log('getHeatonLevel v3.3 called with scaled score:', scaledScore);
-            
-            if (scaledScore > 6) return ""; // No impairment level for scores >16th percentile
-            
-            // Convert scaled score to approximate percentile for Heaton levels
-            const data = window.NeuroscriptDB.getByWechslerScore(scaledScore);
-            const percentile = data.percentile;
-            
-            if (percentile <= 2) {
-                return "indicating a severe level of impairment";
-            } else if (percentile <= 9) {
-                return "indicating a moderate to severe level of impairment";
-            } else if (percentile <= 16) {
-                return "indicating a mild to moderate level of impairment";
-            }
-            
-            return "";
-        }
-
-        // Retention percentage range function
-        function getRetentionRange(percentage) {
-            console.log('getRetentionRange v3.2 called with:', percentage);
-            
-            if (typeof percentage !== 'number' || isNaN(percentage)) {
-                console.warn('Invalid percentage passed to getRetentionRange:', percentage);
-                return "Average";
-            }
-            
-            if (percentage >= 95) return "Exceptionally High";
-            if (percentage >= 90) return "Above Average";
-            if (percentage >= 75) return "High Average";
-            if (percentage >= 50) return "Average";
-            if (percentage >= 25) return "Below Average";
-            if (percentage >= 10) return "Low Average";
-            return "Exceptionally Low";
-        }
-
-        // Load Test Data Function for Development
-        function loadTestData() {
-            console.log('Loading WMS-III test data v3.2...');
-            
-            // Demographics
-            document.getElementById('age').value = 45;
-            document.getElementById('gender').value = 'Female';
-            document.getElementById('readingLevel').value = 12;
-            
-            // Primary Indices (realistic scores)
-            document.getElementById('auditoryImmediate').value = 95;
-            document.getElementById('visualImmediate').value = 102;
-            document.getElementById('immediateMemory').value = 98;
-            document.getElementById('auditoryDelayed').value = 92;
-            document.getElementById('visualDelayed').value = 105;
-            document.getElementById('auditoryRecognition').value = 110;
-            document.getElementById('generalMemory').value = 99;
-            document.getElementById('workingMemory').value = 108;
-            
-            // Primary Subtests (scaled scores)
-            document.getElementById('logicalMemoryI').value = 9;
-            document.getElementById('facesI').value = 11;
-            document.getElementById('verbalPairedI').value = 8;
-            document.getElementById('familyPicturesI').value = 10;
-            document.getElementById('letterNumber').value = 12;
-            document.getElementById('spatialSpan').value = 11;
-            document.getElementById('logicalMemoryII').value = 8;
-            document.getElementById('facesII').value = 12;
-            document.getElementById('verbalPairedII').value = 7;
-            document.getElementById('familyPicturesII').value = 11;
-            
-            // Supplemental Subtests
-            document.getElementById('infoOrientation').value = 13;
-            document.getElementById('listLearning').value = 9;
-            document.getElementById('listRecall').value = 8;
-            document.getElementById('listRecognition').value = 11;
-            document.getElementById('visualReproI').value = 10;
-            document.getElementById('visualReproII').value = 9;
-            document.getElementById('digitSpan').value = 12;
-            
-            // Process Scores (retention percentages)
-            document.getElementById('lmRetention').value = 85;
-            document.getElementById('vpaRetention').value = 75;
-            document.getElementById('facesRetention').value = 95;
-            document.getElementById('familyPicRetention').value = 90;
-            document.getElementById('visualReproRetention').value = 80;
-            document.getElementById('wordListsRetention').value = 70;
-            
-            console.log('WMS-III test data v3.2 loaded successfully');
-        }
-
-        // Database utility functions
+        // Database utility functions following WAIS-IV pattern
         function getIndexInterpretationFromDB(score) {
             if (!window.NeuroscriptDB || !score) return "Average range";
             
+            const range = window.NeuroscriptDB.getRange(score, 'standard');
             const data = window.NeuroscriptDB.getByStandardScore(score);
             
-            let interpretation = data.aacn + " range";
+            let interpretation = range + " range";
             
             // Add Heaton impairment levels for low scores based on percentile
             if (data.percentile <= 16) {
                 if (data.percentile <= 2) {
-                    interpretation += ", indicating a severely impaired level of impairment";
+                    interpretation += ", indicating a severe level of impairment";
                 } else if (data.percentile <= 7) {
-                    interpretation += ", indicating a mildly to moderately impaired level of impairment";
+                    interpretation += ", indicating a moderate to severe level of impairment";
                 } else if (data.percentile <= 16) {
-                    interpretation += ", indicating a mildly impaired level of impairment";
+                    interpretation += ", indicating a mild to moderate level of impairment";
                 }
             }
             
@@ -484,443 +331,503 @@
         function getSubtestInterpretationFromDB(score) {
             if (!window.NeuroscriptDB || !score) return "Average range";
             
+            const range = window.NeuroscriptDB.getRange(score, 'wechsler');
             const data = window.NeuroscriptDB.getByWechslerScore(score);
             
-            let interpretation = data.aacn + " range (ss=" + score + ")";
+            let interpretation = range + " range";
             
             // Add Heaton impairment levels for low scores based on percentile
             if (data.percentile <= 16) {
                 if (data.percentile <= 2) {
-                    interpretation += ", indicating a severely impaired level of impairment";
+                    interpretation += ", indicating a severe level of impairment";
                 } else if (data.percentile <= 7) {
-                    interpretation += ", indicating a mildly to moderately impaired level of impairment";
+                    interpretation += ", indicating a moderate to severe level of impairment";
                 } else if (data.percentile <= 16) {
-                    interpretation += ", indicating a mildly impaired level of impairment";
+                    interpretation += ", indicating a mild to moderate level of impairment";
                 }
             }
             
             return interpretation;
         }
 
+        // Input validation for all score inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    
+                    if (this.value && (isNaN(value) || value < min || value > max)) {
+                        this.style.border = '2px solid red';
+                        this.style.backgroundColor = '#ffe6e6';
+                    } else {
+                        this.style.border = '1px solid #ddd';
+                        this.style.backgroundColor = 'white';
+                    }
+                });
+            });
+        });
+
+        function generateValidationWarnings(data) {
+            const warnings = [];
+
+            // Extreme score warnings for index scores (outside 3 SD)
+            const indexScores = [
+                {score: data.audiImmediate, name: 'Auditory Immediate Index'},
+                {score: data.visualImmediate, name: 'Visual Immediate Index'},
+                {score: data.immediateMemory, name: 'Immediate Memory Index'},
+                {score: data.audiDelayed, name: 'Auditory Delayed Index'},
+                {score: data.visualDelayed, name: 'Visual Delayed Index'},
+                {score: data.audiRecogDelayed, name: 'Auditory Recognition Delayed'},
+                {score: data.generalMemory, name: 'General Memory Index'},
+                {score: data.workingMemory, name: 'Working Memory Index'}
+            ];
+
+            indexScores.forEach(item => {
+                if (item.score && (item.score < 55 || item.score > 145)) {
+                    warnings.push(`⚠️ ${item.name} score (${item.score}) is >3 SD from mean - consider validity factors`);
+                }
+            });
+
+            // Extreme score warnings for subtest scores
+            const subtestScores = [
+                {score: data.lm1, name: 'Logical Memory I'},
+                {score: data.lm2, name: 'Logical Memory II'},
+                {score: data.vpa1, name: 'Verbal Paired Associates I'},
+                {score: data.vpa2, name: 'Verbal Paired Associates II'},
+                {score: data.faces1, name: 'Faces I'},
+                {score: data.faces2, name: 'Faces II'},
+                {score: data.familyPic1, name: 'Family Pictures I'},
+                {score: data.familyPic2, name: 'Family Pictures II'},
+                {score: data.visualRepro1, name: 'Visual Reproduction I'},
+                {score: data.visualRepro2, name: 'Visual Reproduction II'},
+                {score: data.wordLists1, name: 'Word Lists I'},
+                {score: data.wordLists2, name: 'Word Lists II'},
+                {score: data.spatialSpan, name: 'Spatial Span'},
+                {score: data.letterNumber, name: 'Letter-Number Sequencing'},
+                {score: data.digitSpan, name: 'Digit Span'},
+                {score: data.mentalControl, name: 'Mental Control'}
+            ];
+
+            subtestScores.forEach(item => {
+                if (item.score && (item.score < 4 || item.score > 16)) {
+                    warnings.push(`⚠️ ${item.name} scaled score (${item.score}) is >3 SD from mean - consider validity factors`);
+                }
+            });
+
+            // Input validation for process scores (0-100%)
+            const processScores = [
+                {score: data.lmRetention, name: 'Logical Memory Retention'},
+                {score: data.vpaRetention, name: 'VPA Retention'},
+                {score: data.facesRetention, name: 'Faces Retention'},
+                {score: data.familyPicRetention, name: 'Family Pictures Retention'},
+                {score: data.visualReproRetention, name: 'Visual Reproduction Retention'},
+                {score: data.wordListsRetention, name: 'Word Lists Retention'}
+            ];
+
+            processScores.forEach(item => {
+                if (item.score && (item.score < 0 || item.score > 100)) {
+                    warnings.push(`⚠️ ${item.name} percentage (${item.score}%) is outside valid range (0-100%) - please check data entry`);
+                }
+            });
+
+            // Reading level concerns for verbal tests
+            if ((data.lm1 || data.lm2 || data.vpa1 || data.vpa2) && !data.readingLevel) {
+                warnings.push("⚠️ Reading level not assessed - may affect verbal memory comprehension");
+            } else if ((data.lm1 || data.lm2 || data.vpa1 || data.vpa2) && data.readingLevel < 5) {
+                warnings.push("⚠️ Grade <5 reading level - verbal memory validity may be compromised");
+            }
+
+            // Age concerns
+            if (data.age && (data.age < 16 || data.age > 89)) {
+                warnings.push("⚠️ Age outside standard WMS-III norms (16-89 years)");
+            }
+
+            // Pervasively low performance (only for valid scores)
+            const validIndices = indexScores.filter(item => item.score && item.score >= 40 && item.score <= 160).map(item => item.score);
+            if (validIndices.length > 0) {
+                const averageIndex = validIndices.reduce((a, b) => a + b, 0) / validIndices.length;
+                if (averageIndex < 50) {
+                    warnings.push("⚠️ Pervasively low memory performance - consider effort, sensory, or cultural factors");
+                }
+            }
+
+            return warnings;
+        }
+
         function generateWMSReport() {
-            console.log('WMS-III generateWMSReport v3.2 called...');
-            
             try {
                 // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
-                    console.error('External database not loaded!');
-                    document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please refresh the page.</p>`;
+                    document.getElementById('output').innerHTML = `<p><strong>Error:</strong> External database not loaded. Please ensure neuroscript-norms.js is properly loaded.</p>`;
                     document.getElementById('output').style.display = 'block';
                     return;
                 }
 
-                console.log('Database loaded successfully, collecting data...');
-
-                // Collect all data
-                const data = {
-                    age: parseInt(document.getElementById('age').value) || 0,
-                    gender: document.getElementById('gender').value,
-                    readingLevel: parseFloat(document.getElementById('readingLevel').value) || null,
-                    
-                    // Primary Indices
-                    auditoryImmediate: parseInt(document.getElementById('auditoryImmediate').value) || 0,
-                    visualImmediate: parseInt(document.getElementById('visualImmediate').value) || 0,
-                    immediateMemory: parseInt(document.getElementById('immediateMemory').value) || 0,
-                    auditoryDelayed: parseInt(document.getElementById('auditoryDelayed').value) || 0,
-                    visualDelayed: parseInt(document.getElementById('visualDelayed').value) || 0,
-                    auditoryRecognition: parseInt(document.getElementById('auditoryRecognition').value) || 0,
-                    generalMemory: parseInt(document.getElementById('generalMemory').value) || 0,
-                    workingMemory: parseInt(document.getElementById('workingMemory').value) || 0,
-                    
-                    // Primary Subtests
-                    logicalMemoryI: parseInt(document.getElementById('logicalMemoryI').value) || 0,
-                    facesI: parseInt(document.getElementById('facesI').value) || 0,
-                    verbalPairedI: parseInt(document.getElementById('verbalPairedI').value) || 0,
-                    familyPicturesI: parseInt(document.getElementById('familyPicturesI').value) || 0,
-                    letterNumber: parseInt(document.getElementById('letterNumber').value) || 0,
-                    spatialSpan: parseInt(document.getElementById('spatialSpan').value) || 0,
-                    logicalMemoryII: parseInt(document.getElementById('logicalMemoryII').value) || 0,
-                    facesII: parseInt(document.getElementById('facesII').value) || 0,
-                    verbalPairedII: parseInt(document.getElementById('verbalPairedII').value) || 0,
-                    familyPicturesII: parseInt(document.getElementById('familyPicturesII').value) || 0,
-                    
-                    // Supplemental Subtests
-                    infoOrientation: parseInt(document.getElementById('infoOrientation').value) || 0,
-                    listLearning: parseInt(document.getElementById('listLearning').value) || 0,
-                    listRecall: parseInt(document.getElementById('listRecall').value) || 0,
-                    listRecognition: parseInt(document.getElementById('listRecognition').value) || 0,
-                    visualReproI: parseInt(document.getElementById('visualReproI').value) || 0,
-                    visualReproII: parseInt(document.getElementById('visualReproII').value) || 0,
-                    digitSpan: parseInt(document.getElementById('digitSpan').value) || 0,
-                    
-                    // Process Scores
-                    lmRetention: parseInt(document.getElementById('lmRetention').value) || 0,
-                    vpaRetention: parseInt(document.getElementById('vpaRetention').value) || 0,
-                    facesRetention: parseInt(document.getElementById('facesRetention').value) || 0,
-                    familyPicRetention: parseInt(document.getElementById('familyPicRetention').value) || 0,
-                    visualReproRetention: parseInt(document.getElementById('visualReproRetention').value) || 0,
-                    wordListsRetention: parseInt(document.getElementById('wordListsRetention').value) || 0
-                };
-
-                console.log('Collected WMS-III data v3.2:', data);
-
-                // Basic validation
-                if (data.generalMemory === 0 && data.immediateMemory === 0) {
-                    alert('Please enter at least one memory index score to generate a report.');
+                // Check for invalid inputs before proceeding
+                const invalidInputs = document.querySelectorAll('input[type="number"]:invalid');
+                if (invalidInputs.length > 0) {
+                    alert('Please correct the highlighted fields with invalid values before generating the report.');
                     return;
                 }
 
-                // Generate validation warnings
-                const warnings = [];
-                if (data.age < 16 || data.age > 89) {
-                    warnings.push("⚠️ Age outside WMS-III normative range (16-89 years)");
-                }
+                // Collect data from all administered tests (only those with checkboxes checked)
+                const data = {
+                    age: document.getElementById('age').value ? parseInt(document.getElementById('age').value) : null,
+                    gender: document.getElementById('gender').value,
+                    readingLevel: document.getElementById('readingLevel').value ? parseFloat(document.getElementById('readingLevel').value) : null,
+                    
+                    // Index scores - only if administered
+                    audiImmediate: document.getElementById('audiImmediate_admin').checked && document.getElementById('audiImmediate').value ? 
+                        parseInt(document.getElementById('audiImmediate').value) : null,
+                    visualImmediate: document.getElementById('visualImmediate_admin').checked && document.getElementById('visualImmediate').value ? 
+                        parseInt(document.getElementById('visualImmediate').value) : null,
+                    immediateMemory: document.getElementById('immediateMemory_admin').checked && document.getElementById('immediateMemory').value ? 
+                        parseInt(document.getElementById('immediateMemory').value) : null,
+                    audiDelayed: document.getElementById('audiDelayed_admin').checked && document.getElementById('audiDelayed').value ? 
+                        parseInt(document.getElementById('audiDelayed').value) : null,
+                    visualDelayed: document.getElementById('visualDelayed_admin').checked && document.getElementById('visualDelayed').value ? 
+                        parseInt(document.getElementById('visualDelayed').value) : null,
+                    audiRecogDelayed: document.getElementById('audiRecogDelayed_admin').checked && document.getElementById('audiRecogDelayed').value ? 
+                        parseInt(document.getElementById('audiRecogDelayed').value) : null,
+                    generalMemory: document.getElementById('generalMemory_admin').checked && document.getElementById('generalMemory').value ? 
+                        parseInt(document.getElementById('generalMemory').value) : null,
+                    workingMemory: document.getElementById('workingMemory_admin').checked && document.getElementById('workingMemory').value ? 
+                        parseInt(document.getElementById('workingMemory').value) : null,
+                    
+                    // Subtest scores - only if administered
+                    lm1: document.getElementById('lm1_admin').checked && document.getElementById('lm1').value ? 
+                        parseInt(document.getElementById('lm1').value) : null,
+                    lm2: document.getElementById('lm2_admin').checked && document.getElementById('lm2').value ? 
+                        parseInt(document.getElementById('lm2').value) : null,
+                    vpa1: document.getElementById('vpa1_admin').checked && document.getElementById('vpa1').value ? 
+                        parseInt(document.getElementById('vpa1').value) : null,
+                    vpa2: document.getElementById('vpa2_admin').checked && document.getElementById('vpa2').value ? 
+                        parseInt(document.getElementById('vpa2').value) : null,
+                    faces1: document.getElementById('faces1_admin').checked && document.getElementById('faces1').value ? 
+                        parseInt(document.getElementById('faces1').value) : null,
+                    faces2: document.getElementById('faces2_admin').checked && document.getElementById('faces2').value ? 
+                        parseInt(document.getElementById('faces2').value) : null,
+                    familyPic1: document.getElementById('familyPic1_admin').checked && document.getElementById('familyPic1').value ? 
+                        parseInt(document.getElementById('familyPic1').value) : null,
+                    familyPic2: document.getElementById('familyPic2_admin').checked && document.getElementById('familyPic2').value ? 
+                        parseInt(document.getElementById('familyPic2').value) : null,
+                    visualRepro1: document.getElementById('visualRepro1_admin').checked && document.getElementById('visualRepro1').value ? 
+                        parseInt(document.getElementById('visualRepro1').value) : null,
+                    visualRepro2: document.getElementById('visualRepro2_admin').checked && document.getElementById('visualRepro2').value ? 
+                        parseInt(document.getElementById('visualRepro2').value) : null,
+                    wordLists1: document.getElementById('wordLists1_admin').checked && document.getElementById('wordLists1').value ? 
+                        parseInt(document.getElementById('wordLists1').value) : null,
+                    wordLists2: document.getElementById('wordLists2_admin').checked && document.getElementById('wordLists2').value ? 
+                        parseInt(document.getElementById('wordLists2').value) : null,
+                    spatialSpan: document.getElementById('spatialSpan_admin').checked && document.getElementById('spatialSpan').value ? 
+                        parseInt(document.getElementById('spatialSpan').value) : null,
+                    letterNumber: document.getElementById('letterNumber_admin').checked && document.getElementById('letterNumber').value ? 
+                        parseInt(document.getElementById('letterNumber').value) : null,
+                    digitSpan: document.getElementById('digitSpan_admin').checked && document.getElementById('digitSpan').value ? 
+                        parseInt(document.getElementById('digitSpan').value) : null,
+                    mentalControl: document.getElementById('mentalControl_admin').checked && document.getElementById('mentalControl').value ? 
+                        parseInt(document.getElementById('mentalControl').value) : null,
+                    
+                    // Process scores
+                    lmRetention: document.getElementById('lmRetention').value ? 
+                        parseInt(document.getElementById('lmRetention').value) : null,
+                    vpaRetention: document.getElementById('vpaRetention').value ? 
+                        parseInt(document.getElementById('vpaRetention').value) : null,
+                    facesRetention: document.getElementById('facesRetention').value ? 
+                        parseInt(document.getElementById('facesRetention').value) : null,
+                    familyPicRetention: document.getElementById('familyPicRetention').value ? 
+                        parseInt(document.getElementById('familyPicRetention').value) : null,
+                    visualReproRetention: document.getElementById('visualReproRetention').value ? 
+                        parseInt(document.getElementById('visualReproRetention').value) : null,
+                    wordListsRetention: document.getElementById('wordListsRetention').value ? 
+                        parseInt(document.getElementById('wordListsRetention').value) : null
+                };
 
+                const warnings = generateValidationWarnings(data);
                 const gender = data.gender;
-                const pronoun = gender === 'Male' ? 'his' : 'her';
-                const heShe = gender === 'Male' ? 'He' : 'She';
+                const pronoun = gender === 'Male' ? 'His' : 'Her';
+                const pronounLower = gender === 'Male' ? 'his' : 'her';
 
-                let report = '<h3><b>Memory</b></h3>\n';
+                let report = '';
+                let attentionSection = '';
+                let memorySection = '';
 
-                // Simplified narrative structure for integrated reporting
+                // Working Memory/Attention Section
+                if (data.spatialSpan || data.letterNumber || data.digitSpan || data.mentalControl || data.workingMemory) {
+                    attentionSection += `<p><b>Attention and Working Memory</b></p>\n`;
 
-                // Step 1: WMS-III identification and General Memory Index
-                if (data.generalMemory > 0) {
-                    const gmData = window.NeuroscriptDB.getByStandardScore(data.generalMemory);
-                    report += `<p>On the WMS-III, ${pronoun} score on the General Memory Index was in the ${gmData.aacn} range.</p>\n`;
+                    if (data.workingMemory) {
+                        attentionSection += `<p>Overall working memory abilities (WMI = ${data.workingMemory}) were in the ${getIndexInterpretationFromDB(data.workingMemory)}.</p>\n`;
+                    }
+
+                    if (data.spatialSpan) {
+                        attentionSection += `<p>On a visual task of immediate memory span (WMS-III Spatial Span), ${pronounLower} performed in the ${getSubtestInterpretationFromDB(data.spatialSpan)}.</p>\n`;
+                    }
+
+                    if (data.letterNumber) {
+                        attentionSection += `<p>On a task requiring mental manipulation of letters and numbers (WMS-III Letter-Number Sequencing), performance was in the ${getSubtestInterpretationFromDB(data.letterNumber)}.</p>\n`;
+                    }
+
+                    if (data.digitSpan) {
+                        attentionSection += `<p>On a task of auditory attention span (WMS-III Digit Span), performance was in the ${getSubtestInterpretationFromDB(data.digitSpan)}.</p>\n`;
+                    }
+
+                    if (data.mentalControl) {
+                        attentionSection += `<p>On tasks of mental control and concentration (WMS-III Mental Control), performance was in the ${getSubtestInterpretationFromDB(data.mentalControl)}.</p>\n`;
+                    }
+
+                    attentionSection += `\n`;
                 }
 
-                // Step 2: Auditory Memory Indices (immediate, delayed, recognition)
-                if (data.auditoryImmediate > 0 || data.auditoryDelayed > 0 || data.auditoryRecognition > 0) {
-                    report += '<p>';
+                // Memory Section
+                if (data.lm1 || data.lm2 || data.vpa1 || data.vpa2 || data.faces1 || data.faces2 || 
+                    data.familyPic1 || data.familyPic2 || data.visualRepro1 || data.visualRepro2 || 
+                    data.wordLists1 || data.wordLists2 || data.audiImmediate || data.visualImmediate ||
+                    data.audiDelayed || data.visualDelayed || data.generalMemory || data.immediateMemory) {
                     
-                    // Handle immediate and delayed auditory memory
-                    if (data.auditoryImmediate > 0 && data.auditoryDelayed > 0) {
-                        const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
-                        const audDelData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
-                        
-                        if (audImmData.aacn === audDelData.aacn) {
-                            report += `${pronoun} scores on overall measures of both immediate and delayed auditory memory were in the ${audImmData.aacn} range.`;
-                        } else {
-                            report += `${pronoun} score was in the ${audImmData.aacn} range on an overall measure of immediate auditory memory, and in the ${audDelData.aacn} range for delayed auditory memory.`;
-                        }
-                    } else if (data.auditoryImmediate > 0) {
-                        const audImmData = window.NeuroscriptDB.getByStandardScore(data.auditoryImmediate);
-                        report += `${pronoun} score on an overall measure of immediate auditory memory was in the ${audImmData.aacn} range.`;
-                    } else if (data.auditoryDelayed > 0) {
-                        const audDelData = window.NeuroscriptDB.getByStandardScore(data.auditoryDelayed);
-                        report += `${pronoun} score on an overall measure of delayed auditory memory was in the ${audDelData.aacn} range.`;
+                    memorySection += `<p><b>Learning and Memory</b></p>\n`;
+
+                    // Index scores summary
+                    if (data.generalMemory) {
+                        memorySection += `<p>Overall delayed memory abilities (GMI = ${data.generalMemory}) were in the ${getIndexInterpretationFromDB(data.generalMemory)}.</p>\n`;
                     }
-                    
-                    // Add recognition memory if available
-                    if (data.auditoryRecognition > 0) {
-                        const audRecData = window.NeuroscriptDB.getByStandardScore(data.auditoryRecognition);
-                        if (data.auditoryImmediate > 0 || data.auditoryDelayed > 0) {
-                            report += ` Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacn} range.`;
-                        } else {
-                            report += `Overall recognition memory for verbally presented material following a delay was in the ${audRecData.aacn} range.`;
+
+                    if (data.immediateMemory) {
+                        memorySection += `<p>Overall immediate memory abilities (IMI = ${data.immediateMemory}) were in the ${getIndexInterpretationFromDB(data.immediateMemory)}.</p>\n`;
+                    }
+
+                    // Auditory memory
+                    if (data.audiImmediate || data.audiDelayed) {
+                        if (data.audiImmediate && data.audiDelayed) {
+                            memorySection += `<p>Her score was in the ${getIndexInterpretationFromDB(data.audiImmediate)} on an overall measure of immediate auditory memory, and in the ${getIndexInterpretationFromDB(data.audiDelayed)} for delayed auditory memory. Overall recognition memory for verbally presented material following a delay was in the ${getIndexInterpretationFromDB(data.audiRecogDelayed)}.</p>\n`;
+                        } else if (data.audiImmediate) {
+                            memorySection += `<p>Auditory immediate memory was in the ${getIndexInterpretationFromDB(data.audiImmediate)}.</p>\n`;
+                        } else if (data.audiDelayed) {
+                            memorySection += `<p>Auditory delayed memory was in the ${getIndexInterpretationFromDB(data.audiDelayed)}.</p>\n`;
                         }
                     }
-                    
-                    report += '</p>\n';
+
+                    // Visual memory
+                    if (data.visualImmediate || data.visualDelayed) {
+                        if (data.visualImmediate && data.visualDelayed) {
+                            memorySection += `<p>Her scores on overall measures of both immediate and delayed visual memory were in the ${getIndexInterpretationFromDB(data.visualImmediate)} and ${getIndexInterpretationFromDB(data.visualDelayed)}, respectively.</p>\n`;
+                        } else if (data.visualImmediate) {
+                            memorySection += `<p>Visual immediate memory was in the ${getIndexInterpretationFromDB(data.visualImmediate)}.</p>\n`;
+                        } else if (data.visualDelayed) {
+                            memorySection += `<p>Visual delayed memory was in the ${getIndexInterpretationFromDB(data.visualDelayed)}.</p>\n`;
+                        }
+                    }
+
+                    // Logical Memory
+                    if (data.lm1 || data.lm2) {
+                        let lmText = '';
+                        if (data.lm1 && data.lm2) {
+                            const avgScore = Math.round((data.lm1 + data.lm2) / 2);
+                            lmText = `Learning and recall of story material (WMS-III Logical Memory) was in the ${getSubtestInterpretationFromDB(avgScore)}`;
+                        } else if (data.lm1) {
+                            lmText = `Immediate recall of story material (WMS-III Logical Memory I) was in the ${getSubtestInterpretationFromDB(data.lm1)}`;
+                        } else if (data.lm2) {
+                            lmText = `Delayed recall of story material (WMS-III Logical Memory II) was in the ${getSubtestInterpretationFromDB(data.lm2)}`;
+                        }
+
+                        if (data.lmRetention) {
+                            lmText += `, with ${data.lmRetention}% retention`;
+                        }
+
+                        if (lmText) {
+                            memorySection += `<p>${lmText}.</p>\n`;
+                        }
+                    }
+
+                    // Verbal Paired Associates
+                    if (data.vpa1 || data.vpa2) {
+                        let vpaText = '';
+                        if (data.vpa1 && data.vpa2) {
+                            const avgScore = Math.round((data.vpa1 + data.vpa2) / 2);
+                            vpaText = `Learning and recall of word pairs (WMS-III Verbal Paired Associates) was in the ${getSubtestInterpretationFromDB(avgScore)}`;
+                        } else if (data.vpa1) {
+                            vpaText = `Learning of word pairs (WMS-III Verbal Paired Associates I) was in the ${getSubtestInterpretationFromDB(data.vpa1)}`;
+                        } else if (data.vpa2) {
+                            vpaText = `Delayed recall of word pairs (WMS-III Verbal Paired Associates II) was in the ${getSubtestInterpretationFromDB(data.vpa2)}`;
+                        }
+
+                        if (data.vpaRetention) {
+                            vpaText += `, with ${data.vpaRetention}% retention`;
+                        }
+
+                        if (vpaText) {
+                            memorySection += `<p>${vpaText}.</p>\n`;
+                        }
+                    }
+
+                    // Faces
+                    if (data.faces1 || data.faces2) {
+                        let facesText = '';
+                        if (data.faces1 && data.faces2) {
+                            const avgScore = Math.round((data.faces1 + data.faces2) / 2);
+                            facesText = `Recognition of faces (WMS-III Faces) was in the ${getSubtestInterpretationFromDB(avgScore)}`;
+                        } else if (data.faces1) {
+                            facesText = `Immediate recognition of faces (WMS-III Faces I) was in the ${getSubtestInterpretationFromDB(data.faces1)}`;
+                        } else if (data.faces2) {
+                            facesText = `Delayed recognition of faces (WMS-III Faces II) was in the ${getSubtestInterpretationFromDB(data.faces2)}`;
+                        }
+
+                        if (data.facesRetention) {
+                            facesText += `, with ${data.facesRetention}% retention`;
+                        }
+
+                        if (facesText) {
+                            memorySection += `<p>${facesText}.</p>\n`;
+                        }
+                    }
+
+                    // Family Pictures
+                    if (data.familyPic1 || data.familyPic2) {
+                        let fpText = '';
+                        if (data.familyPic1 && data.familyPic2) {
+                            const avgScore = Math.round((data.familyPic1 + data.familyPic2) / 2);
+                            fpText = `Recall of visual scenes (WMS-III Family Pictures) was in the ${getSubtestInterpretationFromDB(avgScore)}`;
+                        } else if (data.familyPic1) {
+                            fpText = `Immediate recall of visual scenes (WMS-III Family Pictures I) was in the ${getSubtestInterpretationFromDB(data.familyPic1)}`;
+                        } else if (data.familyPic2) {
+                            fpText = `Delayed recall of visual scenes (WMS-III Family Pictures II) was in the ${getSubtestInterpretationFromDB(data.familyPic2)}`;
+                        }
+
+                        if (data.familyPicRetention) {
+                            fpText += `, with ${data.familyPicRetention}% retention`;
+                        }
+
+                        if (fpText) {
+                            memorySection += `<p>${fpText}.</p>\n`;
+                        }
+                    }
+
+                    // Visual Reproduction
+                    if (data.visualRepro1 || data.visualRepro2) {
+                        let vrText = '';
+                        if (data.visualRepro1 && data.visualRepro2) {
+                            const avgScore = Math.round((data.visualRepro1 + data.visualRepro2) / 2);
+                            vrText = `Reproduction of geometric designs (WMS-III Visual Reproduction) was in the ${getSubtestInterpretationFromDB(avgScore)}`;
+                        } else if (data.visualRepro1) {
+                            vrText = `Immediate reproduction of geometric designs (WMS-III Visual Reproduction I) was in the ${getSubtestInterpretationFromDB(data.visualRepro1)}`;
+                        } else if (data.visualRepro2) {
+                            vrText = `Delayed reproduction of geometric designs (WMS-III Visual Reproduction II) was in the ${getSubtestInterpretationFromDB(data.visualRepro2)}`;
+                        }
+
+                        if (data.visualReproRetention) {
+                            vrText += `, with ${data.visualReproRetention}% retention`;
+                        }
+
+                        if (vrText) {
+                            memorySection += `<p>${vrText}.</p>\n`;
+                        }
+                    }
+
+                    // Word Lists
+                    if (data.wordLists1 || data.wordLists2) {
+                        let wlText = '';
+                        if (data.wordLists1 && data.wordLists2) {
+                            const avgScore = Math.round((data.wordLists1 + data.wordLists2) / 2);
+                            wlText = `Learning and recall of word lists (WMS-III Word Lists) was in the ${getSubtestInterpretationFromDB(avgScore)}`;
+                        } else if (data.wordLists1) {
+                            wlText = `Learning of word lists (WMS-III Word Lists I) was in the ${getSubtestInterpretationFromDB(data.wordLists1)}`;
+                        } else if (data.wordLists2) {
+                            wlText = `Delayed recall of word lists (WMS-III Word Lists II) was in the ${getSubtestInterpretationFromDB(data.wordLists2)}`;
+                        }
+
+                        if (data.wordListsRetention) {
+                            wlText += `, with ${data.wordListsRetention}% retention`;
+                        }
+
+                        if (wlText) {
+                            memorySection += `<p>${wlText}.</p>\n`;
+                        }
+                    }
+
+                    // Recognition memory
+                    if (data.audiRecogDelayed) {
+                        memorySection += `<p>Auditory recognition memory (WMS-III Auditory Recognition Delayed) was in the ${getIndexInterpretationFromDB(data.audiRecogDelayed)}, suggesting ${data.audiRecogDelayed < 85 ? 'impaired' : 'intact'} ability to recognize previously heard information.</p>\n`;
+                    }
+
+                    memorySection += `\n`;
                 }
 
-                // Step 7: Faces (immediate and delayed with retention)
-                if (data.facesI > 0 || data.facesII > 0) {
-                    report += '<p>';
-                    
-                    if (data.facesI > 0 && data.facesII > 0) {
-                        const facesIData = window.NeuroscriptDB.getByWechslerScore(data.facesI);
-                        const facesIIData = window.NeuroscriptDB.getByWechslerScore(data.facesII);
-                        
-                        // Check if ranges are the same
-                        if (facesIData.aacn === facesIIData.aacn) {
-                            report += `Recognition memory for pictures of faces was within the ${facesIData.aacn} range under either immediate (ss=${data.facesI}) or delayed conditions (ss=${data.facesII})`;
-                        } else {
-                            report += `Recognition memory for pictures of faces was within the ${facesIData.aacn} range (ss=${data.facesI}) under immediate conditions, and within the ${facesIIData.aacn} range (ss=${data.facesII}) under delayed conditions`;
-                        }
-                        
-                        // Add Heaton impairment for delayed if ≤16th percentile
-                        if (data.facesII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.facesII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        
-                        report += '.';
-                        
-                        // Add retention percentage if available
-                        if (data.facesRetention > 0) {
-                            const retentionRange = getRetentionRange(data.facesRetention);
-                            report += ` ${heShe} was able to retain ${data.facesRetention} percent of the face recognition information over the delay, showing retention in the ${retentionRange} range.`;
-                        }
-                        
-                    } else if (data.facesI > 0) {
-                        const facesIData = window.NeuroscriptDB.getByWechslerScore(data.facesI);
-                        report += `Recognition memory for pictures of faces under immediate conditions was within the ${facesIData.aacn} range (ss=${data.facesI})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.facesI <= 6) {
-                            const heatonLevel = getHeatonLevel(data.facesI);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                        
-                    } else if (data.facesII > 0) {
-                        const facesIIData = window.NeuroscriptDB.getByWechslerScore(data.facesII);
-                        report += `Recognition memory for pictures of faces under delayed conditions was within the ${facesIIData.aacn} range (ss=${data.facesII})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.facesII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.facesII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                    }
-                    
-                    report += '</p>\n';
+                // Compile final report
+                if (attentionSection) {
+                    report += attentionSection;
                 }
 
-                // Step 3: Logical Memory (immediate and delayed with retention)
-                if (data.logicalMemoryI > 0 || data.logicalMemoryII > 0) {
-                    report += '<p>';
-                    
-                    if (data.logicalMemoryI > 0 && data.logicalMemoryII > 0) {
-                        const lmIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryI);
-                        const lmIIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryII);
-                        
-                        // Check if ranges are the same
-                        if (lmIData.aacn === lmIIData.aacn) {
-                            report += `Recall of prose passages (WMS-III Logical Memory) was in the ${lmIData.aacn} range under either immediate (ss=${data.logicalMemoryI}) or delayed conditions (ss=${data.logicalMemoryII})`;
-                        } else {
-                            report += `Recall of prose passages (WMS-III Logical Memory) was in the ${lmIData.aacn} range (ss=${data.logicalMemoryI}) under immediate conditions, and in the ${lmIIData.aacn} range (ss=${data.logicalMemoryII}) under delayed conditions`;
-                        }
-                        
-                        // Add Heaton impairment for delayed if ≤16th percentile
-                        if (data.logicalMemoryII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.logicalMemoryII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        
-                        report += '.';
-                        
-                        // Add retention percentage if available
-                        if (data.lmRetention > 0) {
-                            const retentionRange = getRetentionRange(data.lmRetention);
-                            report += ` After the delay, ${heShe.toLowerCase()} was able to recall ${data.lmRetention} percent of the material initially learned, showing retention in the ${retentionRange} range.`;
-                        }
-                        
-                    } else if (data.logicalMemoryI > 0) {
-                        const lmIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryI);
-                        report += `Recall of prose passages under immediate conditions (WMS-III Logical Memory I) was in the ${lmIData.aacn} range (ss=${data.logicalMemoryI})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.logicalMemoryI <= 6) {
-                            const heatonLevel = getHeatonLevel(data.logicalMemoryI);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                        
-                    } else if (data.logicalMemoryII > 0) {
-                        const lmIIData = window.NeuroscriptDB.getByWechslerScore(data.logicalMemoryII);
-                        report += `Recall of prose passages under delayed conditions (WMS-III Logical Memory II) was in the ${lmIIData.aacn} range (ss=${data.logicalMemoryII})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.logicalMemoryII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.logicalMemoryII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                    }
-                    
-                    report += '</p>\n';
+                if (memorySection) {
+                    report += memorySection;
                 }
 
-                // Step 4: Verbal Paired Associates (immediate and delayed with retention)
-                if (data.verbalPairedI > 0 || data.verbalPairedII > 0) {
-                    report += '<p>';
-                    
-                    if (data.verbalPairedI > 0 && data.verbalPairedII > 0) {
-                        const vpaIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedI);
-                        const vpaIIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedII);
-                        
-                        report += `Learning of associations between unrelated pairs of words (WMS-III Verbal Paired Associates) was in the ${vpaIData.aacn} range (ss=${data.verbalPairedI}), while retention of those associations following a delay was in the ${vpaIIData.aacn} range (ss=${data.verbalPairedII})`;
-                        
-                        // Add Heaton impairment for delayed if ≤16th percentile
-                        if (data.verbalPairedII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.verbalPairedII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        
-                        report += '.';
-                        
-                        // Add retention percentage if available
-                        if (data.vpaRetention > 0) {
-                            const retentionRange = getRetentionRange(data.vpaRetention);
-                            report += ` ${heShe} was able to retain ${data.vpaRetention} percent of the word associations over the delay, showing retention in the ${retentionRange} range.`;
-                        }
-                        
-                    } else if (data.verbalPairedI > 0) {
-                        const vpaIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedI);
-                        report += `Learning of associations between unrelated pairs of words (WMS-III Verbal Paired Associates I) was in the ${vpaIData.aacn} range (ss=${data.verbalPairedI})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.verbalPairedI <= 6) {
-                            const heatonLevel = getHeatonLevel(data.verbalPairedI);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                        
-                    } else if (data.verbalPairedII > 0) {
-                        const vpaIIData = window.NeuroscriptDB.getByWechslerScore(data.verbalPairedII);
-                        report += `Retention of word associations following a delay (WMS-III Verbal Paired Associates II) was in the ${vpaIIData.aacn} range (ss=${data.verbalPairedII})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.verbalPairedII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.verbalPairedII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                    }
-                    
-                    report += '</p>\n';
-                }
-
-                // Step 5: Visual Memory Indices (immediate and delayed)
-                if (data.visualImmediate > 0 || data.visualDelayed > 0) {
-                    report += '<p>';
-                    
-                    if (data.visualImmediate > 0 && data.visualDelayed > 0) {
-                        const visImmData = window.NeuroscriptDB.getByStandardScore(data.visualImmediate);
-                        const visDelData = window.NeuroscriptDB.getByStandardScore(data.visualDelayed);
-                        
-                        if (visImmData.aacn === visDelData.aacn) {
-                            report += `${pronoun} scores on overall measures of both immediate and delayed visual memory were in the ${visImmData.aacn} range.`;
-                        } else {
-                            report += `${pronoun} score was in the ${visImmData.aacn} range on an overall measure of immediate visual memory, and in the ${visDelData.aacn} range for delayed visual memory.`;
-                        }
-                    } else if (data.visualImmediate > 0) {
-                        const visImmData = window.NeuroscriptDB.getByStandardScore(data.visualImmediate);
-                        report += `${pronoun} score on an overall measure of immediate visual memory was in the ${visImmData.aacn} range.`;
-                    } else if (data.visualDelayed > 0) {
-                        const visDelData = window.NeuroscriptDB.getByStandardScore(data.visualDelayed);
-                        report += `${pronoun} score on an overall measure of delayed visual memory was in the ${visDelData.aacn} range.`;
-                    }
-                    
-                    report += '</p>\n';
-                }
-
-                // Step 6: Visual Reproduction (immediate, delayed, retention, and recognition)
-                if (data.visualReproI > 0 || data.visualReproII > 0) {
-                    report += '<p>';
-                    
-                    if (data.visualReproI > 0 && data.visualReproII > 0) {
-                        const vrIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproI);
-                        const vrIIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproII);
-                        
-                        report += `Immediate recall of simple geometric drawings (WMS-III Visual Reproduction) was in the ${vrIData.aacn} range (ss=${data.visualReproI}), while delayed recall of the drawings was in the ${vrIIData.aacn} range (ss=${data.visualReproII})`;
-                        
-                        // Add Heaton impairment for delayed if ≤16th percentile
-                        if (data.visualReproII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.visualReproII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        
-                        report += '.';
-                        
-                        // Add retention percentage if available
-                        if (data.visualReproRetention > 0) {
-                            const retentionRange = getRetentionRange(data.visualReproRetention);
-                            report += ` For the drawings, ${heShe.toLowerCase()} was able to retain ${data.visualReproRetention} percent of the information learned over the delay, showing retention in the ${retentionRange} range.`;
-                        }
-                        
-                        // Add recognition if available (note: this would need to be added to data collection)
-                        // report += ` Yes/no recognition for the simple geometric drawings was in the High Average range.`;
-                        
-                    } else if (data.visualReproI > 0) {
-                        const vrIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproI);
-                        report += `Immediate recall of simple geometric drawings (WMS-III Visual Reproduction I) was in the ${vrIData.aacn} range (ss=${data.visualReproI})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.visualReproI <= 6) {
-                            const heatonLevel = getHeatonLevel(data.visualReproI);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                        
-                    } else if (data.visualReproII > 0) {
-                        const vrIIData = window.NeuroscriptDB.getByWechslerScore(data.visualReproII);
-                        report += `Delayed recall of simple geometric drawings (WMS-III Visual Reproduction II) was in the ${vrIIData.aacn} range (ss=${data.visualReproII})`;
-                        
-                        // Add Heaton impairment if ≤16th percentile
-                        if (data.visualReproII <= 6) {
-                            const heatonLevel = getHeatonLevel(data.visualReproII);
-                            if (heatonLevel) {
-                                report += `, ${heatonLevel}`;
-                            }
-                        }
-                        report += '.';
-                    }
-                    
-                    report += '</p>\n';
+                if (!report) {
+                    report = '<p>No tests were selected for administration. Please check the boxes for the tests you want to include in the report.</p>';
                 }
 
                 // Store for completion
                 currentNarrative = report.replace(/<[^>]*>/g, '').trim();
 
-                // Create score summary table
-                const scoreData = [];
-                if (data.generalMemory > 0) scoreData.push(['General Memory Index', data.generalMemory, getIndexInterpretationFromDB(data.generalMemory)]);
-                if (data.immediateMemory > 0) scoreData.push(['Immediate Memory Index', data.immediateMemory, getIndexInterpretationFromDB(data.immediateMemory)]);
-                if (data.auditoryImmediate > 0) scoreData.push(['Auditory Immediate Index', data.auditoryImmediate, getIndexInterpretationFromDB(data.auditoryImmediate)]);
-                if (data.visualImmediate > 0) scoreData.push(['Visual Immediate Index', data.visualImmediate, getIndexInterpretationFromDB(data.visualImmediate)]);
-                if (data.workingMemory > 0) scoreData.push(['Working Memory Index', data.workingMemory, getIndexInterpretationFromDB(data.workingMemory)]);
+                // Generate score table
+                const adminTests = [];
+                
+                // Index scores
+                if (data.audiImmediate) adminTests.push(['Auditory Immediate Index', data.audiImmediate, window.NeuroscriptDB.getRange(data.audiImmediate)]);
+                if (data.visualImmediate) adminTests.push(['Visual Immediate Index', data.visualImmediate, window.NeuroscriptDB.getRange(data.visualImmediate)]);
+                if (data.immediateMemory) adminTests.push(['Immediate Memory Index', data.immediateMemory, window.NeuroscriptDB.getRange(data.immediateMemory)]);
+                if (data.audiDelayed) adminTests.push(['Auditory Delayed Index', data.audiDelayed, window.NeuroscriptDB.getRange(data.audiDelayed)]);
+                if (data.visualDelayed) adminTests.push(['Visual Delayed Index', data.visualDelayed, window.NeuroscriptDB.getRange(data.visualDelayed)]);
+                if (data.audiRecogDelayed) adminTests.push(['Auditory Recognition Delayed', data.audiRecogDelayed, window.NeuroscriptDB.getRange(data.audiRecogDelayed)]);
+                if (data.generalMemory) adminTests.push(['General Memory Index', data.generalMemory, window.NeuroscriptDB.getRange(data.generalMemory)]);
+                if (data.workingMemory) adminTests.push(['Working Memory Index', data.workingMemory, window.NeuroscriptDB.getRange(data.workingMemory)]);
+                
+                // Primary subtests
+                if (data.lm1) adminTests.push(['Logical Memory I', data.lm1, window.NeuroscriptDB.getRange(data.lm1, 'wechsler')]);
+                if (data.lm2) adminTests.push(['Logical Memory II', data.lm2, window.NeuroscriptDB.getRange(data.lm2, 'wechsler')]);
+                if (data.vpa1) adminTests.push(['Verbal Paired Associates I', data.vpa1, window.NeuroscriptDB.getRange(data.vpa1, 'wechsler')]);
+                if (data.vpa2) adminTests.push(['Verbal Paired Associates II', data.vpa2, window.NeuroscriptDB.getRange(data.vpa2, 'wechsler')]);
+                if (data.faces1) adminTests.push(['Faces I', data.faces1, window.NeuroscriptDB.getRange(data.faces1, 'wechsler')]);
+                if (data.faces2) adminTests.push(['Faces II', data.faces2, window.NeuroscriptDB.getRange(data.faces2, 'wechsler')]);
+                if (data.familyPic1) adminTests.push(['Family Pictures I', data.familyPic1, window.NeuroscriptDB.getRange(data.familyPic1, 'wechsler')]);
+                if (data.familyPic2) adminTests.push(['Family Pictures II', data.familyPic2, window.NeuroscriptDB.getRange(data.familyPic2, 'wechsler')]);
+                if (data.visualRepro1) adminTests.push(['Visual Reproduction I', data.visualRepro1, window.NeuroscriptDB.getRange(data.visualRepro1, 'wechsler')]);
+                if (data.visualRepro2) adminTests.push(['Visual Reproduction II', data.visualRepro2, window.NeuroscriptDB.getRange(data.visualRepro2, 'wechsler')]);
+                if (data.wordLists1) adminTests.push(['Word Lists I', data.wordLists1, window.NeuroscriptDB.getRange(data.wordLists1, 'wechsler')]);
+                if (data.wordLists2) adminTests.push(['Word Lists II', data.wordLists2, window.NeuroscriptDB.getRange(data.wordLists2, 'wechsler')]);
+                if (data.spatialSpan) adminTests.push(['Spatial Span', data.spatialSpan, window.NeuroscriptDB.getRange(data.spatialSpan, 'wechsler')]);
+                if (data.letterNumber) adminTests.push(['Letter-Number Sequencing', data.letterNumber, window.NeuroscriptDB.getRange(data.letterNumber, 'wechsler')]);
+                if (data.digitSpan) adminTests.push(['Digit Span', data.digitSpan, window.NeuroscriptDB.getRange(data.digitSpan, 'wechsler')]);
+                if (data.mentalControl) adminTests.push(['Mental Control', data.mentalControl, window.NeuroscriptDB.getRange(data.mentalControl, 'wechsler')]);
 
-                currentScoreTable = scoreData;
+                currentScoreTable = adminTests;
 
-                // Create table HTML
-                if (scoreData.length > 0) {
-                    report += `
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                // Display the narrative report
+                let report_header = `<h3>WMS-III Clinical Narrative</h3>\n${report}`;
+                
+                // Add score table
+                report_header += `
+                    <h3>WMS-III Score Summary</h3>
+                    <table style="border-collapse: collapse; width: 100%; margin-top: 20px;">
                         <tr style="background-color: #f8f9fa;">
-                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Test</th>
-                            <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Score</th>
-                            <th style="padding: 8px; text-align: center; border: 1px solid #ddd;">Interpretation</th>
+                            <th style="border: 1px solid #dee2e6; padding: 8px; text-align: left;">Test/Index</th>
+                            <th style="border: 1px solid #dee2e6; padding: 8px; text-align: center;">Score</th>
+                            <th style="border: 1px solid #dee2e6; padding: 8px; text-align: center;">Range</th>
                         </tr>
-                        ${scoreData.map(test => `
+                        ${adminTests.map(test => `
                             <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;">${test[0]}</td>
-                                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${test[1]}</td>
-                                <td style="padding: 8px; text-align: center; border: 1px solid #ddd;">${test[2]}</td>
+                                <td style="padding: 8px; text-align: left;">${test[0]}</td>
+                                <td style="padding: 8px; text-align: center;">${test[1]}</td>
+                                <td style="padding: 8px; text-align: center;">${test[2]}</td>
                             </tr>
                         `).join('')}
                     </table>
                 `;
-                }
 
                 // Display the report
-                document.getElementById('output').innerHTML = report;
+                document.getElementById('output').innerHTML = report_header;
 
                 // Add validation warnings if any
                 if (warnings.length > 0) {
@@ -935,7 +842,7 @@
                 document.getElementById('output').style.display = 'block';
 
             } catch (error) {
-                console.error('Error generating WMS-III report v3.2:', error);
+                console.error('Error generating WMS-III report:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error generating report:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -980,44 +887,6 @@
                 if (clientInfo.clientGender) {
                     document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
                 }
-
-                if (clientInfo.readingLevel) {
-                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
-                }
-
-                // Don't auto-generate report - wait for user input
-            }
-        });
-
-        // Input validation
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('WMS-III Enhanced v3.2 loaded successfully');
-            
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    const value = parseFloat(this.value);
-                    const min = parseFloat(this.min);
-                    const max = parseFloat(this.max);
-                    
-                    if (this.value && (isNaN(value) || value < min || value > max)) {
-                        this.style.border = '2px solid red';
-                        this.style.backgroundColor = '#ffe6e6';
-                    } else {
-                        this.style.border = '1px solid #ddd';
-                        this.style.backgroundColor = 'white';
-                    }
-                });
-            });
-        });
-
-        // Console logging for debugging
-        window.addEventListener('load', function() {
-            console.log('WMS-III v3.1 loaded. Checking database...');
-            if (window.NeuroscriptDB) {
-                console.log('Database loaded successfully');
-            } else {
-                console.log('Database NOT loaded. Check neuroscript-norms.js file location and loading.');
             }
         });
     </script>
