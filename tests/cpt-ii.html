@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPT-II Enhanced v3.6</title>
+    <title>CPT-II Enhanced v3.5</title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -178,30 +178,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>🧠 CPT-II Enhanced v3.6</h1>
+        <h1>🧠 CPT-II Enhanced v3.5</h1>
         
         <div class="demo-section">
             <div class="section-header">Client Demographics</div>
-            <div class="demo-grid">
-                <div>
-                    <label>Age:</label>
-                    <input type="number" id="age" value="" placeholder="6-90" min="6" max="90">
-                </div>
-                <div>
-                    <label>Gender:</label>
-                    <select id="gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Education (years):</label>
-                    <input type="number" id="education" value="" placeholder="6-25" min="6" max="25">
-                </div>
-                <div>
-                    <label>Reading Level (grade):</label>
-                    <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="20">
-                </div>
+            <div style="display: grid; grid-template-columns: repeat(4, auto); gap: 15px; align-items: center; margin-top: 10px;">
+                <label>Age:</label>
+                <span id="age" style="padding: 4px 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 3px; font-size: 14px; min-width: 40px; display: inline-block;">-</span>
+                
+                <label>Gender:</label>
+                <span id="gender" style="padding: 4px 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 3px; font-size: 14px; min-width: 60px; display: inline-block;">-</span>
+                
+                <label>Education (years):</label>
+                <span id="education" style="padding: 4px 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 3px; font-size: 14px; min-width: 40px; display: inline-block;">-</span>
+                
+                <label>Reading Level (grade):</label>
+                <span id="readingLevel" style="padding: 4px 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 3px; font-size: 14px; min-width: 40px; display: inline-block;">-</span>
             </div>
         </div>
 
@@ -419,10 +411,10 @@
             console.log('loadTestData v3.6 called');
             
             // Load demographics
-            document.getElementById('age').value = 28;
-            document.getElementById('gender').value = 'Male';
-            document.getElementById('education').value = 16;
-            document.getElementById('readingLevel').value = 12;
+            document.getElementById('age').textContent = 28;
+            document.getElementById('gender').textContent = 'Male';
+            document.getElementById('education').textContent = 16;
+            document.getElementById('readingLevel').textContent = 12;
             
             // Load CPT-II scores with real values from actual report
             document.getElementById('omissions').value = 73;
@@ -455,10 +447,10 @@
 
                 // Data collection
                 const data = {
-                    age: parseInt(document.getElementById('age').value),
-                    gender: document.getElementById('gender').value,
-                    education: parseInt(document.getElementById('education').value) || 0,
-                    readingLevel: parseFloat(document.getElementById('readingLevel').value) || 0,
+                    age: parseInt(document.getElementById('age').textContent),
+                    gender: document.getElementById('gender').textContent,
+                    education: parseInt(document.getElementById('education').textContent) || 0,
+                    readingLevel: parseFloat(document.getElementById('readingLevel').textContent) || 0,
                     omissions: parseInt(document.getElementById('omissions').value),
                     commissions: parseInt(document.getElementById('commissions').value),
                     hitRT: parseInt(document.getElementById('hitRT').value),
@@ -653,10 +645,10 @@
             console.log('Message received in CPT-II v3.6:', event.data);
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
-                if (clientData.age) document.getElementById('age').value = clientData.age;
-                if (clientData.gender) document.getElementById('gender').value = clientData.gender;
-                if (clientData.education) document.getElementById('education').value = clientData.education;
-                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel;
+                if (clientData.age) document.getElementById('age').textContent = clientData.age;
+                if (clientData.gender) document.getElementById('gender').textContent = clientData.gender;
+                if (clientData.education) document.getElementById('education').textContent = clientData.education;
+                if (clientData.readingLevel) document.getElementById('readingLevel').textContent = clientData.readingLevel;
             }
         });
 
