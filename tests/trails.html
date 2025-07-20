@@ -3,22 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trail Making Test Enhanced v4.0</title>
+    <title>Trail Making Test - Neuroscript</title>
+    
+    <!-- Load external normative databases -->
+    <script src="../neuroscript-norms.js"></script>
     <script src="../tmt-norms.js"></script>
+    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
+            margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f5f7fa;
+            line-height: 1.6;
         }
 
         .container {
+            max-width: 1000px;
+            margin: 0 auto;
             background: white;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .header {
@@ -27,36 +33,168 @@
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .header h1 {
-            margin: 0;
-            font-size: 24px;
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
             font-weight: 600;
         }
 
         .header p {
-            margin: 10px 0 0 0;
+            margin: 0;
+            font-size: 1.1rem;
             opacity: 0.9;
-            font-size: 14px;
         }
 
         .form-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #e9ecef;
+            margin-bottom: 30px;
         }
 
         .section-header {
-            font-size: 18px;
+            font-size: 1.3rem;
             font-weight: 600;
-            color: #495057;
+            color: #2d3748;
             margin-bottom: 15px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group input.invalid {
+            border-color: #e53e3e;
+            background-color: #fed7d7;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .score-grid > div {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .score-grid label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .score-grid input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .output-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .output-section h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .warning ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        table th {
+            background-color: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
         }
 
         /* Demographics Table */
@@ -83,85 +221,22 @@
             font-weight: normal;
         }
 
-        .score-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .score-grid label {
-            display: block;
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 8px;
-        }
-
-        .score-grid input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        .score-grid input:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .save-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            margin: 20px 10px 10px 0;
-        }
-
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-
-        .output-section {
-            background: white;
-            border: 2px solid #dee2e6;
-            padding: 25px;
-            margin-top: 30px;
-            font-family: 'Times New Roman', serif;
-            line-height: 1.6;
-            border-radius: 8px;
-        }
-
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-
-        /* Input validation styling */
-        .invalid-input {
-            border: 2px solid #e53e3e !important;
-            background-color: #fed7d7 !important;
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .score-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Trail Making Test Enhanced v4.0</h1>
-            <p>Visual Scanning, Psychomotor Speed & Mental Flexibility Assessment</p>
+            <h1>🧠 Trail Making Test v4.0</h1>
         </div>
 
         <div class="form-section">
@@ -206,49 +281,69 @@
     </div>
 
     <script>
-        console.log('TMT Enhanced v4.0 - Initializing...');
+        console.log('TMT v4.0 - Initializing...');
         
-        // Global variables for storing current data
+        // Global variables for data storage
         let currentNarrative = '';
         let currentScoreTable = '';
 
-        // Function to get TMT interpretation using external database
-        function getTMTInterpretation(score, test, age, education) {
-            console.log('getTMTInterpretation v4.0 called for', test, 'score:', score);
+        // Function to get TMT norms from external database
+        function getTMTInterpretation(rawScore, test, age, education) {
+            console.log('getTMTInterpretation v4.0 called for', test, 'score:', rawScore);
             
-            if (!window.TMTNorms) {
-                console.error('TMT norms database not loaded');
+            if (!window.TMTNorms || !window.TMTNorms.getNormData) {
+                console.error('TMT norms database not loaded v4.0');
                 return { tScore: 50, percentile: 50, range: 'Average' };
             }
 
             try {
-                return window.TMTNorms.getInterpretation(score, test, age, education);
+                return window.TMTNorms.getNormData(rawScore, test, age, education);
             } catch (error) {
                 console.error('Error in TMT interpretation v4.0:', error);
                 return { tScore: 50, percentile: 50, range: 'Average' };
             }
         }
 
+        function setupInputValidation() {
+            console.log('setupInputValidation v4.0 called');
+            
+            const inputs = document.querySelectorAll('input[type="number"]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    
+                    if (this.value && (isNaN(value) || value < min || value > max)) {
+                        this.classList.add('invalid');
+                    } else {
+                        this.classList.remove('invalid');
+                    }
+                });
+            });
+        }
+
         function validateAllInputs() {
             console.log('validateAllInputs v4.0 called');
             
             const inputs = document.querySelectorAll('input[type="number"]');
-            let allValid = true;
-
+            let isValid = true;
+            
             inputs.forEach(input => {
                 const value = parseFloat(input.value);
                 const min = parseFloat(input.min);
                 const max = parseFloat(input.max);
-
+                
                 if (input.value && (isNaN(value) || value < min || value > max)) {
-                    input.classList.add('invalid-input');
-                    allValid = false;
+                    input.classList.add('invalid');
+                    isValid = false;
                 } else {
-                    input.classList.remove('invalid-input');
+                    input.classList.remove('invalid');
                 }
             });
-
-            return allValid;
+            
+            return isValid;
         }
 
         function generateValidationWarnings(data) {
@@ -296,14 +391,45 @@
             return warnings;
         }
 
-        function generateTrailsText(data) {
-            console.log('generateTrailsText v4.0 called with data:', data);
+        function generateTrailsReport() {
+            console.log('generateTrailsReport v4.0 called');
             
+            // Validate all inputs first
+            if (!validateAllInputs()) {
+                alert('Please correct the highlighted fields before generating the report.');
+                return;
+            }
+
+            // Check if minimum required fields are filled
+            const trailsA = document.getElementById('trailsA').value;
+            const trailsB = document.getElementById('trailsB').value;
+            
+            if (!trailsA && !trailsB) {
+                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
+                document.getElementById('output').style.display = 'block';
+                return;
+            }
+
+            const data = {
+                age: parseInt(document.getElementById('age').textContent) || 0,
+                gender: document.getElementById('gender').textContent,
+                education: parseInt(document.getElementById('education').textContent) || 0,
+                readingLevel: document.getElementById('readingLevel').textContent ? 
+                    parseFloat(document.getElementById('readingLevel').textContent) : null,
+                trailsA: parseInt(document.getElementById('trailsA').value) || 0,
+                trailsB: parseInt(document.getElementById('trailsB').value) || 0
+            };
+
+            const warnings = generateValidationWarnings(data);
+            const gender = data.gender;
+            const pronoun = gender === 'Male' ? 'his' : 'her';
+            const pronounLower = gender === 'Male' ? 'his' : 'her';
+
             let report = '';
             let interpretationA = null;
             let interpretationB = null;
 
-            // Get TMT interpretations using external database
+            // Get interpretations from external database
             if (data.trailsA > 0) {
                 interpretationA = getTMTInterpretation(data.trailsA, 'A', data.age, data.education);
             }
@@ -311,11 +437,6 @@
             if (data.trailsB > 0) {
                 interpretationB = getTMTInterpretation(data.trailsB, 'B', data.age, data.education);
             }
-
-            const warnings = generateValidationWarnings(data);
-            const gender = data.gender;
-            const pronoun = gender === 'Male' ? 'his' : 'her';
-            const pronounLower = gender === 'Male' ? 'his' : 'her';
 
             // Generate clinical narrative
             report += `<h3><b>Attention & Executive Functioning</b></h3>\n`;
@@ -434,55 +555,24 @@
             // Add score table to report
             report += currentScoreTable;
 
-            // Add warnings if any
-            if (warnings.length > 0) {
-                report += `<div class="warning">`;
-                report += `<h4><b>Data Validation Warnings</b></h4>`;
-                warnings.forEach(warning => {
-                    report += `<p>${warning}</p>`;
-                });
-                report += `</div>`;
-            }
-
-            return report;
+            document.getElementById('output').innerHTML = report;
+            document.getElementById('output').style.display = 'block';
         }
 
         function saveTestData() {
             console.log('saveTestData v4.0 called');
             
-            // Validate all inputs first
-            if (!validateAllInputs()) {
-                alert('Please correct the highlighted fields before saving.');
-                return;
+            // Generate the narrative first if not already generated
+            if (!currentNarrative) {
+                generateTrailsReport();
+                
+                // Check if generation was successful
+                if (!currentNarrative) {
+                    alert('Please ensure test scores are entered before saving.');
+                    return;
+                }
             }
 
-            // Check if minimum required fields are filled
-            const trailsA = document.getElementById('trailsA').value;
-            const trailsB = document.getElementById('trailsB').value;
-            
-            if (!trailsA && !trailsB) {
-                alert('Please enter at least one Trail Making score before saving.');
-                return;
-            }
-
-            const data = {
-                age: parseInt(document.getElementById('age').textContent) || 0,
-                gender: document.getElementById('gender').textContent,
-                education: parseInt(document.getElementById('education').textContent) || 0,
-                readingLevel: document.getElementById('readingLevel').textContent ? 
-                    parseFloat(document.getElementById('readingLevel').textContent) : null,
-                trailsA: parseInt(document.getElementById('trailsA').value) || 0,
-                trailsB: parseInt(document.getElementById('trailsB').value) || 0
-            };
-
-            console.log('TMT v4.0 data collected:', data);
-
-            // Generate narrative and display
-            const report = generateTrailsText(data);
-            document.getElementById('output').innerHTML = report;
-            document.getElementById('output').style.display = 'block';
-
-            // Store data for master dashboard
             const results = {
                 narrative: currentNarrative,
                 scoreTable: currentScoreTable,
@@ -503,7 +593,13 @@
             alert('Trail Making Test data saved successfully!');
         }
 
-        // Event listener for receiving client info from master dashboard
+        // Initialize input validation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('TMT v4.0 DOM loaded, setting up validation');
+            setupInputValidation();
+        });
+
+        // Listen for client info from parent (same pattern as other tests)
         window.addEventListener('message', function(event) {
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
@@ -520,27 +616,7 @@
             }
         });
 
-        // Input validation for real-time feedback
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('TMT v4.0 DOM loaded, setting up validation');
-            
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    const value = parseFloat(this.value);
-                    const min = parseFloat(this.min);
-                    const max = parseFloat(this.max);
-                    
-                    if (this.value && (isNaN(value) || value < min || value > max)) {
-                        this.classList.add('invalid-input');
-                    } else {
-                        this.classList.remove('invalid-input');
-                    }
-                });
-            });
-        });
-
-        console.log('TMT Enhanced v4.0 initialization complete');
+        console.log('TMT v4.0 initialization complete');
     </script>
 </body>
 </html>
