@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+.demographics-section {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -30,33 +36,26 @@
             margin-bottom: 30px;
         }
         
-        /* Header Demographics Section */
-        .demographics-section {
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
+        /* Demographics Table */
+        .demographics-table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .demographics-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+        .demographics-table td {
+            padding: 8px;
+            vertical-align: middle;
         }
-        .demographic-field {
-            display: flex;
-            flex-direction: column;
-        }
-        .demographic-field label {
+        .demographics-table label {
             font-weight: bold;
-            margin-bottom: 5px;
             color: #495057;
+            margin-right: 10px;
         }
-        .demographic-field input, .demographic-field select {
+        .demographics-table input, .demographics-table select {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+            width: 100px;
         }
         
         /* Section Headers */
@@ -242,33 +241,33 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.0</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.1</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <!-- Demographics Section -->
         <div class="demographics-section">
             <h3 style="margin-top: 0; color: #495057;">Client Demographics</h3>
-            <div class="demographics-grid">
-                <div class="demographic-field">
-                    <label>Age (years):</label>
-                    <input type="number" id="age" placeholder="16-90" min="16" max="90">
-                </div>
-                <div class="demographic-field">
-                    <label>Gender:</label>
-                    <select id="gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="demographic-field">
-                    <label>Education (years):</label>
-                    <input type="number" id="education" placeholder="6-25" min="6" max="25">
-                </div>
-                <div class="demographic-field">
-                    <label>Reading Level (grade):</label>
-                    <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
-                </div>
-            </div>
+            <table class="demographics-table">
+                <tbody>
+                    <tr>
+                        <td><label for="age">Age (years):</label></td>
+                        <td><input type="number" id="age" min="16" max="90" placeholder="16-90"></td>
+                        <td><label for="gender">Gender:</label></td>
+                        <td>
+                            <select id="gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="education">Education (years):</label></td>
+                        <td><input type="number" id="education" min="6" max="25" placeholder="6-25"></td>
+                        <td><label for="readingLevel">Reading Level (grade):</label></td>
+                        <td><input type="number" id="readingLevel" min="1" max="16" step="0.1" placeholder="Optional"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- Core Score Summary -->
@@ -415,7 +414,7 @@
 
         // Load test data for debugging (REMOVE WHEN DONE DEBUGGING)
         function loadTestData() {
-            // Demographics
+            // Demographics - match master dashboard client info fields
             document.getElementById('age').value = 45;
             document.getElementById('gender').value = 'Male';
             document.getElementById('education').value = 12;
@@ -475,7 +474,7 @@
                 const result = window.NeuroscriptDB.getByStandardScore(indexScore);
                 return result.aacnRange;
             } catch (error) {
-                console.error('Error in getIndexInterpretationFromDB v3.0:', error);
+                console.error('Error in getIndexInterpretationFromDB v3.1:', error);
                 return "Error in interpretation";
             }
         }
@@ -487,13 +486,13 @@
                 const result = window.NeuroscriptDB.getByWechslerScore(scaledScore);
                 return result.aacnRange;
             } catch (error) {
-                console.error('Error in getScaledInterpretationFromDB v3.0:', error);
+                console.error('Error in getScaledInterpretationFromDB v3.1:', error);
                 return "Error in interpretation";
             }
         }
 
         function validateCVLTData(data) {
-            console.log('validateCVLTData v3.0 called with data:', data);
+            console.log('validateCVLTData v3.1 called with data:', data);
             
             const warnings = [];
             
@@ -664,10 +663,10 @@
                 currentNarrative = text.replace(/<[^>]*>/g, '').trim();
                 currentScoreTable = generateScoreTable(data);
                 
-                console.log('CVLT-3 v3.0 professional narrative generated successfully');
+                console.log('CVLT-3 v3.1 professional narrative generated successfully');
 
             } catch (error) {
-                console.error('Error generating CVLT v3.0 report:', error);
+                console.error('Error generating CVLT v3.1 report:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -797,7 +796,7 @@
         }
 
         function saveTestData() {
-            console.log('saveTestData v3.0 called');
+            console.log('saveTestData v3.1 called');
             
             // Generate the narrative first if not already generated
             if (!currentNarrative) {
@@ -824,7 +823,7 @@
                 results: results
             }, '*');
             
-            console.log('CVLT-3 v3.0 test completed and sent to dashboard');
+            console.log('CVLT-3 v3.1 test completed and sent to dashboard');
         }
 
         // Event listener for receiving client info from master dashboard
