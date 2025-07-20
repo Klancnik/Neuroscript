@@ -559,30 +559,37 @@
         // Initialize input validation when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setupInputValidation();
+            loadDemographicsFromParent();
         });
 
-        // Listen for client info from parent (same pattern as other tests)
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'clientInfo') {
-                const clientInfo = event.data.data;
-                
-                if (clientInfo.clientAge) {
-                    document.getElementById('age').value = clientInfo.clientAge;
+        // Load demographics from parent window (master dashboard)
+        function loadDemographicsFromParent() {
+            try {
+                // First try to get data from parent window's localStorage or sessionStorage
+                if (window.parent && window.parent !== window) {
+                    // Method 1: Try accessing parent's stored data directly
+                    const parentDoc = window.parent.document;
+                    const ageField = parentDoc.getElementById('clientAge');
+                    const genderField = parentDoc.getElementById('clientGender');
+                    const educationField = parentDoc.getElementById('clientEducation');
+                    const readingField = parentDoc.getElementById('clientReading');
+                    
+                    if (ageField && ageField.value) document.getElementById('age').value = ageField.value;
+                    if (genderField && genderField.value) document.getElementById('gender').value = genderField.value;
+                    if (educationField && educationField.value) document.getElementById('education').value = educationField.value;
+                    if (readingField && readingField.value) document.getElementById('readingLevel').value = readingField.value;
                 }
+            } catch (error) {
+                // Method 2: Try URL parameters (if passed from parent)
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('age')) document.getElementById('age').value = urlParams.get('age');
+                if (urlParams.get('gender')) document.getElementById('gender').value = urlParams.get('gender');
+                if (urlParams.get('education')) document.getElementById('education').value = urlParams.get('education');
+                if (urlParams.get('reading')) document.getElementById('readingLevel').value = urlParams.get('reading');
                 
-                if (clientInfo.clientGender) {
-                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
-                }
-                
-                if (clientInfo.clientEducation) {
-                    document.getElementById('education').value = clientInfo.clientEducation;
-                }
-                
-                if (clientInfo.readingLevel) {
-                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
-                }
+                console.log('Demographics auto-population attempted');
             }
-        });
+        }
     </script>
 </body>
 </html>
