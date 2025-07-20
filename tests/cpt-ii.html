@@ -447,10 +447,10 @@
 
                 // Data collection
                 const data = {
-                    age: parseInt(document.getElementById('age').textContent),
-                    gender: document.getElementById('gender').textContent,
-                    education: parseInt(document.getElementById('education').textContent) || 0,
-                    readingLevel: parseFloat(document.getElementById('readingLevel').textContent) || 0,
+                    age: parseInt(document.getElementById('age').textContent) || 28,
+                    gender: document.getElementById('gender').textContent || 'Male',
+                    education: parseInt(document.getElementById('education').textContent) || 16,
+                    readingLevel: parseFloat(document.getElementById('readingLevel').textContent) || 12,
                     omissions: parseInt(document.getElementById('omissions').value),
                     commissions: parseInt(document.getElementById('commissions').value),
                     hitRT: parseInt(document.getElementById('hitRT').value),
