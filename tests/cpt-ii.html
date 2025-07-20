@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+// Collect input data
+                const data =<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPT-II Enhanced v3.5</title>
+    <title>CPT-II Enhanced v3.6</title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -178,7 +179,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🧠 CPT-II Enhanced v3.5</h1>
+        <h1>🧠 CPT-II Enhanced v3.6</h1>
         
         <div class="demo-section">
             <div class="section-header">Client Demographics</div>
@@ -439,18 +440,19 @@
             console.log('saveTestData v3.6 called');
             
             try {
-                // Database validation
+                // Validate database availability
                 if (typeof window.NeuroscriptDB === 'undefined') {
+                    console.error('NeuroscriptDB not loaded in CPT-II!');
                     alert('Database not loaded. Please refresh the page and try again.');
                     return;
                 }
 
-                // Data collection
+                // Collect input data
                 const data = {
-                    age: parseInt(document.getElementById('age').textContent) || 28,
-                    gender: document.getElementById('gender').textContent || 'Male',
-                    education: parseInt(document.getElementById('education').textContent) || 16,
-                    readingLevel: parseFloat(document.getElementById('readingLevel').textContent) || 12,
+                    age: parseInt(document.getElementById('age').textContent),
+                    gender: document.getElementById('gender').textContent,
+                    education: parseInt(document.getElementById('education').textContent) || 0,
+                    readingLevel: parseFloat(document.getElementById('readingLevel').textContent) || 0,
                     omissions: parseInt(document.getElementById('omissions').value),
                     commissions: parseInt(document.getElementById('commissions').value),
                     hitRT: parseInt(document.getElementById('hitRT').value),
@@ -463,7 +465,7 @@
 
                 console.log('Collected CPT-II data v3.6:', data);
 
-                // Validation - CPT requires all core scores
+                // Validation
                 if (!data.age || !data.gender) {
                     alert('Please enter age and gender before saving test data.');
                     return;
@@ -630,9 +632,9 @@
                     testName: 'cpt-ii',
                     results: results
                 }, '*');
-                
-                console.log('CPT-II test data saved successfully to dashboard v3.6');
-                
+
+                console.log('CPT-II test data saved successfully v3.6');
+
             } catch (error) {
                 console.error('Error saving test data v3.6:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
