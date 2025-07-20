@@ -42,27 +42,22 @@
             border-collapse: collapse;
         }
         .demographics-table td {
-            padding: 5px;
+            padding: 2px 4px;
             vertical-align: middle;
+            border: none;
         }
-        .demographics-table td:first-child {
-            width: 150px;
-        }
+        .demographics-table td:first-child,
         .demographics-table td:nth-child(3) {
-            width: 150px;
-        }
-        .demographics-table label {
             font-weight: bold;
             color: #495057;
-            margin: 0;
-            padding-right: 5px;
+            width: 140px;
+            text-align: right;
+            padding-right: 8px;
         }
-        .demographics-table input, .demographics-table select {
-            padding: 6px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+        .demographics-table td:nth-child(2),
+        .demographics-table td:nth-child(4) {
             width: 80px;
+            font-weight: normal;
         }
         
         /* Section Headers */
@@ -248,7 +243,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.2</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.3</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <!-- Demographics Section -->
@@ -257,21 +252,16 @@
             <table class="demographics-table">
                 <tbody>
                     <tr>
-                        <td><label for="age">Age (years):</label></td>
-                        <td><input type="number" id="age" min="16" max="90" placeholder="16-90"></td>
-                        <td><label for="gender">Gender:</label></td>
-                        <td>
-                            <select id="gender">
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </td>
+                        <td>Age (years):</td>
+                        <td><span id="age">--</span></td>
+                        <td>Gender:</td>
+                        <td><span id="gender">--</span></td>
                     </tr>
                     <tr>
-                        <td><label for="education">Education (years):</label></td>
-                        <td><input type="number" id="education" min="6" max="25" placeholder="6-25"></td>
-                        <td><label for="readingLevel">Reading Level (grade):</label></td>
-                        <td><input type="number" id="readingLevel" min="1" max="16" step="0.1" placeholder="Optional"></td>
+                        <td>Education (years):</td>
+                        <td><span id="education">--</span></td>
+                        <td>Reading Level (grade):</td>
+                        <td><span id="readingLevel">--</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -421,11 +411,11 @@
 
         // Load test data for debugging (REMOVE WHEN DONE DEBUGGING)
         function loadTestData() {
-            // Demographics - match master dashboard client info fields
-            document.getElementById('age').value = 45;
-            document.getElementById('gender').value = 'Male';
-            document.getElementById('education').value = 12;
-            document.getElementById('readingLevel').value = 11.5;
+            // Demographics - match master dashboard client info fields (display only)
+            document.getElementById('age').textContent = 45;
+            document.getElementById('gender').textContent = 'Male';
+            document.getElementById('education').textContent = 12;
+            document.getElementById('readingLevel').textContent = 11.5;
             
             // Core scores - Raw scores
             document.getElementById('trial1').value = 5;
@@ -481,7 +471,7 @@
                 const result = window.NeuroscriptDB.getByStandardScore(indexScore);
                 return result.aacnRange;
             } catch (error) {
-                console.error('Error in getIndexInterpretationFromDB v3.2:', error);
+                console.error('Error in getIndexInterpretationFromDB v3.3:', error);
                 return "Error in interpretation";
             }
         }
@@ -493,13 +483,13 @@
                 const result = window.NeuroscriptDB.getByWechslerScore(scaledScore);
                 return result.aacnRange;
             } catch (error) {
-                console.error('Error in getScaledInterpretationFromDB v3.2:', error);
+                console.error('Error in getScaledInterpretationFromDB v3.3:', error);
                 return "Error in interpretation";
             }
         }
 
         function validateCVLTData(data) {
-            console.log('validateCVLTData v3.2 called with data:', data);
+            console.log('validateCVLTData v3.3 called with data:', data);
             
             const warnings = [];
             
@@ -594,10 +584,10 @@
 
                 // Collect all form data
                 const data = {
-                    age: parseInt(document.getElementById('age').value),
-                    gender: document.getElementById('gender').value,
-                    education: parseInt(document.getElementById('education').value),
-                    readingLevel: parseFloat(document.getElementById('readingLevel').value),
+                    age: parseInt(document.getElementById('age').textContent),
+                    gender: document.getElementById('gender').textContent,
+                    education: parseInt(document.getElementById('education').textContent),
+                    readingLevel: parseFloat(document.getElementById('readingLevel').textContent),
                     
                     // Core scores
                     trial1: parseInt(document.getElementById('trial1').value),
@@ -670,10 +660,10 @@
                 currentNarrative = text.replace(/<[^>]*>/g, '').trim();
                 currentScoreTable = generateScoreTable(data);
                 
-                console.log('CVLT-3 v3.2 professional narrative generated successfully');
+                console.log('CVLT-3 v3.3 professional narrative generated successfully');
 
             } catch (error) {
-                console.error('Error generating CVLT v3.2 report:', error);
+                console.error('Error generating CVLT v3.3 report:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -803,7 +793,7 @@
         }
 
         function saveTestData() {
-            console.log('saveTestData v3.2 called');
+            console.log('saveTestData v3.3 called');
             
             // Generate the narrative first if not already generated
             if (!currentNarrative) {
@@ -830,23 +820,23 @@
                 results: results
             }, '*');
             
-            console.log('CVLT-3 v3.2 test completed and sent to dashboard');
+            console.log('CVLT-3 v3.3 test completed and sent to dashboard');
         }
 
         // Event listener for receiving client info from master dashboard
         window.addEventListener('message', function(event) {
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
-                console.log('CVLT-3 v3.2 received client data:', clientData);
+                console.log('CVLT-3 v3.3 received client data:', clientData);
                 
-                // Auto-populate from master dashboard client info
-                if (clientData.clientAge) document.getElementById('age').value = clientData.clientAge;
+                // Display values as text (not editable)
+                if (clientData.clientAge) document.getElementById('age').textContent = clientData.clientAge;
                 if (clientData.clientGender) {
                     const genderValue = clientData.clientGender.toLowerCase() === 'male' ? 'Male' : 'Female';
-                    document.getElementById('gender').value = genderValue;
+                    document.getElementById('gender').textContent = genderValue;
                 }
-                if (clientData.clientEducation) document.getElementById('education').value = clientData.clientEducation;
-                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel;
+                if (clientData.clientEducation) document.getElementById('education').textContent = clientData.clientEducation;
+                if (clientData.readingLevel) document.getElementById('readingLevel').textContent = clientData.readingLevel;
             }
         });
 
