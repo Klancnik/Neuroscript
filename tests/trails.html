@@ -42,6 +42,12 @@
             font-weight: 600;
         }
 
+        .header p {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
         .form-section {
             margin-bottom: 30px;
         }
@@ -55,28 +61,35 @@
             border-bottom: 2px solid #e2e8f0;
         }
 
-        /* Demographics Table */
-        .demographics-table {
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .input-group input, .input-group select {
             width: 100%;
-            border-collapse: collapse;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
         }
-        .demographics-table td {
-            padding: 2px 4px;
-            vertical-align: middle;
-            border: none;
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        .demographics-table td:first-child,
-        .demographics-table td:nth-child(3) {
-            font-weight: bold;
-            color: #495057;
-            width: 140px;
-            text-align: right;
-            padding-right: 8px;
-        }
-        .demographics-table td:nth-child(2),
-        .demographics-table td:nth-child(4) {
-            width: 80px;
-            font-weight: normal;
+
+        .input-group input.invalid {
+            border-color: #e53e3e;
+            background-color: #fed7d7;
         }
 
         .score-grid {
@@ -107,8 +120,8 @@
             font-size: 16px;
         }
 
-        .save-btn {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        .generate-btn, .complete-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -121,8 +134,16 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .save-btn:hover {
+        .generate-btn:hover, .complete-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .complete-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .complete-btn:hover {
             box-shadow: 0 6px 20px rgba(72, 187, 120, 0.3);
         }
 
@@ -184,9 +205,10 @@
             background-color: #f8f9fa;
         }
 
-        .input-group input.invalid {
-            border-color: #e53e3e;
-            background-color: #fed7d7;
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
         }
 
         @media (max-width: 768px) {
@@ -198,33 +220,44 @@
             .score-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .demographics-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Trail Making Test v4.0</h1>
+            <h1>🧠 Trail Making Test</h1>
+            <p>Visual Scanning, Psychomotor Speed & Mental Flexibility Assessment</p>
         </div>
 
         <div class="form-section">
             <div class="section-header">Demographics</div>
-            <table class="demographics-table">
-                <tbody>
-                    <tr>
-                        <td>Age:</td>
-                        <td><span id="age">--</span></td>
-                        <td>Gender:</td>
-                        <td><span id="gender">--</span></td>
-                    </tr>
-                    <tr>
-                        <td>Education (years):</td>
-                        <td><span id="education">--</span></td>
-                        <td>Reading Level (grade):</td>
-                        <td><span id="readingLevel">--</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="demographics-grid">
+                <div class="input-group">
+                    <label>Age:</label>
+                    <input type="number" id="age" value="" min="18" max="89" placeholder="18-89 years">
+                </div>
+                <div class="input-group">
+                    <label>Gender:</label>
+                    <select id="gender">
+                        <option value="">Select...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Education (years):</label>
+                    <input type="number" id="education" value="" min="6" max="25" placeholder="6-25">
+                </div>
+                <div class="input-group">
+                    <label>Reading Level (grade):</label>
+                    <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+                </div>
+            </div>
         </div>
 
         <div class="form-section">
@@ -241,7 +274,8 @@
             </div>
         </div>
 
-        <button class="save-btn" onclick="saveTestData()">Save Test Data</button>
+        <button class="generate-btn" onclick="generateTrailsReport()">Generate Trails Report</button>
+        <button class="complete-btn" onclick="completeTest()">Complete Test</button>
 
         <div id="output" class="output-section" style="display:none;">
             <!-- Generated report will appear here -->
@@ -249,8 +283,6 @@
     </div>
 
     <script>
-        console.log('TMT v4.0 - Initializing...');
-        
         // Data management
         let currentNarrative = '';
         let currentScoreTable = '';
@@ -336,8 +368,6 @@
         }
 
         function generateTrailsReport() {
-            console.log('generateTrailsReport v4.0 called');
-            
             // Validate all inputs first
             if (!validateAllInputs()) {
                 alert('Please correct the highlighted fields before generating the report.');
@@ -355,70 +385,59 @@
             }
 
             const data = {
-                age: parseInt(document.getElementById('age').textContent) || 0,
-                gender: document.getElementById('gender').textContent,
-                education: parseInt(document.getElementById('education').textContent) || 0,
-                readingLevel: document.getElementById('readingLevel').textContent ? 
-                    parseFloat(document.getElementById('readingLevel').textContent) : null,
+                age: parseInt(document.getElementById('age').value) || 0,
+                gender: document.getElementById('gender').value,
+                education: parseInt(document.getElementById('education').value) || 0,
+                readingLevel: document.getElementById('readingLevel').value ? 
+                    parseFloat(document.getElementById('readingLevel').value) : null,
                 trailsA: parseInt(document.getElementById('trailsA').value) || 0,
                 trailsB: parseInt(document.getElementById('trailsB').value) || 0
             };
 
             const warnings = generateValidationWarnings(data);
             const gender = data.gender;
-            const pronoun = gender === 'Male' ? 'his' : 'her';
+            const pronoun = gender === 'Male' ? 'His' : 'Her';
             const pronounLower = gender === 'Male' ? 'his' : 'her';
+            const heShe = gender === 'Male' ? 'He' : 'She';
+
+            // Get interpretations from external database
+            let interpretationA, interpretationB;
+            
+            if (data.trailsA > 0) {
+                interpretationA = window.TMTNorms.getDetailedInterpretation(
+                    data.trailsA, 'trailsA', data.age, data.education
+                );
+            }
+            
+            if (data.trailsB > 0) {
+                interpretationB = window.TMTNorms.getDetailedInterpretation(
+                    data.trailsB, 'trailsB', data.age, data.education
+                );
+            }
+
+            // B-A difference calculation
+            const bMinusA = data.trailsB - data.trailsA;
+            const bMinusAInterpretation = bMinusA <= 30 ? "minimal" : 
+                                         bMinusA <= 60 ? "moderate" : "substantial";
 
             let report = '';
-            let interpretationA = null;
-            let interpretationB = null;
 
-            // Simple interpretation logic (preserving original approach)
-            if (data.trailsA > 0) {
-                let tScoreA, percentileA, rangeA;
-                if (data.trailsA <= 15) {
-                    tScoreA = 60; percentileA = 75; rangeA = "High Average";
-                } else if (data.trailsA <= 25) {
-                    tScoreA = 50; percentileA = 50; rangeA = "Average";
-                } else if (data.trailsA <= 40) {
-                    tScoreA = 40; percentileA = 25; rangeA = "Below Average";
-                } else {
-                    tScoreA = 30; percentileA = 10; rangeA = "Low Average";
-                }
-                interpretationA = { tScore: tScoreA, percentile: percentileA, range: rangeA };
+            // Display warnings if any
+            if (warnings.length > 0) {
+                report += `<div class="warning">`;
+                report += `<strong>⚠️ Validation Warnings:</strong>`;
+                report += `<ul>`;
+                warnings.forEach(warning => {
+                    report += `<li>${warning}</li>`;
+                });
+                report += `</ul></div>`;
             }
 
-            if (data.trailsB > 0) {
-                let tScoreB, percentileB, rangeB;
-                if (data.trailsB <= 25) {
-                    tScoreB = 70; percentileB = 91; rangeB = "Exceptionally High";
-                } else if (data.trailsB <= 40) {
-                    tScoreB = 60; percentileB = 75; rangeB = "High Average";
-                } else if (data.trailsB <= 70) {
-                    tScoreB = 50; percentileB = 50; rangeB = "Average";
-                } else {
-                    tScoreB = 30; percentileB = 10; rangeB = "Low Average";
-                }
-                interpretationB = { tScore: tScoreB, percentile: percentileB, range: rangeB };
-            }
-
-            // Generate clinical narrative
+            // Attention/Executive Functioning Section
             report += `<h3><b>Attention</b></h3>\n`;
-
+            
             if (data.trailsA > 0 && data.trailsB > 0) {
-                const bMinusA = data.trailsB - data.trailsA;
-                let bMinusAInterpretation = '';
-                
-                if (bMinusA <= 40) {
-                    bMinusAInterpretation = 'minimal';
-                } else if (bMinusA <= 60) {
-                    bMinusAInterpretation = 'mild';
-                } else if (bMinusA <= 100) {
-                    bMinusAInterpretation = 'moderate';
-                } else {
-                    bMinusAInterpretation = 'significant';
-                }
-
+                // Determine if ranges are same or different for "and" vs "but"
                 const connector = interpretationA.range === interpretationB.range ? "and" : "but";
                 
                 report += `<p>On a test of visual search speed requiring drawing lines between targets ${pronounLower} score fell within the ${interpretationA.range} under conditions of undivided attention (Trails A), ${connector} in the ${interpretationB.range} under conditions of divided attention (Trails B).</p>\n\n`;
@@ -470,19 +489,6 @@
             }
             
             if (data.trailsA > 0 && data.trailsB > 0) {
-                const bMinusA = data.trailsB - data.trailsA;
-                let bMinusAInterpretation = '';
-                
-                if (bMinusA <= 10) {
-                    bMinusAInterpretation = 'minimal';
-                } else if (bMinusA <= 40) {
-                    bMinusAInterpretation = 'mild';
-                } else if (bMinusA <= 100) {
-                    bMinusAInterpretation = 'moderate';
-                } else {
-                    bMinusAInterpretation = 'significant';
-                }
-
                 currentScoreTable += `
                     <tr>
                         <td style="padding: 8px;"><strong>B-A Difference</strong></td>
@@ -523,64 +529,60 @@
             document.getElementById('output').style.display = 'block';
         }
 
-        function saveTestData() {
-            console.log('saveTestData v4.0 called');
-            
-            // Generate the narrative first if not already generated
+        function completeTest() {
             if (!currentNarrative) {
-                generateTrailsReport();
-                
-                // Check if generation was successful
-                if (!currentNarrative) {
-                    alert('Please ensure test scores are entered before saving.');
-                    return;
-                }
+                alert('Please generate the report first before completing the test.');
+                return;
             }
 
-            const results = {
+            // Store data for master dashboard
+            const testData = {
                 narrative: currentNarrative,
                 scoreTable: currentScoreTable,
                 testName: 'Trail Making Test',
-                completedAt: new Date().toISOString()
+                completed: true,
+                timestamp: new Date().toISOString()
             };
 
-            // Send to master dashboard
+            // Try to communicate with parent window (dashboard)
             if (window.parent && window.parent !== window) {
                 window.parent.postMessage({
                     type: 'testComplete',
-                    testName: 'trails',
-                    results: results
+                    test: 'trails',
+                    data: testData
                 }, '*');
             }
 
-            console.log('TMT v4.0 test completed and sent to dashboard');
-            alert('Trail Making Test data saved successfully!');
+            alert('Trail Making Test completed! Data has been sent to the master report.');
         }
 
         // Initialize input validation when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('TMT v4.0 DOM loaded, setting up validation');
             setupInputValidation();
         });
 
         // Listen for client info from parent (same pattern as other tests)
         window.addEventListener('message', function(event) {
             if (event.data.type === 'clientInfo') {
-                const clientData = event.data.data;
-                console.log('TMT v4.0 received client data:', clientData);
+                const clientInfo = event.data.data;
                 
-                // Display values as text (not editable)
-                if (clientData.clientAge) document.getElementById('age').textContent = clientData.clientAge;
-                if (clientData.clientGender) {
-                    const genderValue = clientData.clientGender.toLowerCase() === 'male' ? 'Male' : 'Female';
-                    document.getElementById('gender').textContent = genderValue;
+                if (clientInfo.clientAge) {
+                    document.getElementById('age').value = clientInfo.clientAge;
                 }
-                if (clientData.clientEducation) document.getElementById('education').textContent = clientData.clientEducation;
-                if (clientData.readingLevel) document.getElementById('readingLevel').textContent = clientData.readingLevel;
+                
+                if (clientInfo.clientGender) {
+                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
+                }
+                
+                if (clientInfo.clientEducation) {
+                    document.getElementById('education').value = clientInfo.clientEducation;
+                }
+                
+                if (clientInfo.readingLevel) {
+                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
+                }
             }
         });
-
-        console.log('TMT v4.0 initialization complete');
     </script>
 </body>
 </html>
