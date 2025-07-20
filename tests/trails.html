@@ -3,28 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trail Making Test - Neuroscript</title>
-    
-    <!-- Load external normative databases -->
-    <script src="../neuroscript-norms.js"></script>
+    <title>Trail Making Test Enhanced v4.0</title>
     <script src="../tmt-norms.js"></script>
-    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
+            max-width: 1000px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: #f5f7fa;
-            line-height: 1.6;
+            background-color: #f5f5f5;
         }
 
         .container {
-            max-width: 1000px;
-            margin: 0 auto;
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header {
@@ -33,231 +27,161 @@
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         .header h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.2rem;
+            margin: 0;
+            font-size: 24px;
             font-weight: 600;
         }
 
         .header p {
-            margin: 0;
-            font-size: 1.1rem;
+            margin: 10px 0 0 0;
             opacity: 0.9;
+            font-size: 14px;
         }
 
         .form-section {
-            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
         }
 
         .section-header {
-            font-size: 1.3rem;
+            font-size: 18px;
             font-weight: 600;
-            color: #2d3748;
+            color: #495057;
             margin-bottom: 15px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 2px solid #667eea;
         }
 
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #4a5568;
-        }
-
-        .input-group input, .input-group select {
+        /* Demographics Table */
+        .demographics-table {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
+            border-collapse: collapse;
         }
-
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .demographics-table td {
+            padding: 2px 4px;
+            vertical-align: middle;
+            border: none;
         }
-
-        .input-group input.invalid {
-            border-color: #e53e3e;
-            background-color: #fed7d7;
+        .demographics-table td:first-child,
+        .demographics-table td:nth-child(3) {
+            font-weight: bold;
+            color: #495057;
+            width: 140px;
+            text-align: right;
+            padding-right: 8px;
+        }
+        .demographics-table td:nth-child(2),
+        .demographics-table td:nth-child(4) {
+            width: 80px;
+            font-weight: normal;
         }
 
         .score-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-        }
-
-        .score-grid > div {
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border: 1px solid #e9ecef;
+            margin-top: 15px;
         }
 
         .score-grid label {
+            display: block;
             font-weight: 600;
             color: #495057;
             margin-bottom: 8px;
-            display: block;
         }
 
         .score-grid input {
             width: 100%;
             padding: 10px;
-            border: 2px solid #dee2e6;
-            border-radius: 4px;
-            font-size: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
         }
 
-        .generate-btn, .complete-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .score-grid input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 12px 30px;
             font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-top: 20px;
             font-weight: 600;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            margin: 20px 10px 10px 0;
         }
 
-        .generate-btn:hover, .complete-btn:hover {
+        .save-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .complete-btn {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-        }
-
-        .complete-btn:hover {
-            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.3);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
 
         .output-section {
-            margin-top: 30px;
+            background: white;
+            border: 2px solid #dee2e6;
             padding: 25px;
-            background: #f8f9fa;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .output-section h3 {
-            margin-top: 0;
-            color: #2d3748;
         }
 
         .warning {
-            background-color: #fff3cd;
+            background: #fff3cd;
             border: 1px solid #ffeaa7;
             color: #856404;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
         }
 
-        .warning ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            background: white;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        table th {
-            background-color: #667eea;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        table td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        table tr:last-child td {
-            border-bottom: none;
-        }
-
-        table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .demographics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            .score-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .demographics-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Input validation styling */
+        .invalid-input {
+            border: 2px solid #e53e3e !important;
+            background-color: #fed7d7 !important;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Trail Making Test</h1>
+            <h1>🧠 Trail Making Test Enhanced v4.0</h1>
             <p>Visual Scanning, Psychomotor Speed & Mental Flexibility Assessment</p>
         </div>
 
         <div class="form-section">
             <div class="section-header">Demographics</div>
-            <div class="demographics-grid">
-                <div class="input-group">
-                    <label>Age:</label>
-                    <input type="number" id="age" value="" min="18" max="89" placeholder="18-89 years">
-                </div>
-                <div class="input-group">
-                    <label>Gender:</label>
-                    <select id="gender">
-                        <option value="">Select...</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Education (years):</label>
-                    <input type="number" id="education" value="" min="6" max="25" placeholder="6-25">
-                </div>
-                <div class="input-group">
-                    <label>Reading Level (grade):</label>
-                    <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
-                </div>
-            </div>
+            <table class="demographics-table">
+                <tbody>
+                    <tr>
+                        <td>Age:</td>
+                        <td><span id="age">--</span></td>
+                        <td>Gender:</td>
+                        <td><span id="gender">--</span></td>
+                    </tr>
+                    <tr>
+                        <td>Education (years):</td>
+                        <td><span id="education">--</span></td>
+                        <td>Reading Level (grade):</td>
+                        <td><span id="readingLevel">--</span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="form-section">
@@ -274,8 +198,7 @@
             </div>
         </div>
 
-        <button class="generate-btn" onclick="generateTrailsReport()">Generate Trails Report</button>
-        <button class="complete-btn" onclick="completeTest()">Complete Test</button>
+        <button class="save-btn" onclick="saveTestData()">Save Test Data</button>
 
         <div id="output" class="output-section" style="display:none;">
             <!-- Generated report will appear here -->
@@ -283,53 +206,59 @@
     </div>
 
     <script>
-        // Data management
+        console.log('TMT Enhanced v4.0 - Initializing...');
+        
+        // Global variables for storing current data
         let currentNarrative = '';
         let currentScoreTable = '';
 
-        // Input validation
-        function setupInputValidation() {
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    validateInput(this);
-                });
-            });
-        }
-
-        function validateInput(input) {
-            const value = parseFloat(input.value);
-            const min = parseFloat(input.min);
-            const max = parseFloat(input.max);
+        // Function to get TMT interpretation using external database
+        function getTMTInterpretation(score, test, age, education) {
+            console.log('getTMTInterpretation v4.0 called for', test, 'score:', score);
             
-            if (input.value && (isNaN(value) || value < min || value > max)) {
-                input.classList.add('invalid');
-                return false;
-            } else {
-                input.classList.remove('invalid');
-                return true;
+            if (!window.TMTNorms) {
+                console.error('TMT norms database not loaded');
+                return { tScore: 50, percentile: 50, range: 'Average' };
+            }
+
+            try {
+                return window.TMTNorms.getInterpretation(score, test, age, education);
+            } catch (error) {
+                console.error('Error in TMT interpretation v4.0:', error);
+                return { tScore: 50, percentile: 50, range: 'Average' };
             }
         }
 
         function validateAllInputs() {
+            console.log('validateAllInputs v4.0 called');
+            
             const inputs = document.querySelectorAll('input[type="number"]');
             let allValid = true;
-            
+
             inputs.forEach(input => {
-                if (!validateInput(input)) {
+                const value = parseFloat(input.value);
+                const min = parseFloat(input.min);
+                const max = parseFloat(input.max);
+
+                if (input.value && (isNaN(value) || value < min || value > max)) {
+                    input.classList.add('invalid-input');
                     allValid = false;
+                } else {
+                    input.classList.remove('invalid-input');
                 }
             });
-            
+
             return allValid;
         }
 
         function generateValidationWarnings(data) {
-            let warnings = [];
+            console.log('generateValidationWarnings v4.0 called with data:', data);
+            
+            const warnings = [];
 
             // Age boundary warnings
             if (data.age < 18 || data.age > 89) {
-                warnings.push("⚠️ Age outside Heaton et al. (2004) normative range (18-89 years)");
+                warnings.push("⚠️ Age outside Tombaugh (2004) normative range (18-89 years)");
             }
 
             // Education boundary warnings
@@ -367,77 +296,44 @@
             return warnings;
         }
 
-        function generateTrailsReport() {
-            // Validate all inputs first
-            if (!validateAllInputs()) {
-                alert('Please correct the highlighted fields before generating the report.');
-                return;
-            }
-
-            // Check if minimum required fields are filled
-            const trailsA = document.getElementById('trailsA').value;
-            const trailsB = document.getElementById('trailsB').value;
+        function generateTrailsText(data) {
+            console.log('generateTrailsText v4.0 called with data:', data);
             
-            if (!trailsA && !trailsB) {
-                document.getElementById('output').innerHTML = `<p>Please enter test scores to generate the report.</p>`;
-                document.getElementById('output').style.display = 'block';
-                return;
+            let report = '';
+            let interpretationA = null;
+            let interpretationB = null;
+
+            // Get TMT interpretations using external database
+            if (data.trailsA > 0) {
+                interpretationA = getTMTInterpretation(data.trailsA, 'A', data.age, data.education);
             }
 
-            const data = {
-                age: parseInt(document.getElementById('age').value) || 0,
-                gender: document.getElementById('gender').value,
-                education: parseInt(document.getElementById('education').value) || 0,
-                readingLevel: document.getElementById('readingLevel').value ? 
-                    parseFloat(document.getElementById('readingLevel').value) : null,
-                trailsA: parseInt(document.getElementById('trailsA').value) || 0,
-                trailsB: parseInt(document.getElementById('trailsB').value) || 0
-            };
+            if (data.trailsB > 0) {
+                interpretationB = getTMTInterpretation(data.trailsB, 'B', data.age, data.education);
+            }
 
             const warnings = generateValidationWarnings(data);
             const gender = data.gender;
-            const pronoun = gender === 'Male' ? 'His' : 'Her';
+            const pronoun = gender === 'Male' ? 'his' : 'her';
             const pronounLower = gender === 'Male' ? 'his' : 'her';
-            const heShe = gender === 'Male' ? 'He' : 'She';
 
-            // Get interpretations from external database
-            let interpretationA, interpretationB;
-            
-            if (data.trailsA > 0) {
-                interpretationA = window.TMTNorms.getDetailedInterpretation(
-                    data.trailsA, 'trailsA', data.age, data.education
-                );
-            }
-            
-            if (data.trailsB > 0) {
-                interpretationB = window.TMTNorms.getDetailedInterpretation(
-                    data.trailsB, 'trailsB', data.age, data.education
-                );
-            }
+            // Generate clinical narrative
+            report += `<h3><b>Attention & Executive Functioning</b></h3>\n`;
 
-            // B-A difference calculation
-            const bMinusA = data.trailsB - data.trailsA;
-            const bMinusAInterpretation = bMinusA <= 30 ? "minimal" : 
-                                         bMinusA <= 60 ? "moderate" : "substantial";
-
-            let report = '';
-
-            // Display warnings if any
-            if (warnings.length > 0) {
-                report += `<div class="warning">`;
-                report += `<strong>⚠️ Validation Warnings:</strong>`;
-                report += `<ul>`;
-                warnings.forEach(warning => {
-                    report += `<li>${warning}</li>`;
-                });
-                report += `</ul></div>`;
-            }
-
-            // Attention/Executive Functioning Section
-            report += `<h3><b>Attention</b></h3>\n`;
-            
             if (data.trailsA > 0 && data.trailsB > 0) {
-                // Determine if ranges are same or different for "and" vs "but"
+                const bMinusA = data.trailsB - data.trailsA;
+                let bMinusAInterpretation = '';
+                
+                if (bMinusA <= 40) {
+                    bMinusAInterpretation = 'minimal';
+                } else if (bMinusA <= 60) {
+                    bMinusAInterpretation = 'mild';
+                } else if (bMinusA <= 100) {
+                    bMinusAInterpretation = 'moderate';
+                } else {
+                    bMinusAInterpretation = 'significant';
+                }
+
                 const connector = interpretationA.range === interpretationB.range ? "and" : "but";
                 
                 report += `<p>On a test of visual search speed requiring drawing lines between targets ${pronounLower} score fell within the ${interpretationA.range} under conditions of undivided attention (Trails A), ${connector} in the ${interpretationB.range} under conditions of divided attention (Trails B).</p>\n\n`;
@@ -489,6 +385,19 @@
             }
             
             if (data.trailsA > 0 && data.trailsB > 0) {
+                const bMinusA = data.trailsB - data.trailsA;
+                let bMinusAInterpretation = '';
+                
+                if (bMinusA <= 40) {
+                    bMinusAInterpretation = 'minimal cognitive flexibility demand';
+                } else if (bMinusA <= 60) {
+                    bMinusAInterpretation = 'mild cognitive flexibility demand';
+                } else if (bMinusA <= 100) {
+                    bMinusAInterpretation = 'moderate cognitive flexibility demand';
+                } else {
+                    bMinusAInterpretation = 'significant cognitive flexibility demand';
+                }
+
                 currentScoreTable += `
                     <tr>
                         <td style="padding: 8px;"><strong>B-A Difference</strong></td>
@@ -525,64 +434,113 @@
             // Add score table to report
             report += currentScoreTable;
 
-            document.getElementById('output').innerHTML = report;
-            document.getElementById('output').style.display = 'block';
+            // Add warnings if any
+            if (warnings.length > 0) {
+                report += `<div class="warning">`;
+                report += `<h4><b>Data Validation Warnings</b></h4>`;
+                warnings.forEach(warning => {
+                    report += `<p>${warning}</p>`;
+                });
+                report += `</div>`;
+            }
+
+            return report;
         }
 
-        function completeTest() {
-            if (!currentNarrative) {
-                alert('Please generate the report first before completing the test.');
+        function saveTestData() {
+            console.log('saveTestData v4.0 called');
+            
+            // Validate all inputs first
+            if (!validateAllInputs()) {
+                alert('Please correct the highlighted fields before saving.');
                 return;
             }
 
+            // Check if minimum required fields are filled
+            const trailsA = document.getElementById('trailsA').value;
+            const trailsB = document.getElementById('trailsB').value;
+            
+            if (!trailsA && !trailsB) {
+                alert('Please enter at least one Trail Making score before saving.');
+                return;
+            }
+
+            const data = {
+                age: parseInt(document.getElementById('age').textContent) || 0,
+                gender: document.getElementById('gender').textContent,
+                education: parseInt(document.getElementById('education').textContent) || 0,
+                readingLevel: document.getElementById('readingLevel').textContent ? 
+                    parseFloat(document.getElementById('readingLevel').textContent) : null,
+                trailsA: parseInt(document.getElementById('trailsA').value) || 0,
+                trailsB: parseInt(document.getElementById('trailsB').value) || 0
+            };
+
+            console.log('TMT v4.0 data collected:', data);
+
+            // Generate narrative and display
+            const report = generateTrailsText(data);
+            document.getElementById('output').innerHTML = report;
+            document.getElementById('output').style.display = 'block';
+
             // Store data for master dashboard
-            const testData = {
+            const results = {
                 narrative: currentNarrative,
                 scoreTable: currentScoreTable,
                 testName: 'Trail Making Test',
-                completed: true,
-                timestamp: new Date().toISOString()
+                completedAt: new Date().toISOString()
             };
 
-            // Try to communicate with parent window (dashboard)
+            // Send to master dashboard
             if (window.parent && window.parent !== window) {
                 window.parent.postMessage({
                     type: 'testComplete',
-                    test: 'trails',
-                    data: testData
+                    testName: 'trails',
+                    results: results
                 }, '*');
             }
 
-            alert('Trail Making Test completed! Data has been sent to the master report.');
+            console.log('TMT v4.0 test completed and sent to dashboard');
+            alert('Trail Making Test data saved successfully!');
         }
 
-        // Initialize input validation when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            setupInputValidation();
-        });
-
-        // Listen for client info from parent (same pattern as other tests)
+        // Event listener for receiving client info from master dashboard
         window.addEventListener('message', function(event) {
             if (event.data.type === 'clientInfo') {
-                const clientInfo = event.data.data;
+                const clientData = event.data.data;
+                console.log('TMT v4.0 received client data:', clientData);
                 
-                if (clientInfo.clientAge) {
-                    document.getElementById('age').value = clientInfo.clientAge;
+                // Display values as text (not editable)
+                if (clientData.clientAge) document.getElementById('age').textContent = clientData.clientAge;
+                if (clientData.clientGender) {
+                    const genderValue = clientData.clientGender.toLowerCase() === 'male' ? 'Male' : 'Female';
+                    document.getElementById('gender').textContent = genderValue;
                 }
-                
-                if (clientInfo.clientGender) {
-                    document.getElementById('gender').value = clientInfo.clientGender === 'male' ? 'Male' : 'Female';
-                }
-                
-                if (clientInfo.clientEducation) {
-                    document.getElementById('education').value = clientInfo.clientEducation;
-                }
-                
-                if (clientInfo.readingLevel) {
-                    document.getElementById('readingLevel').value = clientInfo.readingLevel;
-                }
+                if (clientData.clientEducation) document.getElementById('education').textContent = clientData.clientEducation;
+                if (clientData.readingLevel) document.getElementById('readingLevel').textContent = clientData.readingLevel;
             }
         });
+
+        // Input validation for real-time feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('TMT v4.0 DOM loaded, setting up validation');
+            
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    
+                    if (this.value && (isNaN(value) || value < min || value > max)) {
+                        this.classList.add('invalid-input');
+                    } else {
+                        this.classList.remove('invalid-input');
+                    }
+                });
+            });
+        });
+
+        console.log('TMT Enhanced v4.0 initialization complete');
     </script>
 </body>
 </html>
