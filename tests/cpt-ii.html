@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+I just use the last of us<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -278,7 +278,8 @@
         </div>
 
         <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
-        <button class="complete-btn" onclick="saveTestData()">Save Test Data</button>
+        <button class="generate-btn" onclick="generateCPTReport()">Generate CPT-II Report</button>
+        <button class="complete-btn" onclick="completeTest()">Complete Test</button>
 
         <div id="output" class="output-section" style="display:none;">
             <!-- Generated report will appear here -->
@@ -415,7 +416,7 @@
         // === UTILITY FUNCTIONS ===
         
         function loadTestData() {
-            console.log('Loading CPT-II test data v3.6...');
+            console.log('Loading CPT-II test data v3.5...');
             
             // Load realistic test data from CPT printout example
             document.getElementById('age').value = '8';
@@ -470,13 +471,79 @@
 
         // === MAIN REPORT GENERATION FUNCTION ===
         
-        <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
-<button class="complete-btn" onclick="saveTestData()">Save Test Data</button>
+        function generateCPTReport() {
+            console.log('Generating CPT-II report v3.5...');
+            
+            try {
+                // Collect all data
+                const data = {
+                    age: parseInt(document.getElementById('age').value) || 0,
+                    gender: document.getElementById('gender').value,
+                    education: parseInt(document.getElementById('education').value) || 0,
+                    readingLevel: document.getElementById('readingLevel').value ? 
+                        parseFloat(document.getElementById('readingLevel').value) : null,
+                    omissions: parseInt(document.getElementById('omissions').value) || 0,
+                    commissions: parseInt(document.getElementById('commissions').value) || 0,
+                    hitRT: parseInt(document.getElementById('hitRT').value) || 0,
+                    hitRTSE: parseInt(document.getElementById('hitRTSE').value) || 0,
+                    variability: parseInt(document.getElementById('variability').value) || 0,
+                    detectability: parseInt(document.getElementById('detectability').value) || 0,
+                    responseStyle: parseFloat(document.getElementById('responseStyle').value) || null,
+                    perseverations: parseInt(document.getElementById('perseverations').value) || 0
+                };
+
+                console.log('Data collected:', data);
+
+                // Generate narrative using 5-step approach
+                const narrative = generateCPTNarrative(data);
+                const scoreTable = generateCPTScoreTable(data);
+                const technicalDetails = generateTechnicalDetails(data);
+                const validationWarnings = generateValidationWarnings(data);
+
+                // Display results
+                let report = '<h3><b>CPT-II Clinical Narrative</b></h3>\n';
+                report += narrative;
+                
+                if (scoreTable) {
+                    report += '\n<h3><b>Score Summary</b></h3>\n';
+                    report += scoreTable;
+                }
+                
+                if (technicalDetails) {
+                    report += '\n<h3><b>Technical Details</b></h3>\n';
+                    report += technicalDetails;
+                }
+                
+                if (validationWarnings.length > 0) {
+                    report += '\n<h3><b>Validation Warnings</b></h3>\n';
+                    report += '<ul>\n';
+                    validationWarnings.forEach(warning => {
+                        report += `<li>${warning}</li>\n`;
+                    });
+                    report += '</ul>\n';
+                }
+
+                // Store for completion
+                currentNarrative = narrative;
+                currentScoreTable = scoreTable;
+
+                // Display report
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = report;
+                outputDiv.style.display = 'block';
+                
+                console.log('Report generated successfully');
+
+            } catch (error) {
+                console.error('Error generating CPT-II report v3.5:', error);
+                alert('Error generating report: ' + error.message);
+            }
+        }
 
         // === NARRATIVE GENERATION FUNCTIONS ===
         
         function generateCPTNarrative(data) {
-            console.log('Generating narrative v3.6 with data:', data);
+            console.log('Generating narrative v3.5 with data:', data);
             
             const gender = data.gender;
             const pronoun = gender === 'Male' ? 'his' : 'her';
@@ -516,7 +583,7 @@
         }
 
         function generateErrorsStatement(data) {
-            console.log('Generating errors statement v3.6...');
+            console.log('Generating errors statement v3.5...');
             
             const gender = data.gender;
             const heShe = gender === 'Male' ? 'He' : 'She';
@@ -564,7 +631,7 @@
         }
 
         function generateInterpretiveStatement(data) {
-            console.log('Generating interpretive statement v3.6...');
+            console.log('Generating interpretive statement v3.5...');
             
             const highOmissions = isHighErrorLevel(data.omissions);
             const highCommissions = isHighErrorLevel(data.commissions);
@@ -661,11 +728,47 @@
 
         // === COMPLETION AND COMMUNICATION ===
         
+        function completeTest() {
+            if (!currentNarrative) {
+                alert('Please generate the report first before completing the test.');
+                return;
+            }
+            
+            const results = {
+                narrative: currentNarrative,
+                scoreTable: currentScoreTable,
+                testName: 'CPT-II',
+                completedAt: new Date().toISOString()
+            };
+            
+            // Send to master dashboard
+            window.parent.postMessage({
+                type: 'testComplete',
+                testName: 'cpt-ii',
+                results: results
+            }, '*');
+            
+            console.log('CPT-II test marked as complete');
+        }
+
+        // === INITIALIZATION ===
         
+        // Auto-populate demographics from master dashboard
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'clientInfo') {
+                console.log('Received client info:', event.data.data);
+                
+                const clientData = event.data.data;
+                if (clientData.age) document.getElementById('age').value = clientData.age;
+                if (clientData.gender) document.getElementById('gender').value = clientData.gender;
+                if (clientData.education) document.getElementById('education').value = clientData.education;
+                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel;
+            }
+        });
 
         // Input validation with red highlighting
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CPT-II Enhanced v3.6 loaded successfully');
+            console.log('CPT-II Enhanced v3.5 loaded successfully');
             
             const inputs = document.querySelectorAll('input[type="number"]');
             inputs.forEach(input => {
@@ -685,7 +788,7 @@
             });
         });
 
-        console.log('CPT-II Enhanced v3.6 functions loaded successfully');
+        console.log('CPT-II Enhanced v3.5 functions loaded successfully');
     </script>
 </body>
 </html>
