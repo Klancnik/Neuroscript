@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+.demographics-section {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -237,7 +243,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.4</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span style="font-size: 0.6em; color: #6c757d;">v3.3</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <!-- Demographics Section -->
@@ -465,7 +471,7 @@
                 const result = window.NeuroscriptDB.getByStandardScore(indexScore);
                 return result.aacnRange;
             } catch (error) {
-                console.error('Error in getIndexInterpretationFromDB v3.4:', error);
+                console.error('Error in getIndexInterpretationFromDB v3.3:', error);
                 return "Error in interpretation";
             }
         }
@@ -477,13 +483,13 @@
                 const result = window.NeuroscriptDB.getByWechslerScore(scaledScore);
                 return result.aacnRange;
             } catch (error) {
-                console.error('Error in getScaledInterpretationFromDB v3.4:', error);
+                console.error('Error in getScaledInterpretationFromDB v3.3:', error);
                 return "Error in interpretation";
             }
         }
 
         function validateCVLTData(data) {
-            console.log('validateCVLTData v3.4 called with data:', data);
+            console.log('validateCVLTData v3.3 called with data:', data);
             
             const warnings = [];
             
@@ -654,10 +660,10 @@
                 currentNarrative = text.replace(/<[^>]*>/g, '').trim();
                 currentScoreTable = generateScoreTable(data);
                 
-                console.log('CVLT-3 v3.4 professional narrative generated successfully');
+                console.log('CVLT-3 v3.3 professional narrative generated successfully');
 
             } catch (error) {
-                console.error('Error generating CVLT v3.4 report:', error);
+                console.error('Error generating CVLT v3.3 report:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -787,7 +793,7 @@
         }
 
         function saveTestData() {
-            console.log('saveTestData v3.4 called');
+            console.log('saveTestData v3.3 called');
             
             // Generate the narrative first if not already generated
             if (!currentNarrative) {
@@ -814,14 +820,14 @@
                 results: results
             }, '*');
             
-            console.log('CVLT-3 v3.4 test completed and sent to dashboard');
+            console.log('CVLT-3 v3.3 test completed and sent to dashboard');
         }
 
         // Event listener for receiving client info from master dashboard
         window.addEventListener('message', function(event) {
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
-                console.log('CVLT-3 v3.4 received client data:', clientData);
+                console.log('CVLT-3 v3.3 received client data:', clientData);
                 
                 // Display values as text (not editable)
                 if (clientData.clientAge) document.getElementById('age').textContent = clientData.clientAge;
