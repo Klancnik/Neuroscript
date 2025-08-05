@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WAIS-IV Clinical Report Generator <span class="version">v5.6</span></title>
+    <title>WAIS-IV Enhanced v5.5</title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -203,7 +203,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.6</span></h1>
+        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.5</span></h1>
         <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -386,7 +386,7 @@
 
         // === ALL FUNCTION DEFINITIONS FIRST ===
         function loadTestData() {
-            console.log('loadTestData v5.6 called');
+            console.log('loadTestData v5.5 called');
             // Test data for development - matching v4.9 test data
             document.getElementById('age').value = 35;
             document.getElementById('gender').value = 'Male';
@@ -410,41 +410,31 @@
         }
 
         function getSubtestInterpretationFromDB(score) {
-            console.log('getSubtestInterpretationFromDB v5.6 called with score:', score);
+            console.log('getSubtestInterpretationFromDB v5.5 called with score:', score);
             try {
                 if (typeof window.NeuroscriptDB === 'undefined') {
-                    console.error('Database not loaded in getSubtestInterpretationFromDB v5.6');
-                    return 'Database Error range';
+                    console.error('Database not loaded in getSubtestInterpretationFromDB v5.5');
+                    return 'Error range';
                 }
                 
-                // Use the database properly - matching WAIS 4.9 working pattern
-                const range = window.NeuroscriptDB.getRange(score, 'wechsler');
+                // Use the database properly - matching WAIS 5.4 pattern with updated impairment language
                 const data = window.NeuroscriptDB.getByWechslerScore(score);
+                let interpretation = `${data.aacn} range (ss=${score})`;
                 
-                let interpretation = range;
-                
-                // Add Heaton impairment levels for low scores based on percentile
-                console.log('Score:', score, 'Percentile:', data.percentile, 'Range:', range);
-                
-                if (data.percentile <= 16) {
-                    if (data.percentile <= 2) {
-                        interpretation += ", indicating a severely impaired level of impairment";
-                    } else if (data.percentile <= 7) {
-                        interpretation += ", indicating a mildly to moderately impaired level of impairment";
-                    } else if (data.percentile <= 16) {
-                        interpretation += ", indicating a mildly impaired level of impairment";
-                    }
+                // Add Heaton impairment level for T < 40, using exact database descriptor
+                if (data.t < 40) {
+                    interpretation += `, indicating a ${data.heaton}`;
                 }
                 
                 return interpretation;
             } catch (error) {
-                console.error('Error in getSubtestInterpretationFromDB v5.6:', error);
+                console.error('Error in getSubtestInterpretationFromDB v5.5:', error);
                 return 'Error range';
             }
         }
 
         function updateInputDisplay() {
-            console.log('updateInputDisplay v5.6 called');
+            console.log('updateInputDisplay v5.5 called');
             // Input validation with red highlighting
             const inputs = document.querySelectorAll('input[type="number"]');
             inputs.forEach(input => {
@@ -465,7 +455,7 @@
         }
 
         function saveTestData() {
-            console.log('saveTestData v5.6 called');
+            console.log('saveTestData v5.5 called');
             try {
                 // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
@@ -509,7 +499,7 @@
                     return;
                 }
 
-                // Generate narrative report - using v4.9 exact structure
+                // Generate narrative report - using v5.4 exact structure
                 let report = '<h3>WAIS-IV Clinical Narrative</h3>';
                 
                 const pronoun = data.gender === 'Male' ? 'His' : 'Her';
@@ -519,7 +509,7 @@
                 if (data.fsiq) {
                     const fsiqData = window.NeuroscriptDB.getByStandardScore(data.fsiq);
                     report += `<h3>Overall Cognitive Functioning</h3>`;
-                    report += `<p>${heShe} obtained a Full Scale IQ (FSIQ) of ${data.fsiq}, placing ${data.gender === 'Male' ? 'him' : 'her'} within the ${fsiqData.aacn === 'Low' ? 'Exceptionally Low' : fsiqData.aacn === 'High' ? 'Exceptionally High' : fsiqData.aacn} range (${fsiqData.percentile}th percentile) of cognitive functioning.</p>`;
+                    report += `<p>${heShe} obtained a Full Scale IQ (FSIQ) of ${data.fsiq}, placing ${data.gender === 'Male' ? 'him' : 'her'} within the ${fsiqData.aacn} range (${fsiqData.percentile}th percentile) of cognitive functioning.</p>`;
                 }
 
                 // Index scores (only if available)
@@ -528,19 +518,19 @@
                     
                     if (data.vci > 0) {
                         const vciData = window.NeuroscriptDB.getByStandardScore(data.vci);
-                        report += `<p>Verbal Comprehension Index (VCI): ${data.vci} - ${vciData.aacn === 'Low' ? 'Exceptionally Low' : vciData.aacn === 'High' ? 'Exceptionally High' : vciData.aacn} range (${vciData.percentile}th percentile)</p>`;
+                        report += `<p>Verbal Comprehension Index (VCI): ${data.vci} - ${vciData.aacn} range (${vciData.percentile}th percentile)</p>`;
                     }
                     if (data.pri > 0) {
                         const priData = window.NeuroscriptDB.getByStandardScore(data.pri);
-                        report += `<p>Perceptual Reasoning Index (PRI): ${data.pri} - ${priData.aacn === 'Low' ? 'Exceptionally Low' : priData.aacn === 'High' ? 'Exceptionally High' : priData.aacn} range (${priData.percentile}th percentile)</p>`;
+                        report += `<p>Perceptual Reasoning Index (PRI): ${data.pri} - ${priData.aacn} range (${priData.percentile}th percentile)</p>`;
                     }
                     if (data.wmi > 0) {
                         const wmiData = window.NeuroscriptDB.getByStandardScore(data.wmi);
-                        report += `<p>Working Memory Index (WMI): ${data.wmi} - ${wmiData.aacn === 'Low' ? 'Exceptionally Low' : wmiData.aacn === 'High' ? 'Exceptionally High' : wmiData.aacn} range (${wmiData.percentile}th percentile)</p>`;
+                        report += `<p>Working Memory Index (WMI): ${data.wmi} - ${wmiData.aacn} range (${wmiData.percentile}th percentile)</p>`;
                     }
                     if (data.psi > 0) {
                         const psiData = window.NeuroscriptDB.getByStandardScore(data.psi);
-                        report += `<p>Processing Speed Index (PSI): ${data.psi} - ${psiData.aacn === 'Low' ? 'Exceptionally Low' : psiData.aacn === 'High' ? 'Exceptionally High' : psiData.aacn} range (${psiData.percentile}th percentile)</p>`;
+                        report += `<p>Processing Speed Index (PSI): ${data.psi} - ${psiData.aacn} range (${psiData.percentile}th percentile)</p>`;
                     }
                 }
 
@@ -568,7 +558,7 @@
                         report += `<p>${pronoun} performance on a test of auditory working memory (WAIS-IV Digit Span) was within the ${getSubtestInterpretationFromDB(data.digitspan)}.</p>`;
                     }
                     if (data.arithmetic > 0) {
-                        report += `<p>${pronoun} performance on a test of mental arithmetic (WAIS-IV Arithmetic) was within the ${getSubtestInterpretationFromDB(data.arithmetic)}.</p>`;
+                        report += `<(pm}${pronoun} performance on a test of mental arithmetic (WAIS-IV Arithmetic) was within the ${getSubtestInterpretationFromDB(data.arithmetic)}.</p>`;
                     }
                     if (data.letternumber) {
                         report += `<p>${pronoun} performance on a test of working memory involving sequencing (WAIS-IV Letter-Number Sequencing) was within the ${getSubtestInterpretationFromDB(data.letternumber)}.</p>`;
@@ -607,7 +597,7 @@
                 if (data.matrixreasoning > 0 || data.figureweights) {
                     report += '<h3>Executive Functioning / Problem Solving</h3>';
                     if (data.matrixreasoning > 0) {
-                        report += `<p>He scored within the ${getSubtestInterpretationFromDB(data.matrixreasoning)} on a visual test of fluid intelligence and perceptual organization (WAIS-IV Matrix Reasoning).</p>`;
+                        report += `<p>${heShe} scored within the ${getSubtestInterpretationFromDB(data.matrixreasoning)} on a visual test of fluid intelligence and perceptual organization (WAIS-IV Matrix Reasoning).</p>`;
                     }
                     if (data.figureweights) {
                         report += `<p>${pronoun} performance on a test of quantitative and analogical reasoning (WAIS-IV Figure Weights) was in the ${getSubtestInterpretationFromDB(data.figureweights)}.</p>`;
@@ -636,10 +626,10 @@
                     results: results
                 }, '*');
                 
-                console.log('WAIS-IV test data saved successfully to dashboard');
+                console.log('WAIS-IV test data saved successfully to dashboard v5.5');
                 
             } catch (error) {
-                console.error('Error saving test data v5.6:', error);
+                console.error('Error saving test data v5.5:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -647,7 +637,7 @@
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         window.addEventListener('message', function(event) {
-            console.log('Message received in WAIS-IV v5.6:', event.data);
+            console.log('Message received in WAIS-IV v5.5:', event.data);
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
                 if (clientData.age) document.getElementById('age').value = clientData.age;
@@ -659,19 +649,19 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WAIS-IV v5.6 loaded successfully');
+            console.log('WAIS-IV v5.5 loaded successfully');
             updateInputDisplay();
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in WAIS-IV v5.6!');
+                console.error('NeuroscriptDB not loaded in WAIS-IV v5.5!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.6');
+                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.5');
             }
         });
     </script>
