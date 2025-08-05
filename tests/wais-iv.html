@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WAIS-IV Enhanced v5.7</title>
+    <title>WAIS-IV Enhanced v5.8</title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -45,14 +45,13 @@
             margin-bottom: 15px;
         }
         label {
-            display: block;
             font-weight: bold;
-            margin-bottom: 5px;
             color: #34495e;
+            margin-right: 10px;
         }
         .demo-value {
-            display: block;
-            padding: 8px;
+            display: inline-block;
+            padding: 6px 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
@@ -66,10 +65,12 @@
         }
         .demo-row {
             display: flex;
+            align-items: center;
             gap: 15px;
         }
         .demo-row .input-group {
-            flex: 1;
+            display: flex;
+            align-items: center;
         }
         h3 {
             color: #007bff;
@@ -214,7 +215,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.7</span></h1>
+        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.8</span></h1>
         <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -223,11 +224,11 @@
                 <label>Name/ID:</label>
                 <span class="demo-value demo-name" id="clientName"></span>
             </div>
-            <div class="input-group">
-                <label>Age (years):</label>
-                <span class="demo-value" id="age"></span>
-            </div>
             <div class="demo-row">
+                <div class="input-group">
+                    <label>Age (years):</label>
+                    <span class="demo-value" id="age"></span>
+                </div>
                 <div class="input-group">
                     <label>Gender:</label>
                     <span class="demo-value" id="gender"></span>
@@ -400,7 +401,7 @@
 
         // === ALL FUNCTION DEFINITIONS FIRST ===
         function loadTestData() {
-            console.log('loadTestData v5.7 called');
+            console.log('loadTestData v5.8 called');
             // Test data for development - matching v4.9 test data
             document.getElementById('vci').value = 108;
             document.getElementById('pri').value = 125;
@@ -421,14 +422,14 @@
         }
 
         function getSubtestInterpretationFromDB(score) {
-            console.log('getSubtestInterpretationFromDB v5.7 called with score:', score);
+            console.log('getSubtestInterpretationFromDB v5.8 called with score:', score);
             try {
                 if (typeof window.NeuroscriptDB === 'undefined') {
-                    console.error('Database not loaded in getSubtestInterpretationFromDB v5.7');
+                    console.error('Database not loaded in getSubtestInterpretationFromDB v5.8');
                     return 'Error range';
                 }
                 
-                // Use the database properly - matching WAIS 5.6 pattern
+                // Use the database properly - matching WAIS 5.7 pattern
                 const data = window.NeuroscriptDB.getByWechslerScore(score);
                 let interpretation = `${data.aacn} range (ss=${score})`;
                 
@@ -439,13 +440,13 @@
                 
                 return interpretation;
             } catch (error) {
-                console.error('Error in getSubtestInterpretationFromDB v5.7:', error);
+                console.error('Error in getSubtestInterpretationFromDB v5.8:', error);
                 return 'Error range';
             }
         }
 
         function updateInputDisplay() {
-            console.log('updateInputDisplay v5.7 called');
+            console.log('updateInputDisplay v5.8 called');
             // Input validation with red highlighting
             const inputs = document.querySelectorAll('input[type="number"]');
             inputs.forEach(input => {
@@ -466,7 +467,7 @@
         }
 
         function saveTestData() {
-            console.log('saveTestData v5.7 called');
+            console.log('saveTestData v5.8 called');
             try {
                 // Check if external database is loaded
                 if (!window.NeuroscriptDB) {
@@ -511,7 +512,7 @@
                     return;
                 }
 
-                // Generate narrative report - using v5.6 exact structure
+                // Generate narrative report - using v5.7 exact structure
                 let report = '<h3>WAIS-IV Clinical Narrative</h3>';
                 
                 const pronoun = data.gender === 'Male' ? 'His' : 'Her';
@@ -638,10 +639,10 @@
                     results: results
                 }, '*');
                 
-                console.log('WAIS-IV test data saved successfully to dashboard v5.7');
+                console.log('WAIS-IV test data saved successfully to dashboard v5.8');
                 
             } catch (error) {
-                console.error('Error saving test data v5.7:', error);
+                console.error('Error saving test data v5.8:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -649,7 +650,7 @@
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         window.addEventListener('message', function(event) {
-            console.log('Message received in WAIS-IV v5.7:', event.data);
+            console.log('Message received in WAIS-IV v5.8:', event.data);
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
                 document.getElementById('clientName').textContent = clientData.clientName || '';
@@ -657,24 +658,25 @@
                 document.getElementById('gender').textContent = clientData.gender || '';
                 document.getElementById('education').textContent = clientData.education || '';
                 document.getElementById('readingLevel').textContent = clientData.readingLevel || '';
+                console.log('Client data populated:', clientData); // Debug log to verify data
             }
         });
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WAIS-IV v5.7 loaded successfully');
+            console.log('WAIS-IV v5.8 loaded successfully');
             updateInputDisplay();
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in WAIS-IV v5.7!');
+                console.error('NeuroscriptDB not loaded in WAIS-IV v5.8!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.7');
+                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.8');
             }
         });
     </script>
