@@ -6,7 +6,9 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Neuroscript v1.1</title>
+    <title>WAIS-IV Clinical Report Generator <span class="version">v5.5</span></title>
+    <!-- Load shared normative database -->
+    <script src="../neuroscript-norms.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,13 +18,11 @@
             background-color: #f5f5f5;
         }
         .container {
-            display: grid;
-            grid-template-columns: 1fr 3fr;
-            gap: 20px;
             background: white;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: block; /* Ensure container is visible by default */
         }
         h1 {
             text-align: center;
@@ -36,16 +36,11 @@
             color: #6c757d;
             font-weight: normal;
         }
-        .client-info, .test-battery {
+        .input-section {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-        }
-        h3 {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin: 0 0 15px 0;
+            margin-bottom: 30px;
         }
         .input-group {
             margin-bottom: 15px;
@@ -56,8 +51,7 @@
             margin-bottom: 5px;
             color: #34495e;
         }
-        input[type="text"], input[type="number"], select {
-            width: 100%;
+        input[type="number"], select {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -67,24 +61,91 @@
             border: 2px solid #ff0000;
             background-color: #ffe6e6;
         }
-        .test-list {
-            list-style: none;
-            padding: 0;
-        }
-        .test-list li {
-            margin: 10px 0;
-        }
-        .test-list a {
-            text-decoration: none;
+        h3 {
             color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin: 25px 0 15px 0;
+        }
+        .section-header {
+            font-size: 18px;
             font-weight: bold;
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
         }
-        .test-list a:hover {
-            color: #0056b3;
-        }
-        .progress {
+        .score-table {
+            width: 40%;
+            border-collapse: collapse;
             margin: 20px 0;
+            background: white;
+        }
+        .score-table th {
+            background-color: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: left;
             font-weight: bold;
+        }
+        .score-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        .score-table td:first-child {
+            width: 70%;
+        }
+        .score-table td:last-child {
+            width: 30%;
+        }
+        .score-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .score-table input {
+            width: 80px;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
+        }
+        .subtest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .subtest-group {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .subtest-group h4 {
+            margin-top: 0;
+            color: #007bff;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 8px;
+        }
+        .score-input {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .score-input label {
+            margin: 0;
+            font-size: 14px;
+        }
+        .score-input input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: center;
         }
         .generate-btn {
             background: #007bff;
@@ -95,152 +156,338 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            margin-top: 20px;
-            display: block;
-            text-align: center;
+            margin: 10px 5px;
         }
         .generate-btn:hover {
             background: #0056b3;
         }
-        .welcome-section {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            border: 2px solid #dee2e6;
-        }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .feature {
-            background: #f8f9fa;
-            padding: 15px;
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border: none;
             border-radius: 5px;
-            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background: #1e7e34;
+        }
+        .load-btn {
+            background: #f39c12;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .load-btn:hover {
+            background: #e67e22;
+        }
+        .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+        .supplemental {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        /* Hide non-test content when loaded in iframe */
+        @media screen and (display-mode: standalone) {
+            body:not(:-moz-full-screen):not(:fullscreen) .container {
+                display: none; /* Fallback for iframe detection */
+            }
+        }
+        body {
+            margin: 0;
+        }
+        .container {
+            display: block;
+        }
+        @media (min-width: 0px) {
+            body:not(:-moz-full-screen):not(:fullscreen):not(:-webkit-full-screen) .container {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div>
-            <h1>Neuroscript <span class="version">v1.1</span></h1>
-            <p>Professional Neuropsychological Assessment</p>
+        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.5</span></h1>
+        <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
-            <div class="client-info">
-                <h3>Client Information</h3>
-                <div class="input-group">
-                    <label>Name/ID</label>
-                    <input type="text" id="name" placeholder="Enter client name or ID">
+        <div class="input-section">
+            <div class="section-header">Demographics</div>
+            <div class="input-group">
+                <label>Name/ID</label>
+                <input type="text" id="name" value="" placeholder="Enter client name or ID">
+            </div>
+            <div class="input-group">
+                <label>Age (years):</label>
+                <input type="number" id="age" value="" placeholder="16-90" min="16" max="90">
+            </div>
+            <div class="input-group">
+                <label>Gender:</label>
+                <select id="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Education (years):</label>
+                <input type="number" id="education" value="" placeholder="6-25" min="6" max="25">
+            </div>
+            <div class="input-group">
+                <label>Reading Level (grade):</label>
+                <input type="number" id="readingLevel" value="" placeholder="Optional" min="1" max="16" step="0.1">
+            </div>
+
+            <div class="section-header">Composite Scores</div>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Verbal Comprehension</td>
+                        <td><input type="number" id="vci" min="40" max="160"></td>
+                    </tr>
+                    <tr>
+                        <td>Perceptual Reasoning</td>
+                        <td><input type="number" id="pri" min="40" max="160"></td>
+                    </tr>
+                    <tr>
+                        <td>Working Memory</td>
+                        <td><input type="number" id="wmi" min="40" max="160"></td>
+                    </tr>
+                    <tr>
+                        <td>Processing Speed</td>
+                        <td><input type="number" id="psi" min="40" max="160"></td>
+                    </tr>
+                    <tr>
+                        <td>Full Scale IQ</td>
+                        <td><input type="number" id="fsiq" min="40" max="160"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-header">Subtest Scores</div>
+            <div class="subtest-grid">
+                <div class="subtest-group">
+                    <h4>Verbal Comprehension</h4>
+                    <div class="score-input"><label>Similarities</label><input type="number" id="similarities" min="1" max="19"></div>
+                    <div class="score-input"><label>Vocabulary</label><input type="number" id="vocabulary" min="1" max="19"></div>
+                    <div class="score-input"><label>Information</label><input type="number" id="information" min="1" max="19"></div>
+                    <div class="score-input"><label>Comprehension</label><input type="number" id="comprehension" min="1" max="19"></div>
                 </div>
-                <div class="input-group">
-                    <label>Age</label>
-                    <input type="number" id="age" placeholder="16-90" min="16" max="90">
+                <div class="subtest-group">
+                    <h4>Perceptual Reasoning</h4>
+                    <div class="score-input"><label>Block Design</label><input type="number" id="blockdesign" min="1" max="19"></div>
+                    <div class="score-input"><label>Matrix Reasoning</label><input type="number" id="matrixreasoning" min="1" max="19"></div>
+                    <div class="score-input"><label>Visual Puzzles</label><input type="number" id="visualpuzzles" min="1" max="19"></div>
+                    <div class="score-input"><label>Picture Completion</label><input type="number" id="picturecompletion" min="1" max="19"></div>
                 </div>
-                <div class="input-group">
-                    <label>Gender</label>
-                    <select id="gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
+                <div class="subtest-group">
+                    <h4>Working Memory</h4>
+                    <div class="score-input"><label>Digit Span</label><input type="number" id="digitspan" min="1" max="19"></div>
+                    <div class="score-input"><label>Arithmetic</label><input type="number" id="arithmetic" min="1" max="19"></div>
+                    <div class="score-input"><label>Letter-Number Sequencing</label><input type="number" id="letternumber" min="1" max="19"></div>
                 </div>
-                <div class="input-group">
-                    <label>Education</label>
-                    <input type="number" id="education" placeholder="6-25" min="6" max="25">
-                </div>
-                <div class="input-group">
-                    <label>Reading Level</label>
-                    <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
+                <div class="subtest-group">
+                    <h4>Processing Speed</h4>
+                    <div class="score-input"><label>Symbol Search</label><input type="number" id="symbolsearch" min="1" max="19"></div>
+                    <div class="score-input"><label>Coding</label><input type="number" id="coding" min="1" max="19"></div>
+                    <div class="score-input"><label>Cancellation</label><input type="number" id="cancellation" min="1" max="19"></div>
                 </div>
             </div>
 
-            <div class="test-battery">
-                <h3>Test Battery</h3>
-                <ul class="test-list">
-                    <li><a href="tests/wais-iv.html" target="testFrame">WAIS-IV</a></li>
-                    <li><a href="tests/cvlt-3.html" target="testFrame">CVLT-3</a></li>
-                    <li><a href="tests/wms-iii.html" target="testFrame">WMS-III</a></li>
-                    <li><a href="tests/consonant-trigrams.html" target="testFrame">Consonant Trigrams</a></li>
-                    <li><a href="tests/trail-making.html" target="testFrame">Trail Making Test</a></li>
-                    <li><a href="tests/cpt-ii.html" target="testFrame">CPT-II</a></li>
-                    <li><a href="tests/wcst.html" target="testFrame">WCST</a></li>
-                </ul>
-                <div class="progress">0 of 7 completed <span>0%</span></div>
-                <button class="generate-btn">Generate Integrated Report</button>
-            </div>
+            <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
         </div>
 
-        <div>
-            <div class="welcome-section">
-                <h2>Welcome to Neuroscript</h2>
-                <p>Professional neuropsychological assessment reports with comprehensive clinical narratives and score interpretations.</p>
-                <div class="features">
-                    <div class="feature">
-                        <h4>📊 Comprehensive Testing</h4>
-                        <p>Complete battery of validated neuropsychological assessments</p>
-                    </div>
-                    <div class="feature">
-                        <h4>🧠 Clinical Narratives</h4>
-                        <p>Professional-quality interpretive reports with clinical language</p>
-                    </div>
-                    <div class="feature">
-                        <h4>📈 Statistical Precision</h4>
-                        <p>Exact normative conversions using validated databases</p>
-                    </div>
-                    <div class="feature">
-                        <h4>⚡ Efficient Workflow</h4>
-                        <p>Streamlined assessment process with integrated reporting</p>
-                    </div>
-                </div>
-                <p>Enter client demographics and select a test from the left panel to begin.</p>
-            </div>
-            <iframe name="testFrame" style="width:100%;height:600px;border:1px solid #ddd;border-radius:5px;"></iframe>
-        </div>
+        <div class="output-section" id="output" style="display: none;"></div>
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.1 loaded');
+        console.log('WAIS-IV v5.5 loaded successfully');
 
-        // Send client demographics to all test iframes on input change
-        function sendClientInfo() {
-            const clientData = {
-                name: document.getElementById('name').value,
-                age: document.getElementById('age').value,
-                gender: document.getElementById('gender').value,
-                education: document.getElementById('education').value,
-                readingLevel: document.getElementById('readingLevel').value
-            };
-
-            // Find all iframes (test generators)
-            const iframes = document.querySelectorAll('iframe');
-            iframes.forEach(iframe => {
-                iframe.contentWindow.postMessage({
-                    type: 'clientInfo',
-                    data: clientData
-                }, '*');
-            });
-
-            console.log('Client info sent from Master Dashboard v1.1:', clientData);
+        // === ALL FUNCTION DEFINITIONS FIRST ===
+        function getSubtestInterpretationFromDB(score) {
+            return window.NeuroscriptDB.getDetailedInterpretation(score, 'wechsler');
         }
 
-        // Attach event listeners to demographic inputs
-        document.addEventListener('DOMContentLoaded', function() {
-            ['name', 'age', 'gender', 'education', 'readingLevel'].forEach(id => {
-                const input = document.getElementById(id);
-                input.addEventListener('change', sendClientInfo);
-                input.addEventListener('input', sendClientInfo); // For real-time updates
-            });
+        function saveTestData() {
+            try {
+                console.log('Saving test data v5.5');
+                const data = {
+                    name: document.getElementById('name').value || '',
+                    age: document.getElementById('age').value || '',
+                    gender: document.getElementById('gender').value || '',
+                    education: document.getElementById('education').value || '',
+                    readingLevel: document.getElementById('readingLevel').value || '',
+                    vci: parseInt(document.getElementById('vci').value) || 0,
+                    pri: parseInt(document.getElementById('pri').value) || 0,
+                    wmi: parseInt(document.getElementById('wmi').value) || 0,
+                    psi: parseInt(document.getElementById('psi').value) || 0,
+                    fsiq: parseInt(document.getElementById('fsiq').value) || 0,
+                    similarities: parseInt(document.getElementById('similarities').value) || 0,
+                    vocabulary: parseInt(document.getElementById('vocabulary').value) || 0,
+                    information: parseInt(document.getElementById('information').value) || 0,
+                    comprehension: parseInt(document.getElementById('comprehension').value) || 0,
+                    blockdesign: parseInt(document.getElementById('blockdesign').value) || 0,
+                    matrixreasoning: parseInt(document.getElementById('matrixreasoning').value) || 0,
+                    visualpuzzles: parseInt(document.getElementById('visualpuzzles').value) || 0,
+                    picturecompletion: parseInt(document.getElementById('picturecompletion').value) || 0,
+                    digitspan: parseInt(document.getElementById('digitspan').value) || 0,
+                    arithmetic: parseInt(document.getElementById('arithmetic').value) || 0,
+                    letternumber: parseInt(document.getElementById('letternumber').value) || 0,
+                    symbolsearch: parseInt(document.getElementById('symbolsearch').value) || 0,
+                    coding: parseInt(document.getElementById('coding').value) || 0,
+                    cancellation: parseInt(document.getElementById('cancellation').value) || 0
+                };
 
-            console.log('Neuroscript Master Dashboard v1.1 initialized');
+                let report = '';
+                const pronoun = data.gender === 'Male' ? 'His' : 'Her';
+
+                // Verbal Comprehension Section
+                if (data.similarities > 0 || data.vocabulary > 0 || data.information > 0 || data.comprehension) {
+                    report += '<h3>Verbal Comprehension</h3>';
+                    if (data.similarities > 0) {
+                        report += `<p>${pronoun} performance on a test of verbal reasoning and concept formation (WAIS-IV Similarities) was within the ${getSubtestInterpretationFromDB(data.similarities)}.</p>`;
+                    }
+                    if (data.vocabulary > 0) {
+                        report += `<p>${pronoun} performance on a test of expressive vocabulary (WAIS-IV Vocabulary) was within the ${getSubtestInterpretationFromDB(data.vocabulary)}.</p>`;
+                    }
+                    if (data.information > 0) {
+                        report += `<p>${pronoun} performance on a test of general factual knowledge (WAIS-IV Information) was within the ${getSubtestInterpretationFromDB(data.information)}.</p>`;
+                    }
+                    if (data.comprehension) {
+                        report += `<p>${pronoun} performance on a test of practical knowledge and judgment (WAIS-IV Comprehension) was within the ${getSubtestInterpretationFromDB(data.comprehension)}.</p>`;
+                    }
+                }
+
+                // Working Memory Section
+                if (data.digitspan > 0 || data.arithmetic > 0 || data.letternumber) {
+                    report += '<h3>Working Memory</h3>';
+                    if (data.digitspan > 0) {
+                        report += `<p>${pronoun} performance on a test of auditory working memory (WAIS-IV Digit Span) was within the ${getSubtestInterpretationFromDB(data.digitspan)}.</p>`;
+                    }
+                    if (data.arithmetic > 0) {
+                        report += `<p>${pronoun} performance on a test of mental arithmetic (WAIS-IV Arithmetic) was within the ${getSubtestInterpretationFromDB(data.arithmetic)}.</p>`;
+                    }
+                    if (data.letternumber) {
+                        report += `<p>${pronoun} performance on a test of working memory involving sequencing (WAIS-IV Letter-Number Sequencing) was within the ${getSubtestInterpretationFromDB(data.letternumber)}.</p>`;
+                    }
+                }
+
+                // Processing Speed Section
+                if (data.symbolsearch > 0 || data.coding > 0 || data.cancellation) {
+                    report += '<h3>Processing Speed</h3>';
+                    if (data.symbolsearch > 0) {
+                        report += `<p>${pronoun} performance on a test of visual scanning and processing speed (WAIS-IV Symbol Search) was within the ${getSubtestInterpretationFromDB(data.symbolsearch)}.</p>`;
+                    }
+                    if (data.coding > 0) {
+                        report += `<p>${pronoun} performance on a test of psychomotor speed (WAIS-IV Coding) was within the ${getSubtestInterpretationFromDB(data.coding)}.</p>`;
+                    }
+                    if (data.cancellation) {
+                        report += `<p>${pronoun} performance on a test of visual scanning (WAIS-IV Cancellation) was within the ${getSubtestInterpretationFromDB(data.cancellation)}.</p>`;
+                    }
+                }
+
+                // Visuospatial / Construction Section
+                if (data.blockdesign > 0 || data.visualpuzzles || data.picturecompletion) {
+                    report += '<h3>Visuospatial / Construction</h3>';
+                    if (data.blockdesign > 0) {
+                        report += `<p>${pronoun} performance on a test of visual-spatial construction (WAIS-IV Block Design) was within the ${getSubtestInterpretationFromDB(data.blockdesign)}.</p>`;
+                    }
+                    if (data.visualpuzzles) {
+                        report += `<p>${pronoun} performance on a test of visual-spatial reasoning (WAIS-IV Visual Puzzles) was within the ${getSubtestInterpretationFromDB(data.visualpuzzles)}.</p>`;
+                    }
+                    if (data.picturecompletion) {
+                        report += `<p>${pronoun} test requiring identification of missing elements in pictures (WAIS-IV Picture Completion) was within the ${getSubtestInterpretationFromDB(data.picturecompletion)}.</p>`;
+                    }
+                }
+
+                // Executive Functioning / Problem Solving Section
+                if (data.matrixreasoning > 0 || data.figureweights) {
+                    report += '<h3>Executive Functioning / Problem Solving</h3>';
+                    if (data.matrixreasoning > 0) {
+                        report += `<p>He scored within the ${getSubtestInterpretationFromDB(data.matrixreasoning)} on a visual test of fluid intelligence and perceptual organization (WAIS-IV Matrix Reasoning).</p>`;
+                    }
+                    if (data.figureweights) {
+                        report += `<p>${pronoun} performance on a test of quantitative and analogical reasoning (WAIS-IV Figure Weights) was in the ${getSubtestInterpretationFromDB(data.figureweights)}.</p>`;
+                    }
+                }
+
+                // Store for completion
+                currentNarrative = report.replace(/<[^>]*>/g, '').trim();
+                currentScoreTable = '';
+
+                // Display the report
+                document.getElementById('output').innerHTML = report;
+                document.getElementById('output').style.display = 'block';
+
+                // Send to master dashboard
+                const results = {
+                    narrative: currentNarrative,
+                    scoreTable: currentScoreTable,
+                    testName: 'WAIS-IV',
+                    completedAt: new Date().toISOString()
+                };
+                
+                window.parent.postMessage({
+                    type: 'testComplete',
+                    testName: 'wais-iv',
+                    results: results
+                }, '*');
+                
+                console.log('WAIS-IV test data saved successfully to dashboard v5.5');
+                
+            } catch (error) {
+                console.error('Error saving test data v5.5:', error);
+                document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
+                document.getElementById('output').style.display = 'block';
+            }
+        }
+
+        // === EVENT HANDLERS AND INITIALIZATION ===
+        window.addEventListener('message', function(event) {
+            console.log('Message received in WAIS-IV v5.5:', event.data);
+            if (event.data.type === 'clientInfo') {
+                const clientData = event.data.data;
+                if (clientData.name) document.getElementById('name').value = clientData.name;
+                if (clientData.age) document.getElementById('age').value = clientData.age;
+                if (clientData.gender) document.getElementById('gender').value = clientData.gender;
+                if (clientData.education) document.getElementById('education').value = clientData.education;
+                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel;
+            }
         });
 
-        // Receive test completion messages
-        window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.1:', event.data);
-            if (event.data.type === 'testComplete') {
-                console.log(`Test ${event.data.testName} completed:`, event.data.results);
-                // Update progress tracking (to be implemented)
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('WAIS-IV v5.5 loaded successfully');
+            updateInputDisplay();
+            
+            // Database loading check
+            if (typeof window.NeuroscriptDB === 'undefined') {
+                console.error('NeuroscriptDB not loaded in WAIS-IV v5.5!');
+                setTimeout(() => {
+                    if (typeof window.NeuroscriptDB === 'undefined') {
+                        alert('Database loading error. Please refresh the page.');
+                    }
+                }, 2000);
+            } else {
+                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.5');
             }
         });
     </script>
