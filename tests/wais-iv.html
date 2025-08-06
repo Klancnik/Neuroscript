@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WAIS-IV Clinical Report Generator <span class="version">v5.84</span></title>
+    <title>WAIS-IV Clinical Report Generator <span class="version">v5.85</span></title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -211,32 +211,18 @@
             font-style: italic;
             opacity: 0.8;
         }
-        /* Enhanced iframe detection */
-        @media screen and (display-mode: standalone) {
-            body:not(:-moz-full-screen):not(:fullscreen) .container {
-                display: none !important;
-            }
-        }
+        /* Retain CSS for standalone use, but rely on JS for iframe */
         body {
             margin: 0;
         }
         .container {
             display: block;
         }
-        @media (min-width: 0px) {
-            body:not(:-moz-full-screen):not(:fullscreen):not(:-webkit-full-screen) .container {
-                display: none !important;
-            }
-        }
-        /* JS-based iframe check */
-        body iframe ~ .container {
-            display: none;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.84</span></h1>
+        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.85</span></h1>
         <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -339,7 +325,7 @@
     </div>
 
     <script>
-        console.log('WAIS-IV v5.84 loaded successfully');
+        console.log('WAIS-IV v5.85 loaded successfully');
 
         // === ALL FUNCTION DEFINITIONS FIRST ===
         function getSubtestInterpretationFromDB(score) {
@@ -348,7 +334,7 @@
 
         function saveTestData() {
             try {
-                console.log('Saving test data v5.84');
+                console.log('Saving test data v5.85');
                 const data = {
                     name: document.getElementById('name').value || '',
                     age: document.getElementById('age').value || '',
@@ -471,10 +457,10 @@
                     results: results
                 }, '*');
                 
-                console.log('WAIS-IV test data saved successfully to dashboard v5.84');
+                console.log('WAIS-IV test data saved successfully to dashboard v5.85');
                 
             } catch (error) {
-                console.error('Error saving test data v5.84:', error);
+                console.error('Error saving test data v5.85:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -482,7 +468,7 @@
 
         function loadTestData() {
             try {
-                console.log('Loading test data v5.84');
+                console.log('Loading test data v5.85');
                 // Plausible dummy data for demonstration
                 const dummyData = JSON.parse(localStorage.getItem('waisData')) || {
                     name: 'John Doe',
@@ -523,15 +509,15 @@
                 document.getElementById('coding').value = dummyData.coding || '';
                 document.getElementById('cancellation').value = dummyData.cancellation || '';
 
-                console.log('Test data loaded successfully v5.84 with dummy data:', dummyData);
+                console.log('Test data loaded successfully v5.85 with dummy data:', dummyData);
             } catch (error) {
-                console.error('Error loading test data v5.84:', error);
+                console.error('Error loading test data v5.85:', error);
             }
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         window.addEventListener('message', function(event) {
-            console.log('Message received in WAIS-IV v5.84:', event.data);
+            console.log('Message received in WAIS-IV v5.85:', event.data);
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
                 if (clientData.name) document.getElementById('name').value = clientData.name || '';
@@ -544,7 +530,7 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WAIS-IV v5.84 loaded successfully');
+            console.log('WAIS-IV v5.85 loaded successfully');
             updateInputDisplay();
             // Hide container if in iframe
             if (window.self !== window.top) {
@@ -553,14 +539,14 @@
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in WAIS-IV v5.84!');
+                console.error('NeuroscriptDB not loaded in WAIS-IV v5.85!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.84');
+                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.85');
             }
         });
 
@@ -593,7 +579,7 @@
                 cancellation: document.getElementById('cancellation').value || 0
             };
             localStorage.setItem('waisData', JSON.stringify(data));
-            console.log('Data saved to localStorage v5.84');
+            console.log('Data saved to localStorage v5.85');
         });
 
         // Trigger save on saveTestData call
