@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html  lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WAIS-IV Clinical Report Generator <span class="version">v5.83</span></title>
+    <title>WAIS-IV Clinical Report Generator <span class="version">v5.84</span></title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -211,10 +211,10 @@
             font-style: italic;
             opacity: 0.8;
         }
-        /* Enhanced iframe detection to hide non-test content */
+        /* Enhanced iframe detection */
         @media screen and (display-mode: standalone) {
             body:not(:-moz-full-screen):not(:fullscreen) .container {
-                display: none !important; /* Stronger enforcement */
+                display: none !important;
             }
         }
         body {
@@ -228,15 +228,15 @@
                 display: none !important;
             }
         }
-        /* Additional JS-based iframe check */
+        /* JS-based iframe check */
         body iframe ~ .container {
-            display: none; /* Hide if body has iframe sibling (iframe context) */
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.83</span></h1>
+        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.84</span></h1>
         <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -339,7 +339,7 @@
     </div>
 
     <script>
-        console.log('WAIS-IV v5.83 loaded successfully');
+        console.log('WAIS-IV v5.84 loaded successfully');
 
         // === ALL FUNCTION DEFINITIONS FIRST ===
         function getSubtestInterpretationFromDB(score) {
@@ -348,7 +348,7 @@
 
         function saveTestData() {
             try {
-                console.log('Saving test data v5.83');
+                console.log('Saving test data v5.84');
                 const data = {
                     name: document.getElementById('name').value || '',
                     age: document.getElementById('age').value || '',
@@ -471,10 +471,10 @@
                     results: results
                 }, '*');
                 
-                console.log('WAIS-IV test data saved successfully to dashboard v5.83');
+                console.log('WAIS-IV test data saved successfully to dashboard v5.84');
                 
             } catch (error) {
-                console.error('Error saving test data v5.83:', error);
+                console.error('Error saving test data v5.84:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -482,56 +482,56 @@
 
         function loadTestData() {
             try {
-                console.log('Loading test data v5.83');
-                // Basic implementation: Load from localStorage or a dummy dataset
-                const savedData = JSON.parse(localStorage.getItem('waisData')) || {
-                    name: '',
-                    age: '',
-                    gender: '',
-                    education: '',
-                    readingLevel: '',
-                    vci: 0, pri: 0, wmi: 0, psi: 0, fsiq: 0,
-                    similarities: 0, vocabulary: 0, information: 0, comprehension: 0,
-                    blockdesign: 0, matrixreasoning: 0, visualpuzzles: 0, picturecompletion: 0,
-                    digitspan: 0, arithmetic: 0, letternumber: 0,
-                    symbolsearch: 0, coding: 0, cancellation: 0
+                console.log('Loading test data v5.84');
+                // Plausible dummy data for demonstration
+                const dummyData = JSON.parse(localStorage.getItem('waisData')) || {
+                    name: 'John Doe',
+                    age: '30',
+                    gender: 'Male',
+                    education: '12',
+                    readingLevel: '10',
+                    vci: '100', pri: '105', wmi: '95', psi: '110', fsiq: '102',
+                    similarities: '10', vocabulary: '11', information: '9', comprehension: '10',
+                    blockdesign: '12', matrixreasoning: '11', visualpuzzles: '10', picturecompletion: '9',
+                    digitspan: '8', arithmetic: '9', letternumber: '10',
+                    symbolsearch: '11', coding: '12', cancellation: '10'
                 };
 
-                // Populate fields
-                document.getElementById('name').value = savedData.name || '';
-                document.getElementById('age').value = savedData.age || '';
-                document.getElementById('gender').value = savedData.gender || '';
-                document.getElementById('education').value = savedData.education || '';
-                document.getElementById('readingLevel').value = savedData.readingLevel || '';
-                document.getElementById('vci').value = savedData.vci || '';
-                document.getElementById('pri').value = savedData.pri || '';
-                document.getElementById('wmi').value = savedData.wmi || '';
-                document.getElementById('psi').value = savedData.psi || '';
-                document.getElementById('fsiq').value = savedData.fsiq || '';
-                document.getElementById('similarities').value = savedData.similarities || '';
-                document.getElementById('vocabulary').value = savedData.vocabulary || '';
-                document.getElementById('information').value = savedData.information || '';
-                document.getElementById('comprehension').value = savedData.comprehension || '';
-                document.getElementById('blockdesign').value = savedData.blockdesign || '';
-                document.getElementById('matrixreasoning').value = savedData.matrixreasoning || '';
-                document.getElementById('visualpuzzles').value = savedData.visualpuzzles || '';
-                document.getElementById('picturecompletion').value = savedData.picturecompletion || '';
-                document.getElementById('digitspan').value = savedData.digitspan || '';
-                document.getElementById('arithmetic').value = savedData.arithmetic || '';
-                document.getElementById('letternumber').value = savedData.letternumber || '';
-                document.getElementById('symbolsearch').value = savedData.symbolsearch || '';
-                document.getElementById('coding').value = savedData.coding || '';
-                document.getElementById('cancellation').value = savedData.cancellation || '';
+                // Populate fields with dummy or saved data
+                document.getElementById('name').value = dummyData.name || '';
+                document.getElementById('age').value = dummyData.age || '';
+                document.getElementById('gender').value = dummyData.gender || '';
+                document.getElementById('education').value = dummyData.education || '';
+                document.getElementById('readingLevel').value = dummyData.readingLevel || '';
+                document.getElementById('vci').value = dummyData.vci || '';
+                document.getElementById('pri').value = dummyData.pri || '';
+                document.getElementById('wmi').value = dummyData.wmi || '';
+                document.getElementById('psi').value = dummyData.psi || '';
+                document.getElementById('fsiq').value = dummyData.fsiq || '';
+                document.getElementById('similarities').value = dummyData.similarities || '';
+                document.getElementById('vocabulary').value = dummyData.vocabulary || '';
+                document.getElementById('information').value = dummyData.information || '';
+                document.getElementById('comprehension').value = dummyData.comprehension || '';
+                document.getElementById('blockdesign').value = dummyData.blockdesign || '';
+                document.getElementById('matrixreasoning').value = dummyData.matrixreasoning || '';
+                document.getElementById('visualpuzzles').value = dummyData.visualpuzzles || '';
+                document.getElementById('picturecompletion').value = dummyData.picturecompletion || '';
+                document.getElementById('digitspan').value = dummyData.digitspan || '';
+                document.getElementById('arithmetic').value = dummyData.arithmetic || '';
+                document.getElementById('letternumber').value = dummyData.letternumber || '';
+                document.getElementById('symbolsearch').value = dummyData.symbolsearch || '';
+                document.getElementById('coding').value = dummyData.coding || '';
+                document.getElementById('cancellation').value = dummyData.cancellation || '';
 
-                console.log('Test data loaded successfully v5.83');
+                console.log('Test data loaded successfully v5.84 with dummy data:', dummyData);
             } catch (error) {
-                console.error('Error loading test data v5.83:', error);
+                console.error('Error loading test data v5.84:', error);
             }
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         window.addEventListener('message', function(event) {
-            console.log('Message received in WAIS-IV v5.83:', event.data);
+            console.log('Message received in WAIS-IV v5.84:', event.data);
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
                 if (clientData.name) document.getElementById('name').value = clientData.name || '';
@@ -544,19 +544,23 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WAIS-IV v5.83 loaded successfully');
+            console.log('WAIS-IV v5.84 loaded successfully');
             updateInputDisplay();
+            // Hide container if in iframe
+            if (window.self !== window.top) {
+                document.querySelector('.container').style.display = 'none';
+            }
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in WAIS-IV v5.83!');
+                console.error('NeuroscriptDB not loaded in WAIS-IV v5.84!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.83');
+                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.84');
             }
         });
 
@@ -589,7 +593,7 @@
                 cancellation: document.getElementById('cancellation').value || 0
             };
             localStorage.setItem('waisData', JSON.stringify(data));
-            console.log('Data saved to localStorage v5.83');
+            console.log('Data saved to localStorage v5.84');
         });
 
         // Trigger save on saveTestData call
