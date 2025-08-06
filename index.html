@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Neuroscript v1.3</title>
+    <title>Neuroscript v1.4</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,7 +44,6 @@
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-            height: 100%; /* Full height of container */
             overflow-y: auto; /* Scroll if content overflows */
         }
         h3 {
@@ -134,12 +133,24 @@
             border-radius: 5px;
             overflow: auto; /* Scroll if content exceeds height */
         }
+        /* Sidebar column adjustments for full expansion */
+        .container > div:first-child {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .client-info {
+            flex: 1 0 auto;
+        }
+        .test-battery {
+            flex: 1 0 auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div>
-            <h1>Neuroscript <span class="version">v1.3</span></h1>
+            <h1>Neuroscript <span class="version">v1.4</span></h1>
             <p>Professional Neuropsychological Assessment</p>
 
             <div class="client-info">
@@ -214,7 +225,7 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.3 loaded');
+        console.log('Neuroscript Master Dashboard v1.4 loaded');
 
         // Send client demographics to all test iframes on input change
         function sendClientInfo() {
@@ -235,13 +246,13 @@
                 }, '*');
             });
 
-            console.log('Client info sent from Master Dashboard v1.3:', clientData);
+            console.log('Client info sent from Master Dashboard v1.4:', clientData);
         }
 
         // Hide welcome section
         function hideWelcome() {
             document.getElementById('welcomeSection').style.display = 'none';
-            console.log('Welcome section hidden v1.3');
+            console.log('Welcome section hidden v1.4');
         }
 
         // Attach event listeners to demographic inputs
@@ -252,12 +263,12 @@
                 input.addEventListener('input', sendClientInfo); // For real-time updates
             });
 
-            console.log('Neuroscript Master Dashboard v1.3 initialized');
+            console.log('Neuroscript Master Dashboard v1.4 initialized');
         });
 
         // Receive test completion messages
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.3:', event.data);
+            console.log('Message received in Master Dashboard v1.4:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
                 // Update progress tracking (to be implemented)
