@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WAIS-IV Clinical Report Generator <span class="version">v5.82</span></title>
+    <title>WAIS-IV Clinical Report Generator <span class="version">v5.83</span></title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -211,10 +211,10 @@
             font-style: italic;
             opacity: 0.8;
         }
-        /* Hide non-test content when loaded in iframe */
+        /* Enhanced iframe detection to hide non-test content */
         @media screen and (display-mode: standalone) {
             body:not(:-moz-full-screen):not(:fullscreen) .container {
-                display: none; /* Fallback for iframe detection */
+                display: none !important; /* Stronger enforcement */
             }
         }
         body {
@@ -228,11 +228,15 @@
                 display: none !important;
             }
         }
+        /* Additional JS-based iframe check */
+        body iframe ~ .container {
+            display: none; /* Hide if body has iframe sibling (iframe context) */
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.82</span></h1>
+        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.83</span></h1>
         <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -335,7 +339,7 @@
     </div>
 
     <script>
-        console.log('WAIS-IV v5.82 loaded successfully');
+        console.log('WAIS-IV v5.83 loaded successfully');
 
         // === ALL FUNCTION DEFINITIONS FIRST ===
         function getSubtestInterpretationFromDB(score) {
@@ -344,7 +348,7 @@
 
         function saveTestData() {
             try {
-                console.log('Saving test data v5.82');
+                console.log('Saving test data v5.83');
                 const data = {
                     name: document.getElementById('name').value || '',
                     age: document.getElementById('age').value || '',
@@ -467,24 +471,67 @@
                     results: results
                 }, '*');
                 
-                console.log('WAIS-IV test data saved successfully to dashboard v5.82');
+                console.log('WAIS-IV test data saved successfully to dashboard v5.83');
                 
             } catch (error) {
-                console.error('Error saving test data v5.82:', error);
+                console.error('Error saving test data v5.83:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
         }
 
         function loadTestData() {
-            // Placeholder for loading functionality - to be implemented
-            console.log('Load Test Data clicked v5.82');
-            // Add logic to load previously saved data if needed
+            try {
+                console.log('Loading test data v5.83');
+                // Basic implementation: Load from localStorage or a dummy dataset
+                const savedData = JSON.parse(localStorage.getItem('waisData')) || {
+                    name: '',
+                    age: '',
+                    gender: '',
+                    education: '',
+                    readingLevel: '',
+                    vci: 0, pri: 0, wmi: 0, psi: 0, fsiq: 0,
+                    similarities: 0, vocabulary: 0, information: 0, comprehension: 0,
+                    blockdesign: 0, matrixreasoning: 0, visualpuzzles: 0, picturecompletion: 0,
+                    digitspan: 0, arithmetic: 0, letternumber: 0,
+                    symbolsearch: 0, coding: 0, cancellation: 0
+                };
+
+                // Populate fields
+                document.getElementById('name').value = savedData.name || '';
+                document.getElementById('age').value = savedData.age || '';
+                document.getElementById('gender').value = savedData.gender || '';
+                document.getElementById('education').value = savedData.education || '';
+                document.getElementById('readingLevel').value = savedData.readingLevel || '';
+                document.getElementById('vci').value = savedData.vci || '';
+                document.getElementById('pri').value = savedData.pri || '';
+                document.getElementById('wmi').value = savedData.wmi || '';
+                document.getElementById('psi').value = savedData.psi || '';
+                document.getElementById('fsiq').value = savedData.fsiq || '';
+                document.getElementById('similarities').value = savedData.similarities || '';
+                document.getElementById('vocabulary').value = savedData.vocabulary || '';
+                document.getElementById('information').value = savedData.information || '';
+                document.getElementById('comprehension').value = savedData.comprehension || '';
+                document.getElementById('blockdesign').value = savedData.blockdesign || '';
+                document.getElementById('matrixreasoning').value = savedData.matrixreasoning || '';
+                document.getElementById('visualpuzzles').value = savedData.visualpuzzles || '';
+                document.getElementById('picturecompletion').value = savedData.picturecompletion || '';
+                document.getElementById('digitspan').value = savedData.digitspan || '';
+                document.getElementById('arithmetic').value = savedData.arithmetic || '';
+                document.getElementById('letternumber').value = savedData.letternumber || '';
+                document.getElementById('symbolsearch').value = savedData.symbolsearch || '';
+                document.getElementById('coding').value = savedData.coding || '';
+                document.getElementById('cancellation').value = savedData.cancellation || '';
+
+                console.log('Test data loaded successfully v5.83');
+            } catch (error) {
+                console.error('Error loading test data v5.83:', error);
+            }
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         window.addEventListener('message', function(event) {
-            console.log('Message received in WAIS-IV v5.82:', event.data);
+            console.log('Message received in WAIS-IV v5.83:', event.data);
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
                 if (clientData.name) document.getElementById('name').value = clientData.name || '';
@@ -497,21 +544,61 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WAIS-IV v5.82 loaded successfully');
+            console.log('WAIS-IV v5.83 loaded successfully');
             updateInputDisplay();
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in WAIS-IV v5.82!');
+                console.error('NeuroscriptDB not loaded in WAIS-IV v5.83!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.82');
+                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.83');
             }
         });
+
+        // Save data to localStorage on save
+        window.addEventListener('saveTestData', function() {
+            const data = {
+                name: document.getElementById('name').value || '',
+                age: document.getElementById('age').value || '',
+                gender: document.getElementById('gender').value || '',
+                education: document.getElementById('education').value || '',
+                readingLevel: document.getElementById('readingLevel').value || '',
+                vci: document.getElementById('vci').value || 0,
+                pri: document.getElementById('pri').value || 0,
+                wmi: document.getElementById('wmi').value || 0,
+                psi: document.getElementById('psi').value || 0,
+                fsiq: document.getElementById('fsiq').value || 0,
+                similarities: document.getElementById('similarities').value || 0,
+                vocabulary: document.getElementById('vocabulary').value || 0,
+                information: document.getElementById('information').value || 0,
+                comprehension: document.getElementById('comprehension').value || 0,
+                blockdesign: document.getElementById('blockdesign').value || 0,
+                matrixreasoning: document.getElementById('matrixreasoning').value || 0,
+                visualpuzzles: document.getElementById('visualpuzzles').value || 0,
+                picturecompletion: document.getElementById('picturecompletion').value || 0,
+                digitspan: document.getElementById('digitspan').value || 0,
+                arithmetic: document.getElementById('arithmetic').value || 0,
+                letternumber: document.getElementById('letternumber').value || 0,
+                symbolsearch: document.getElementById('symbolsearch').value || 0,
+                coding: document.getElementById('coding').value || 0,
+                cancellation: document.getElementById('cancellation').value || 0
+            };
+            localStorage.setItem('waisData', JSON.stringify(data));
+            console.log('Data saved to localStorage v5.83');
+        });
+
+        // Trigger save on saveTestData call
+        saveTestData = (function(original) {
+            return function() {
+                original.apply(this, arguments);
+                window.dispatchEvent(new Event('saveTestData'));
+            };
+        })(saveTestData);
     </script>
 </body>
 </html>
