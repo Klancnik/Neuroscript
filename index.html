@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Neuroscript v1.2</title>
+    <title>Neuroscript v1.3</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,6 +14,8 @@
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
+            height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Prevent unwanted scrolling */
         }
         .container {
             display: grid;
@@ -23,6 +25,8 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 100%; /* Full height of body */
+            overflow: hidden; /* Ensure no overflow */
         }
         h1 {
             text-align: center;
@@ -40,6 +44,8 @@
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
+            height: 100%; /* Full height of container */
+            overflow-y: auto; /* Scroll if content overflows */
         }
         h3 {
             color: #007bff;
@@ -120,12 +126,20 @@
             border-radius: 5px;
             text-align: center;
         }
+        iframe {
+            width: 100%;
+            height: 100%; /* Dynamic height to fill container */
+            min-height: 600px; /* Minimum height to ensure content visibility */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: auto; /* Scroll if content exceeds height */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div>
-            <h1>Neuroscript <span class="version">v1.2</span></h1>
+            <h1>Neuroscript <span class="version">v1.3</span></h1>
             <p>Professional Neuropsychological Assessment</p>
 
             <div class="client-info">
@@ -195,12 +209,12 @@
                 </div>
                 <p>Enter client demographics and select a test from the left panel to begin.</p>
             </div>
-            <iframe name="testFrame" style="width:100%;height:600px;border:1px solid #ddd;border-radius:5px;"></iframe>
+            <iframe name="testFrame" style="width:100%;height:100%;min-height:600px;border:1px solid #ddd;border-radius:5px;overflow:auto;"></iframe>
         </div>
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.2 loaded');
+        console.log('Neuroscript Master Dashboard v1.3 loaded');
 
         // Send client demographics to all test iframes on input change
         function sendClientInfo() {
@@ -221,13 +235,13 @@
                 }, '*');
             });
 
-            console.log('Client info sent from Master Dashboard v1.2:', clientData);
+            console.log('Client info sent from Master Dashboard v1.3:', clientData);
         }
 
         // Hide welcome section
         function hideWelcome() {
             document.getElementById('welcomeSection').style.display = 'none';
-            console.log('Welcome section hidden v1.2');
+            console.log('Welcome section hidden v1.3');
         }
 
         // Attach event listeners to demographic inputs
@@ -238,12 +252,12 @@
                 input.addEventListener('input', sendClientInfo); // For real-time updates
             });
 
-            console.log('Neuroscript Master Dashboard v1.2 initialized');
+            console.log('Neuroscript Master Dashboard v1.3 initialized');
         });
 
         // Receive test completion messages
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.2:', event.data);
+            console.log('Message received in Master Dashboard v1.3:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
                 // Update progress tracking (to be implemented)
