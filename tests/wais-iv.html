@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WAIS-IV Clinical Report Generator <span class="version">v5.5</span></title>
+    <title>WAIS-IV Clinical Report Generator <span class="version">v5.9</span></title>
     <!-- Load shared normative database -->
     <script src="../neuroscript-norms.js"></script>
     <style>
@@ -221,7 +221,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.5</span></h1>
+        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.9</span></h1>
         <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="input-section">
@@ -319,7 +319,7 @@
     </div>
 
     <script>
-        console.log('WAIS-IV v5.5 loaded successfully');
+        console.log('WAIS-IV v5.9 loaded successfully');
 
         // === ALL FUNCTION DEFINITIONS FIRST ===
         function getSubtestInterpretationFromDB(score) {
@@ -328,7 +328,7 @@
 
         function saveTestData() {
             try {
-                console.log('Saving test data v5.5');
+                console.log('Saving test data v5.9');
                 const data = {
                     name: document.getElementById('name').value || '',
                     age: document.getElementById('age').value || '',
@@ -451,10 +451,10 @@
                     results: results
                 }, '*');
                 
-                console.log('WAIS-IV test data saved successfully to dashboard v5.5');
+                console.log('WAIS-IV test data saved successfully to dashboard v5.9');
                 
             } catch (error) {
-                console.error('Error saving test data v5.5:', error);
+                console.error('Error saving test data v5.9:', error);
                 document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
                 document.getElementById('output').style.display = 'block';
             }
@@ -462,7 +462,7 @@
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         window.addEventListener('message', function(event) {
-            console.log('Message received in WAIS-IV v5.5:', event.data);
+            console.log('Message received in WAIS-IV v5.9:', event.data);
             if (event.data.type === 'clientInfo') {
                 const clientData = event.data.data;
                 if (clientData.name) document.getElementById('name').value = clientData.name;
@@ -475,19 +475,19 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WAIS-IV v5.5 loaded successfully');
+            console.log('WAIS-IV v5.9 loaded successfully');
             updateInputDisplay();
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in WAIS-IV v5.5!');
+                console.error('NeuroscriptDB not loaded in WAIS-IV v5.9!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.5');
+                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.9');
             }
         });
     </script>
