@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>WAIS-IV Clinical Report Generator <span class="version">v5.85</span></title>
-    <!-- Load shared normative database -->
+    <title>CVLT-3 Clinical Report Generator <span class="version">v9.8</span></title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -15,150 +11,186 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: #f8f9fa;
         }
         .container {
             background: white;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         h1 {
-            text-align: center;
             color: #2c3e50;
-            border-bottom: 3px solid #007bff;
-            padding-bottom: 20px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
             margin-bottom: 30px;
         }
-        .version {
-            font-size: 0.6em;
-            color: #6c757d;
-            font-weight: normal;
-        }
-        .input-section {
+        
+        /* Header Demographics Section */
+        .demographics-section {
             background: #f8f9fa;
-            padding: 20px;
+            border: 2px solid #dee2e6;
             border-radius: 8px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 25px;
         }
-        .input-group {
-            margin-bottom: 15px;
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
         }
-        label {
+        .demographic-field {
+            display: flex;
+            flex-direction: column;
+        }
+        .demographic-field label {
             font-weight: bold;
-            color: #34495e;
-            margin-right: 10px;
+            margin-bottom: 5px;
+            color: #495057;
         }
-        .demo-value {
-            display: inline-block;
-            padding: 6px 8px;
+        .demographic-field input, .demographic-field select {
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
-            background-color: #f0f0f0;
-            color: #333;
-            width: fit-content;
-            min-width: 50px;
         }
-        .demo-name {
-            max-width: 200px; /* For up to 20 characters */
-        }
-        .demo-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .demo-row .input-group {
-            display: flex;
-            align-items: center;
-        }
-        h3 {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin: 25px 0 15px 0;
-        }
+        
+        /* Section Headers */
         .section-header {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px 15px;
             margin: 25px 0 15px 0;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .score-table {
-            width: 40%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: white;
-        }
-        .score-table th {
-            background-color: #34495e;
-            color: white;
-            padding: 12px;
-            text-align: left;
             font-weight: bold;
+            color: #495057;
+            font-size: 16px;
         }
-        .score-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #ddd;
-            vertical-align: middle;
+        .section-header.core-scores {
+            background: #e8f4f8;
+            border-color: #b8daff;
         }
-        .score-table td:first-child {
-            width: 70%;
+        .section-header.composite-scores {
+            background: #e8f5e8;
+            border-color: #b8e6b8;
         }
-        .score-table td:last-child {
-            width: 30%;
+        .section-header.process-scores {
+            background: #ffeaa7;
+            border-color: #fdcb6e;
         }
-        .score-table tr:nth-child(even) {
-            background-color: #f8f9fa;
+        .section-header.error-analysis {
+            background: #fab1a0;
+            border-color: #e84393;
         }
-        .score-table input {
-            width: 80px;
-            padding: 6px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
+        .section-header.validity {
+            background: #fd79a8;
+            border-color: #e84393;
+        }
+        
+        /* Core Score Table Layout */
+        .core-score-table {
+            display: grid;
+            grid-template-columns: 200px 120px 120px;
+            gap: 2px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .table-header {
+            background: #6c757d;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
             text-align: center;
         }
-        .subtest-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        .table-subheader {
+            background: #495057;
+            color: white;
+            padding: 8px;
+            font-weight: bold;
+            grid-column: span 3;
+        }
+        .table-row-label {
+            background: #f8f9fa;
+            padding: 10px;
+            font-weight: 500;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+        }
+        .table-input {
+            padding: 8px;
+            border: none;
+            background: white;
+            text-align: center;
+            font-size: 14px;
+        }
+        .table-input:focus {
+            outline: 2px solid #007bff;
+            background: #f0f8ff;
+        }
+        
+        /* Vertical Layout for All Sections */
+        .vertical-grid {
+            display: flex;
+            flex-direction: column;
             gap: 15px;
             margin-bottom: 20px;
         }
-        .subtest-group {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        .subtest-group h4 {
-            margin-top: 0;
-            color: #007bff;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 8px;
-        }
-        .score-input {
+        .vertical-item {
             display: grid;
-            grid-template-columns: 1fr 100px;
-            gap: 10px;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
             align-items: center;
-            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
         }
-        .score-input label {
+        .vertical-item label {
+            font-weight: bold;
+            color: #495057;
             margin: 0;
+        }
+        .vertical-item input {
+            width: 90px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
             font-size: 14px;
         }
-        .score-input input {
-            padding: 6px;
+        .validity-item input {
+            width: 90px;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 3px;
+            border-radius: 4px;
             text-align: center;
+            font-size: 14px;
         }
-        .generate-btn {
+        .validity-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        .validity-item label {
+            font-weight: bold;
+            color: #495057;
+            margin: 0;
+        }
+        
+        /* Button Styles */
+        .generate-btn, .load-btn {
             background: #007bff;
             color: white;
             padding: 12px 30px;
@@ -169,426 +201,418 @@
             font-weight: bold;
             margin: 10px 5px;
         }
-        .generate-btn:hover {
+        .generate-btn:hover, .load-btn:hover {
             background: #0056b3;
-        }
-        .complete-btn {
-            background: #28a745;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .complete-btn:hover {
-            background: #1e7e34;
         }
         .load-btn {
             background: #f39c12;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-right: 10px;
         }
         .load-btn:hover {
             background: #e67e22;
-        }
-        .output-section {
-            background: white;
-            border: 2px solid #dee2e6;
-            padding: 25px;
-            margin-top: 30px;
-            font-family: 'Times New Roman', serif;
-            line-height: 1.6;
-        }
-        .supplemental {
-            font-style: italic;
-            opacity: 0.8;
-        }
-        /* Retain CSS for standalone use, but rely on JS for iframe */
-        body {
-            margin: 0;
-        }
-        .container {
-            display: block;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>WAIS-IV Clinical Report Generator <span class="version">v5.85</span></h1>
-        <p>Enter WAIS-IV scores to generate clinical narrative text in Neuroscript format</p>
+        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.8</span></h1>
+        <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
-        <div class="input-section">
+        <div class="demographics-section">
             <div class="section-header">Demographics</div>
-            <div class="demo-row">
-                <div class="input-group">
+            <div class="demographics-grid">
+                <div class="demographic-field">
                     <label>Name/ID</label>
-                    <input type="text" id="name" class="demo-value demo-name" value="" placeholder="Enter client name or ID">
+                    <input type="text" id="name" placeholder="Enter client name or ID">
                 </div>
-                <div class="input-group">
+                <div class="demographic-field">
                     <label>Age</label>
-                    <input type="number" id="age" class="demo-value" value="" placeholder="16-90" min="16" max="90">
+                    <input type="number" id="age" placeholder="16-90" min="16" max="90">
                 </div>
-                <div class="input-group">
+                <div class="demographic-field">
                     <label>Gender</label>
-                    <select id="gender" class="demo-value">
+                    <select id="gender">
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
                 </div>
-            </div>
-            <div class="demo-row">
-                <div class="input-group">
+                <div class="demographic-field">
                     <label>Education</label>
-                    <input type="number" id="education" class="demo-value" value="" placeholder="6-25" min="6" max="25">
+                    <input type="number" id="education" placeholder="6-25" min="6" max="25">
                 </div>
-                <div class="input-group">
+                <div class="demographic-field">
                     <label>Reading Level</label>
-                    <input type="number" id="readingLevel" class="demo-value" value="" placeholder="Optional" min="1" max="16" step="0.1">
+                    <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
                 </div>
             </div>
-
-            <div class="section-header">Composite Scores</div>
-            <table class="score-table">
-                <thead>
-                    <tr>
-                        <th>Index</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Verbal Comprehension</td>
-                        <td><input type="number" id="vci" min="40" max="160"></td>
-                    </tr>
-                    <tr>
-                        <td>Perceptual Reasoning</td>
-                        <td><input type="number" id="pri" min="40" max="160"></td>
-                    </tr>
-                    <tr>
-                        <td>Working Memory</td>
-                        <td><input type="number" id="wmi" min="40" max="160"></td>
-                    </tr>
-                    <tr>
-                        <td>Processing Speed</td>
-                        <td><input type="number" id="psi" min="40" max="160"></td>
-                    </tr>
-                    <tr>
-                        <td>Full Scale IQ</td>
-                        <td><input type="number" id="fsiq" min="40" max="160"></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="section-header">Subtest Scores</div>
-            <div class="subtest-grid">
-                <div class="subtest-group">
-                    <h4>Verbal Comprehension</h4>
-                    <div class="score-input"><label>Similarities</label><input type="number" id="similarities" min="1" max="19"></div>
-                    <div class="score-input"><label>Vocabulary</label><input type="number" id="vocabulary" min="1" max="19"></div>
-                    <div class="score-input"><label>Information</label><input type="number" id="information" min="1" max="19"></div>
-                    <div class="score-input"><label>Comprehension</label><input type="number" id="comprehension" min="1" max="19"></div>
-                </div>
-                <div class="subtest-group">
-                    <h4>Perceptual Reasoning</h4>
-                    <div class="score-input"><label>Block Design</label><input type="number" id="blockdesign" min="1" max="19"></div>
-                    <div class="score-input"><label>Matrix Reasoning</label><input type="number" id="matrixreasoning" min="1" max="19"></div>
-                    <div class="score-input"><label>Visual Puzzles</label><input type="number" id="visualpuzzles" min="1" max="19"></div>
-                    <div class="score-input"><label>Picture Completion</label><input type="number" id="picturecompletion" min="1" max="19"></div>
-                </div>
-                <div class="subtest-group">
-                    <h4>Working Memory</h4>
-                    <div class="score-input"><label>Digit Span</label><input type="number" id="digitspan" min="1" max="19"></div>
-                    <div class="score-input"><label>Arithmetic</label><input type="number" id="arithmetic" min="1" max="19"></div>
-                    <div class="score-input"><label>Letter-Number Sequencing</label><input type="number" id="letternumber" min="1" max="19"></div>
-                </div>
-                <div class="subtest-group">
-                    <h4>Processing Speed</h4>
-                    <div class="score-input"><label>Symbol Search</label><input type="number" id="symbolsearch" min="1" max="19"></div>
-                    <div class="score-input"><label>Coding</label><input type="number" id="coding" min="1" max="19"></div>
-                    <div class="score-input"><label>Cancellation</label><input type="number" id="cancellation" min="1" max="19"></div>
-                </div>
-            </div>
-
-            <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
-            <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
         </div>
 
-        <div class="output-section" id="output" style="display: none;"></div>
+        <div class="section-header core-scores">Core Scores</div>
+        <div class="core-score-table">
+            <div class="table-header">Test Component</div>
+            <div class="table-header">Raw Score</div>
+            <div class="table-header">Scaled Score/Index</div>
+            <div class="table-subheader">Trial 1-5 Free Recall</div>
+            <div class="table-row-label">Trial 1</div>
+            <div><input type="number" id="trial1" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div><input type="number" id="trial1Scaled" class="table-input" min="1" max="19" placeholder="1-19"></div>
+            <div class="table-row-label">Trial 2</div>
+            <div><input type="number" id="trial2" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
+            <div class="table-row-label">Trial 3</div>
+            <div><input type="number" id="trial3" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
+            <div class="table-row-label">Trial 4</div>
+            <div><input type="number" id="trial4" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
+            <div class="table-row-label">Trial 5</div>
+            <div><input type="number" id="trial5" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div><input type="number" id="trial5Scaled" class="table-input" min="1" max="19" placeholder="1-19"></div>
+            <div class="table-row-label">Total Recall</div>
+            <div><input type="number" id="totalRecall" class="table-input" min="0" max="80" placeholder="0-80"></div>
+            <div></div>
+            <div class="table-subheader">List B</div>
+            <div class="table-row-label">List B</div>
+            <div><input type="number" id="listB" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
+        </div>
+
+        <div class="section-header process-scores">Process Scores</div>
+        <div class="vertical-grid">
+            <div class="vertical-item">
+                <label>Short-Delay Free Recall</label>
+                <input type="number" id="sdiFree" min="0" max="16" placeholder="0-16">
+            </div>
+            <div class="vertical-item">
+                <label>Short-Delay Cued Recall</label>
+                <input type="number" id="sdiCued" min="0" max="16" placeholder="0-16">
+            </div>
+            <div class="vertical-item">
+                <label>Long-Delay Free Recall</label>
+                <input type="number" id="ldiFree" min="0" max="16" placeholder="0-16">
+            </div>
+            <div class="vertical-item">
+                <label>Long-Delay Cued Recall</label>
+                <input type="number" id="ldiCued" min="0" max="16" placeholder="0-16">
+            </div>
+        </div>
+
+        <div class="section-header error-analysis">Error Analysis</div>
+        <div class="vertical-grid">
+            <div class="vertical-item">
+                <label>Recognition Hits</label>
+                <input type="number" id="recogHits" min="0" max="16" placeholder="0-16">
+            </div>
+            <div class="vertical-item">
+                <label>False Positives</label>
+                <input type="number" id="falsePositives" min="0" max="16" placeholder="0-16">
+            </div>
+            <div class="vertical-item">
+                <label>Recognition Hits (Scaled)</label>
+                <input type="number" id="recogHitsScaled" min="1" max="19" placeholder="1-19">
+            </div>
+        </div>
+
+        <div class="section-header validity">Validity</div>
+        <div class="vertical-grid">
+            <div class="validity-item">
+                <label>Forced Choice</label>
+                <input type="number" id="forcedChoice" min="0" max="16" placeholder="0-16">
+            </div>
+            <div class="validity-item">
+                <label>FC Recalled Missed</label>
+                <input type="number" id="fcRecalledMissed" min="0" max="16" placeholder="0-16">
+            </div>
+            <div class="validity-item">
+                <label>FC Yes/No Missed</label>
+                <input type="number" id="fcYesNoMissed" min="0" max="16" placeholder="0-16">
+            </div>
+        </div>
+
+        <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
+        <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
     </div>
 
     <script>
-        console.log('WAIS-IV v5.85 loaded successfully');
+        console.log('CVLT-3 v9.8 loaded successfully');
 
-        // === ALL FUNCTION DEFINITIONS FIRST ===
-        function getSubtestInterpretationFromDB(score) {
+        let currentNarrative = '';
+        let currentScoreTable = [];
+
+        function getIndexInterpretationFromDB(score) {
+            return window.NeuroscriptDB.getDetailedInterpretation(score, 'standard');
+        }
+
+        function getScaledInterpretationFromDB(score) {
             return window.NeuroscriptDB.getDetailedInterpretation(score, 'wechsler');
+        }
+
+        function generateNarrative(data) {
+            let narrative = '<p>';
+
+            // 1. Learning Trials Performance
+            if (data.trial1 !== null && data.trial1 !== undefined) {
+                narrative += `On learning trials, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.trial1} items on Trial 1`;
+                if (data.trial5 !== null && data.trial5 !== undefined) {
+                    narrative += `, improving to ${data.trial5} items on Trial 5`;
+                }
+                narrative += '. ';
+            }
+
+            // 2. Total Recall Summary
+            if (data.totalRecall !== null && data.totalRecall !== undefined) {
+                narrative += `Total recall across trials was ${data.totalRecall}, `;
+                if (data.totalRecall < 40) {
+                    narrative += 'which is below average. ';
+                } else if (data.totalRecall >= 40 && data.totalRecall < 50) {
+                    narrative += 'which is within the low average range. ';
+                } else if (data.totalRecall >= 50) {
+                    narrative += 'which is within the average to above average range. ';
+                }
+            }
+
+            // 3. List B Interference
+            if (data.listB !== null && data.listB !== undefined) {
+                narrative += `On List B, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.listB} items, `;
+                if (data.listB < 5) {
+                    narrative += 'indicating potential interference effects. ';
+                } else {
+                    narrative += 'suggesting adequate resistance to proactive interference. ';
+                }
+            }
+
+            // 4. Short-Delay Recall
+            if (data.sdiFree !== null && data.sdiFree !== undefined) {
+                narrative += `On short-delay free recall, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.sdiFree} items`;
+                if (data.sdiCued !== null && data.sdiCued !== undefined) {
+                    narrative += `, improving to ${data.sdiCued} items with cued recall. `;
+                } else {
+                    narrative += '. ';
+                }
+            }
+
+            // 5. Long-Delay Recall
+            if (data.ldiFree !== null && data.ldiFree !== undefined) {
+                narrative += `On long-delay free recall, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.ldiFree} items`;
+                if (data.ldiCued !== null && data.ldiCued !== undefined) {
+                    narrative += `, improving to ${data.ldiCued} items with cued recall. `;
+                } else {
+                    narrative += '. ';
+                }
+            }
+
+            // 6. Recognition Performance
+            if (data.recogHits !== null && data.recogHits !== undefined) {
+                narrative += `On recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} correctly identified ${data.recogHits} items`;
+                if (data.recogHitsScaled) {
+                    narrative += ` (ss=${data.recogHitsScaled}). `;
+                } else {
+                    narrative += '. ';
+                }
+            }
+
+            // 7. False Positive Errors
+            if (data.falsePositives !== null && data.falsePositives !== undefined && data.falsePositives > 0) {
+                const fpScaledScore = data.recogHitsScaled ? ` (ss=${data.recogHitsScaled})` : '';
+                narrative += `${fpScaledScore} and made ${data.falsePositives} false positive error${data.falsePositives === 1 ? '' : 's'}. `;
+            }
+
+            // 8. Forced Choice Recognition Performance
+            if (data.forcedChoice !== null && data.forcedChoice !== undefined) {
+                if (data.forcedChoice < 16) {
+                    const errors = 16 - data.forcedChoice;
+                    if (errors === 1) {
+                        narrative += `On forced choice recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} made 1 error, which is unusual. `;
+                    } else {
+                        narrative += `On forced choice recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} made ${errors} errors, which is unusual. `;
+                    }
+                }
+            }
+
+            // 9. Validity Concerns
+            let validityConcerns = [];
+            
+            // Check yes/no recognition errors (significant = less than 14 correct?)
+            if (data.recogHits !== null && data.recogHits !== undefined && data.recogHits < 14) {
+                validityConcerns.push('significant errors on yes/no recognition');
+            }
+            
+            // Check forced choice errors (can stand alone)
+            let forcedChoiceErrors = false;
+            if (data.forcedChoice !== null && data.forcedChoice !== undefined && data.forcedChoice < 16) {
+                forcedChoiceErrors = true;
+            }
+            
+            // Check validity indicators (2 or more total errors = highly unusual)
+            const fcRecalledMissed = data.fcRecalledMissed || 0;
+            const fcYesNoMissed = data.fcYesNoMissed || 0;
+            const totalValidityErrors = fcRecalledMissed + fcYesNoMissed;
+            
+            // Handle validity concerns with specific language
+            if (totalValidityErrors >= 2) {
+                narrative += 'There were highly unusual inconsistencies between recall and recognition performance, indicating that the results of this test are likely invalid, and suggesting symptom exaggeration. ';
+            } else if (forcedChoiceErrors) {
+                narrative += 'There were validity concerns arising from errors on forced choice recognition trials. ';
+            } else if (validityConcerns.length > 0) {
+                if (validityConcerns.length === 1) {
+                    narrative += `There were validity concerns arising from ${validityConcerns[0]}. `;
+                } else {
+                    const lastConcern = validityConcerns.pop();
+                    narrative += `There were validity concerns arising from ${validityConcerns.join(', ')} and ${lastConcern}. `;
+                }
+            }
+
+            // Close paragraph
+            narrative += '</p>';
+
+            return narrative;
+        }
+
+        function generateScoreTable(data) {
+            const scoreTable = [
+                ['Test Component', 'Raw Score', 'Scaled Score/Index', 'Range']
+            ];
+            
+            // Add completed tests to score table
+            if (data.totalRecall) {
+                scoreTable.push(['Total Recall Index', '--', data.totalRecall, getIndexInterpretationFromDB(data.totalRecall)]);
+            }
+            if (data.trial1 && data.trial1Scaled) {
+                scoreTable.push(['Trial 1', data.trial1, `${data.trial1Scaled} (ss)`, getScaledInterpretationFromDB(data.trial1Scaled)]);
+            }
+            if (data.trial5 && data.trial5Scaled) {
+                scoreTable.push(['Trial 5', data.trial5, `${data.trial5Scaled} (ss)`, getScaledInterpretationFromDB(data.trial5Scaled)]);
+            }
+            
+            return scoreTable;
         }
 
         function saveTestData() {
             try {
-                console.log('Saving test data v5.85');
                 const data = {
                     name: document.getElementById('name').value || '',
                     age: document.getElementById('age').value || '',
                     gender: document.getElementById('gender').value || '',
                     education: document.getElementById('education').value || '',
                     readingLevel: document.getElementById('readingLevel').value || '',
-                    vci: parseInt(document.getElementById('vci').value) || 0,
-                    pri: parseInt(document.getElementById('pri').value) || 0,
-                    wmi: parseInt(document.getElementById('wmi').value) || 0,
-                    psi: parseInt(document.getElementById('psi').value) || 0,
-                    fsiq: parseInt(document.getElementById('fsiq').value) || 0,
-                    similarities: parseInt(document.getElementById('similarities').value) || 0,
-                    vocabulary: parseInt(document.getElementById('vocabulary').value) || 0,
-                    information: parseInt(document.getElementById('information').value) || 0,
-                    comprehension: parseInt(document.getElementById('comprehension').value) || 0,
-                    blockdesign: parseInt(document.getElementById('blockdesign').value) || 0,
-                    matrixreasoning: parseInt(document.getElementById('matrixreasoning').value) || 0,
-                    visualpuzzles: parseInt(document.getElementById('visualpuzzles').value) || 0,
-                    picturecompletion: parseInt(document.getElementById('picturecompletion').value) || 0,
-                    digitspan: parseInt(document.getElementById('digitspan').value) || 0,
-                    arithmetic: parseInt(document.getElementById('arithmetic').value) || 0,
-                    letternumber: parseInt(document.getElementById('letternumber').value) || 0,
-                    symbolsearch: parseInt(document.getElementById('symbolsearch').value) || 0,
-                    coding: parseInt(document.getElementById('coding').value) || 0,
-                    cancellation: parseInt(document.getElementById('cancellation').value) || 0
+                    trial1: parseInt(document.getElementById('trial1').value) || null,
+                    trial2: parseInt(document.getElementById('trial2').value) || null,
+                    trial3: parseInt(document.getElementById('trial3').value) || null,
+                    trial4: parseInt(document.getElementById('trial4').value) || null,
+                    trial5: parseInt(document.getElementById('trial5').value) || null,
+                    totalRecall: parseInt(document.getElementById('totalRecall').value) || null,
+                    trial1Scaled: parseInt(document.getElementById('trial1Scaled').value) || null,
+                    trial5Scaled: parseInt(document.getElementById('trial5Scaled').value) || null,
+                    listB: parseInt(document.getElementById('listB').value) || null,
+                    sdiFree: parseInt(document.getElementById('sdiFree').value) || null,
+                    sdiCued: parseInt(document.getElementById('sdiCued').value) || null,
+                    ldiFree: parseInt(document.getElementById('ldiFree').value) || null,
+                    ldiCued: parseInt(document.getElementById('ldiCued').value) || null,
+                    recogHits: parseInt(document.getElementById('recogHits').value) || null,
+                    falsePositives: parseInt(document.getElementById('falsePositives').value) || null,
+                    recogHitsScaled: parseInt(document.getElementById('recogHitsScaled').value) || null,
+                    forcedChoice: parseInt(document.getElementById('forcedChoice').value) || null,
+                    fcRecalledMissed: parseInt(document.getElementById('fcRecalledMissed').value) || null,
+                    fcYesNoMissed: parseInt(document.getElementById('fcYesNoMissed').value) || null
                 };
 
-                let report = '';
-                const pronoun = data.gender === 'Male' ? 'His' : 'Her';
+                // Generate narrative (preserved as is)
+                currentNarrative = generateNarrative(data);
+                if (!currentNarrative) {
+                    throw new Error('Narrative generation failed');
+                }
+                currentScoreTable = generateScoreTable(data);
 
-                // Verbal Comprehension Section
-                if (data.similarities > 0 || data.vocabulary > 0 || data.information > 0 || data.comprehension) {
-                    report += '<h3>Verbal Comprehension</h3>';
-                    if (data.similarities > 0) {
-                        report += `<p>${pronoun} performance on a test of verbal reasoning and concept formation (WAIS-IV Similarities) was within the ${getSubtestInterpretationFromDB(data.similarities)}.</p>`;
-                    }
-                    if (data.vocabulary > 0) {
-                        report += `<p>${pronoun} performance on a test of expressive vocabulary (WAIS-IV Vocabulary) was within the ${getSubtestInterpretationFromDB(data.vocabulary)}.</p>`;
-                    }
-                    if (data.information > 0) {
-                        report += `<p>${pronoun} performance on a test of general factual knowledge (WAIS-IV Information) was within the ${getSubtestInterpretationFromDB(data.information)}.</p>`;
-                    }
-                    if (data.comprehension) {
-                        report += `<p>${pronoun} performance on a test of practical knowledge and judgment (WAIS-IV Comprehension) was within the ${getSubtestInterpretationFromDB(data.comprehension)}.</p>`;
-                    }
+                // Display the report (as in WAIS-IV)
+                const outputDiv = document.getElementById('output');
+                if (outputDiv) {
+                    outputDiv.innerHTML = currentNarrative;
+                    outputDiv.style.display = 'block';
                 }
 
-                // Working Memory Section
-                if (data.digitspan > 0 || data.arithmetic > 0 || data.letternumber) {
-                    report += '<h3>Working Memory</h3>';
-                    if (data.digitspan > 0) {
-                        report += `<p>${pronoun} performance on a test of auditory working memory (WAIS-IV Digit Span) was within the ${getSubtestInterpretationFromDB(data.digitspan)}.</p>`;
-                    }
-                    if (data.arithmetic > 0) {
-                        report += `<p>${pronoun} performance on a test of mental arithmetic (WAIS-IV Arithmetic) was within the ${getSubtestInterpretationFromDB(data.arithmetic)}.</p>`;
-                    }
-                    if (data.letternumber) {
-                        report += `<p>${pronoun} performance on a test of working memory involving sequencing (WAIS-IV Letter-Number Sequencing) was within the ${getSubtestInterpretationFromDB(data.letternumber)}.</p>`;
-                    }
-                }
-
-                // Processing Speed Section
-                if (data.symbolsearch > 0 || data.coding > 0 || data.cancellation) {
-                    report += '<h3>Processing Speed</h3>';
-                    if (data.symbolsearch > 0) {
-                        report += `<p>${pronoun} performance on a test of visual scanning and processing speed (WAIS-IV Symbol Search) was within the ${getSubtestInterpretationFromDB(data.symbolsearch)}.</p>`;
-                    }
-                    if (data.coding > 0) {
-                        report += `<p>${pronoun} performance on a test of psychomotor speed (WAIS-IV Coding) was within the ${getSubtestInterpretationFromDB(data.coding)}.</p>`;
-                    }
-                    if (data.cancellation) {
-                        report += `<p>${pronoun} performance on a test of visual scanning (WAIS-IV Cancellation) was within the ${getSubtestInterpretationFromDB(data.cancellation)}.</p>`;
-                    }
-                }
-
-                // Visuospatial / Construction Section
-                if (data.blockdesign > 0 || data.visualpuzzles || data.picturecompletion) {
-                    report += '<h3>Visuospatial / Construction</h3>';
-                    if (data.blockdesign > 0) {
-                        report += `<p>${pronoun} performance on a test of visual-spatial construction (WAIS-IV Block Design) was within the ${getSubtestInterpretationFromDB(data.blockdesign)}.</p>`;
-                    }
-                    if (data.visualpuzzles) {
-                        report += `<p>${pronoun} performance on a test of visual-spatial reasoning (WAIS-IV Visual Puzzles) was within the ${getSubtestInterpretationFromDB(data.visualpuzzles)}.</p>`;
-                    }
-                    if (data.picturecompletion) {
-                        report += `<p>${pronoun} test requiring identification of missing elements in pictures (WAIS-IV Picture Completion) was within the ${getSubtestInterpretationFromDB(data.picturecompletion)}.</p>`;
-                    }
-                }
-
-                // Executive Functioning / Problem Solving Section
-                if (data.matrixreasoning > 0 || data.figureweights) {
-                    report += '<h3>Executive Functioning / Problem Solving</h3>';
-                    if (data.matrixreasoning > 0) {
-                        report += `<p>${pronoun} scored within the ${getSubtestInterpretationFromDB(data.matrixreasoning)} on a visual test of fluid intelligence and perceptual organization (WAIS-IV Matrix Reasoning).</p>`;
-                    }
-                    if (data.figureweights) {
-                        report += `<p>${pronoun} performance on a test of quantitative and analogical reasoning (WAIS-IV Figure Weights) was in the ${getSubtestInterpretationFromDB(data.figureweights)}.</p>`;
-                    }
-                }
-
-                // Store for completion
-                currentNarrative = report.replace(/<[^>]*>/g, '').trim();
-                currentScoreTable = '';
-
-                // Display the report
-                document.getElementById('output').innerHTML = report;
-                document.getElementById('output').style.display = 'block';
-
-                // Send to master dashboard
                 const results = {
                     narrative: currentNarrative,
                     scoreTable: currentScoreTable,
-                    testName: 'WAIS-IV',
+                    testName: 'CVLT-3',
                     completedAt: new Date().toISOString()
                 };
                 
+                // Send to master dashboard (making narrative available for overall report)
                 window.parent.postMessage({
                     type: 'testComplete',
-                    testName: 'wais-iv',
+                    testName: 'cvlt',
                     results: results
                 }, '*');
                 
-                console.log('WAIS-IV test data saved successfully to dashboard v5.85');
-                
+                console.log('CVLT-3 test completed and sent to dashboard v9.8');
             } catch (error) {
-                console.error('Error saving test data v5.85:', error);
-                document.getElementById('output').innerHTML = `<p><strong>Error saving test data:</strong> ${error.message}</p>`;
-                document.getElementById('output').style.display = 'block';
+                console.error('Error in saveTestData v9.8:', error);
+                alert('Error saving test data: ' + error.message);
             }
         }
 
         function loadTestData() {
-            try {
-                console.log('Loading test data v5.85');
-                // Plausible dummy data for demonstration
-                const dummyData = JSON.parse(localStorage.getItem('waisData')) || {
-                    name: 'John Doe',
-                    age: '30',
-                    gender: 'Male',
-                    education: '12',
-                    readingLevel: '10',
-                    vci: '100', pri: '105', wmi: '95', psi: '110', fsiq: '102',
-                    similarities: '10', vocabulary: '11', information: '9', comprehension: '10',
-                    blockdesign: '12', matrixreasoning: '11', visualpuzzles: '10', picturecompletion: '9',
-                    digitspan: '8', arithmetic: '9', letternumber: '10',
-                    symbolsearch: '11', coding: '12', cancellation: '10'
-                };
+            console.log('Load Test Data clicked v9.8');
+            // Plausible dummy data
+            const dummyData = {
+                trial1: 8,
+                trial2: 9,
+                trial3: 10,
+                trial4: 11,
+                trial5: 12,
+                totalRecall: 50,
+                trial1Scaled: 10,
+                trial5Scaled: 11,
+                listB: 6,
+                sdiFree: 8,
+                sdiCued: 9,
+                ldiFree: 10,
+                ldiCued: 11,
+                recogHits: 15,
+                falsePositives: 2,
+                recogHitsScaled: 10,
+                forcedChoice: 16,
+                fcRecalledMissed: 0,
+                fcYesNoMissed: 0
+            };
 
-                // Populate fields with dummy or saved data
-                document.getElementById('name').value = dummyData.name || '';
-                document.getElementById('age').value = dummyData.age || '';
-                document.getElementById('gender').value = dummyData.gender || '';
-                document.getElementById('education').value = dummyData.education || '';
-                document.getElementById('readingLevel').value = dummyData.readingLevel || '';
-                document.getElementById('vci').value = dummyData.vci || '';
-                document.getElementById('pri').value = dummyData.pri || '';
-                document.getElementById('wmi').value = dummyData.wmi || '';
-                document.getElementById('psi').value = dummyData.psi || '';
-                document.getElementById('fsiq').value = dummyData.fsiq || '';
-                document.getElementById('similarities').value = dummyData.similarities || '';
-                document.getElementById('vocabulary').value = dummyData.vocabulary || '';
-                document.getElementById('information').value = dummyData.information || '';
-                document.getElementById('comprehension').value = dummyData.comprehension || '';
-                document.getElementById('blockdesign').value = dummyData.blockdesign || '';
-                document.getElementById('matrixreasoning').value = dummyData.matrixreasoning || '';
-                document.getElementById('visualpuzzles').value = dummyData.visualpuzzles || '';
-                document.getElementById('picturecompletion').value = dummyData.picturecompletion || '';
-                document.getElementById('digitspan').value = dummyData.digitspan || '';
-                document.getElementById('arithmetic').value = dummyData.arithmetic || '';
-                document.getElementById('letternumber').value = dummyData.letternumber || '';
-                document.getElementById('symbolsearch').value = dummyData.symbolsearch || '';
-                document.getElementById('coding').value = dummyData.coding || '';
-                document.getElementById('cancellation').value = dummyData.cancellation || '';
-
-                console.log('Test data loaded successfully v5.85 with dummy data:', dummyData);
-            } catch (error) {
-                console.error('Error loading test data v5.85:', error);
-            }
+            // Populate fields
+            document.getElementById('trial1').value = dummyData.trial1;
+            document.getElementById('trial2').value = dummyData.trial2;
+            document.getElementById('trial3').value = dummyData.trial3;
+            document.getElementById('trial4').value = dummyData.trial4;
+            document.getElementById('trial5').value = dummyData.trial5;
+            document.getElementById('totalRecall').value = dummyData.totalRecall;
+            document.getElementById('trial1Scaled').value = dummyData.trial1Scaled;
+            document.getElementById('trial5Scaled').value = dummyData.trial5Scaled;
+            document.getElementById('listB').value = dummyData.listB;
+            document.getElementById('sdiFree').value = dummyData.sdiFree;
+            document.getElementById('sdiCued').value = dummyData.sdiCued;
+            document.getElementById('ldiFree').value = dummyData.ldiFree;
+            document.getElementById('ldiCued').value = dummyData.ldiCued;
+            document.getElementById('recogHits').value = dummyData.recogHits;
+            document.getElementById('falsePositives').value = dummyData.falsePositives;
+            document.getElementById('recogHitsScaled').value = dummyData.recogHitsScaled;
+            document.getElementById('forcedChoice').value = dummyData.forcedChoice;
+            document.getElementById('fcRecalledMissed').value = dummyData.fcRecalledMissed;
+            document.getElementById('fcYesNoMissed').value = dummyData.fcYesNoMissed;
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
-        window.addEventListener('message', function(event) {
-            console.log('Message received in WAIS-IV v5.85:', event.data);
-            if (event.data.type === 'clientInfo') {
-                const clientData = event.data.data;
-                if (clientData.name) document.getElementById('name').value = clientData.name || '';
-                if (clientData.age) document.getElementById('age').value = clientData.age || '';
-                if (clientData.gender) document.getElementById('gender').value = clientData.gender || '';
-                if (clientData.education) document.getElementById('education').value = clientData.education || '';
-                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel || '';
-            }
-        });
-
-        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('WAIS-IV v5.85 loaded successfully');
-            updateInputDisplay();
-            // Hide container if in iframe
-            if (window.self !== window.top) {
-                document.querySelector('.container').style.display = 'none';
-            }
+            console.log('CVLT-3 v9.8 loaded successfully');
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in WAIS-IV v5.85!');
+                console.error('NeuroscriptDB not loaded in CVLT-3 v9.8!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in WAIS-IV v5.85');
+                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.8');
             }
         });
-
-        // Save data to localStorage on save
-        window.addEventListener('saveTestData', function() {
-            const data = {
-                name: document.getElementById('name').value || '',
-                age: document.getElementById('age').value || '',
-                gender: document.getElementById('gender').value || '',
-                education: document.getElementById('education').value || '',
-                readingLevel: document.getElementById('readingLevel').value || '',
-                vci: document.getElementById('vci').value || 0,
-                pri: document.getElementById('pri').value || 0,
-                wmi: document.getElementById('wmi').value || 0,
-                psi: document.getElementById('psi').value || 0,
-                fsiq: document.getElementById('fsiq').value || 0,
-                similarities: document.getElementById('similarities').value || 0,
-                vocabulary: document.getElementById('vocabulary').value || 0,
-                information: document.getElementById('information').value || 0,
-                comprehension: document.getElementById('comprehension').value || 0,
-                blockdesign: document.getElementById('blockdesign').value || 0,
-                matrixreasoning: document.getElementById('matrixreasoning').value || 0,
-                visualpuzzles: document.getElementById('visualpuzzles').value || 0,
-                picturecompletion: document.getElementById('picturecompletion').value || 0,
-                digitspan: document.getElementById('digitspan').value || 0,
-                arithmetic: document.getElementById('arithmetic').value || 0,
-                letternumber: document.getElementById('letternumber').value || 0,
-                symbolsearch: document.getElementById('symbolsearch').value || 0,
-                coding: document.getElementById('coding').value || 0,
-                cancellation: document.getElementById('cancellation').value || 0
-            };
-            localStorage.setItem('waisData', JSON.stringify(data));
-            console.log('Data saved to localStorage v5.85');
-        });
-
-        // Trigger save on saveTestData call
-        saveTestData = (function(original) {
-            return function() {
-                original.apply(this, arguments);
-                window.dispatchEvent(new Event('saveTestData'));
-            };
-        })(saveTestData);
     </script>
 </body>
 </html>
