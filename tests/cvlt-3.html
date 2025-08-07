@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVLT-3 Clinical Report Generator <span class="version">v9.5</span></title>
+    <title>CVLT-3 Clinical Report Generator <span class="version">v9.6</span></title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -52,11 +52,16 @@
             margin-bottom: 5px;
             color: #495057;
         }
-        .demographic-field input, .demographic-field select {
+        .demographic-field span {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+            background-color: #f0f0f0;
+            color: #333;
+            display: inline-block;
+            min-width: 90px;
+            text-align: center;
         }
         
         /* Section Headers */
@@ -214,7 +219,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.5</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.6</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="demographics-section">
@@ -222,26 +227,23 @@
             <div class="demographics-grid">
                 <div class="demographic-field">
                     <label>Name/ID</label>
-                    <input type="text" id="name" placeholder="Enter client name or ID">
+                    <span id="name"></span>
                 </div>
                 <div class="demographic-field">
                     <label>Age</label>
-                    <input type="number" id="age" placeholder="16-90" min="16" max="90">
+                    <span id="age"></span>
                 </div>
                 <div class="demographic-field">
                     <label>Gender</label>
-                    <select id="gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
+                    <span id="gender"></span>
                 </div>
                 <div class="demographic-field">
                     <label>Education</label>
-                    <input type="number" id="education" placeholder="6-25" min="6" max="25">
+                    <span id="education"></span>
                 </div>
                 <div class="demographic-field">
                     <label>Reading Level</label>
-                    <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
+                    <span id="readingLevel"></span>
                 </div>
             </div>
         </div>
@@ -253,26 +255,26 @@
             <div class="table-header">Scaled Score/Index</div>
             <div class="table-subheader">Trial 1-5 Free Recall</div>
             <div class="table-row-label">Trial 1</div>
-            <div><input type="number" id="trial1" class="table-input" min="0" max="16"></div>
-            <div><input type="number" id="trial1Scaled" class="table-input" min="1" max="19"></div>
+            <div><input type="number" id="trial1" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div><input type="number" id="trial1Scaled" class="table-input" min="1" max="19" placeholder="1-19"></div>
             <div class="table-row-label">Trial 2</div>
-            <div><input type="number" id="trial2" class="table-input" min="0" max="16"></div>
+            <div><input type="number" id="trial2" class="table-input" min="0" max="16" placeholder="0-16"></div>
             <div></div>
             <div class="table-row-label">Trial 3</div>
-            <div><input type="number" id="trial3" class="table-input" min="0" max="16"></div>
+            <div><input type="number" id="trial3" class="table-input" min="0" max="16" placeholder="0-16"></div>
             <div></div>
             <div class="table-row-label">Trial 4</div>
-            <div><input type="number" id="trial4" class="table-input" min="0" max="16"></div>
+            <div><input type="number" id="trial4" class="table-input" min="0" max="16" placeholder="0-16"></div>
             <div></div>
             <div class="table-row-label">Trial 5</div>
-            <div><input type="number" id="trial5" class="table-input" min="0" max="16"></div>
-            <div><input type="number" id="trial5Scaled" class="table-input" min="1" max="19"></div>
+            <div><input type="number" id="trial5" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div><input type="number" id="trial5Scaled" class="table-input" min="1" max="19" placeholder="1-19"></div>
             <div class="table-row-label">Total Recall</div>
-            <div><input type="number" id="totalRecall" class="table-input" min="0" max="80"></div>
+            <div><input type="number" id="totalRecall" class="table-input" min="0" max="80" placeholder="0-80"></div>
             <div></div>
             <div class="table-subheader">List B</div>
             <div class="table-row-label">List B</div>
-            <div><input type="number" id="listB" class="table-input" min="0" max="16"></div>
+            <div><input type="number" id="listB" class="table-input" min="0" max="16" placeholder="0-16"></div>
             <div></div>
         </div>
 
@@ -280,19 +282,19 @@
         <div class="vertical-grid">
             <div class="vertical-item">
                 <label>Short-Delay Free Recall</label>
-                <input type="number" id="sdiFree" min="0" max="16">
+                <input type="number" id="sdiFree" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
                 <label>Short-Delay Cued Recall</label>
-                <input type="number" id="sdiCued" min="0" max="16">
+                <input type="number" id="sdiCued" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
                 <label>Long-Delay Free Recall</label>
-                <input type="number" id="ldiFree" min="0" max="16">
+                <input type="number" id="ldiFree" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
                 <label>Long-Delay Cued Recall</label>
-                <input type="number" id="ldiCued" min="0" max="16">
+                <input type="number" id="ldiCued" min="0" max="16" placeholder="0-16">
             </div>
         </div>
 
@@ -300,15 +302,15 @@
         <div class="vertical-grid">
             <div class="vertical-item">
                 <label>Recognition Hits</label>
-                <input type="number" id="recogHits" min="0" max="16">
+                <input type="number" id="recogHits" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
                 <label>False Positives</label>
-                <input type="number" id="falsePositives" min="0" max="16">
+                <input type="number" id="falsePositives" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
                 <label>Recognition Hits (Scaled)</label>
-                <input type="number" id="recogHitsScaled" min="1" max="19">
+                <input type="number" id="recogHitsScaled" min="1" max="19" placeholder="1-19">
             </div>
         </div>
 
@@ -316,25 +318,24 @@
         <div class="vertical-grid">
             <div class="validity-item">
                 <label>Forced Choice</label>
-                <input type="number" id="forcedChoice" min="0" max="16">
+                <input type="number" id="forcedChoice" min="0" max="16" placeholder="0-16">
             </div>
             <div class="validity-item">
                 <label>FC Recalled Missed</label>
-                <input type="number" id="fcRecalledMissed" min="0" max="16">
+                <input type="number" id="fcRecalledMissed" min="0" max="16" placeholder="0-16">
             </div>
             <div class="validity-item">
                 <label>FC Yes/No Missed</label>
-                <input type="number" id="fcYesNoMissed" min="0" max="16">
+                <input type="number" id="fcYesNoMissed" min="0" max="16" placeholder="0-16">
             </div>
         </div>
 
         <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
         <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
-        <div class="output-section" id="output" style="display: none;"></div>
     </div>
 
     <script>
-        console.log('CVLT-3 v9.5 loaded successfully');
+        console.log('CVLT-3 v9.6 loaded successfully');
 
         let currentNarrative = '';
         let currentScoreTable = [];
@@ -544,27 +545,27 @@
                     results: results
                 }, '*');
                 
-                console.log('CVLT-3 test completed and sent to dashboard v9.5');
+                console.log('CVLT-3 test completed and sent to dashboard v9.6');
             } catch (error) {
-                console.error('Error in saveTestData v9.5:', error);
+                console.error('Error in saveTestData v9.6:', error);
                 alert('Error saving test data: ' + error.message);
             }
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CVLT-3 v9.5 loaded successfully');
+            console.log('CVLT-3 v9.6 loaded successfully');
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in CVLT-3 v9.5!');
+                console.error('NeuroscriptDB not loaded in CVLT-3 v9.6!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.5');
+                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.6');
             }
         });
     </script>
