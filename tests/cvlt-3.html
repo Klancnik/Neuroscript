@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVLT-3 Clinical Report Generator <span class="version">v9.4</span></title>
+    <title>CVLT-3 Clinical Report Generator <span class="version">v9.5</span></title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -289,10 +289,6 @@
             currentNarrative = generateNarrative(data);
             currentScoreTable = generateScoreTable(data);
 
-            // Display the report (optional, as in WAIS-IV)
-            // document.getElementById('output').innerHTML = currentNarrative;
-            // document.getElementById('output').style.display = 'block';
-
             const results = {
                 narrative: currentNarrative,
                 scoreTable: currentScoreTable,
@@ -307,23 +303,23 @@
                 results: results
             }, '*');
             
-            console.log('CVLT-3 test completed and sent to dashboard v9.4');
+            console.log('CVLT-3 test completed and sent to dashboard v9.5');
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CVLT-3 v9.4 loaded successfully');
+            console.log('CVLT-3 v9.5 loaded successfully');
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in CVLT-3 v9.4!');
+                console.error('NeuroscriptDB not loaded in CVLT-3 v9.5!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.4');
+                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.5');
             }
         });
     </script>
