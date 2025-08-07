@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVLT-3 Clinical Report Generator <span class="version">v9.9</span></title>
+    <title>CVLT-3 Clinical Report Generator <span class="version">v9.10</span></title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -210,11 +210,22 @@
         .load-btn:hover {
             background: #e67e22;
         }
+
+        /* Output Section */
+        .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.9</span></h1>
+        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.10</span></h1>
         <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="demographics-section">
@@ -330,10 +341,11 @@
 
         <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
         <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
+        <div class="output-section" id="output"></div>
     </div>
 
     <script>
-        console.log('CVLT-3 v9.9 loaded successfully');
+        console.log('CVLT-3 v9.10 loaded successfully');
 
         let currentNarrative = '';
         let currentScoreTable = [];
@@ -488,7 +500,7 @@
 
         function saveTestData() {
             try {
-                console.log('Save Test Data clicked v9.9');
+                console.log('Save Test Data clicked v9.10');
                 const data = {
                     name: document.getElementById('name').value || '',
                     age: document.getElementById('age').value || '',
@@ -547,15 +559,15 @@
                     results: results
                 }, '*');
                 
-                console.log('CVLT-3 test completed and sent to dashboard v9.9');
+                console.log('CVLT-3 test completed and sent to dashboard v9.10');
             } catch (error) {
-                console.error('Error in saveTestData v9.9:', error);
+                console.error('Error in saveTestData v9.10:', error);
                 alert('Error saving test data: ' + error.message);
             }
         }
 
         function loadTestData() {
-            console.log('Load Test Data clicked v9.9');
+            console.log('Load Test Data clicked v9.10');
             // Plausible dummy data
             const dummyData = {
                 trial1: 8,
@@ -603,18 +615,18 @@
 
         // === EVENT HANDLERS AND INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CVLT-3 v9.9 loaded successfully');
+            console.log('CVLT-3 v9.10 loaded successfully');
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in CVLT-3 v9.9!');
+                console.error('NeuroscriptDB not loaded in CVLT-3 v9.10!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.9');
+                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.10');
             }
         });
     </script>
