@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVLT-3 Clinical Report Generator <span class="version">v9.4</span></title>
+    <title>CVLT-3 Clinical Report Generator <span class="version">v9.5</span></title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -52,11 +52,16 @@
             margin-bottom: 5px;
             color: #495057;
         }
-        .demographic-field input, .demographic-field select {
+        .demographic-field span {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+            background-color: #f0f0f0;
+            color: #333;
+            display: inline-block;
+            min-width: 90px;
+            text-align: center;
         }
         
         /* Section Headers */
@@ -175,13 +180,243 @@
         }
         .validity-item {
             display: grid;
-            grid-template-columns: 1fr au...(truncated 33057 characters)...ta.falsePositives !== null && data.falsePositives !== undefined && data.falsePositives > 0) {
-                        const fpScaledScore = data.recogHitsScaled ? ` (ss=${data.recogHitsScaled})` : '';
-                        narrative += `${fpScaledScore} and made ${data.falsePositives} false positive error${data.falsePositives === 1 ? '' : 's'}`;
-                    }
-                    
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        .validity-item label {
+            font-weight: bold;
+            color: #495057;
+            margin: 0;
+        }
+        
+        /* Button Styles */
+        .generate-btn, .load-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        .generate-btn:hover, .load-btn:hover {
+            background: #0056b3;
+        }
+        .load-btn {
+            background: #f39c12;
+        }
+        .load-btn:hover {
+            background: #e67e22;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.5</span></h1>
+        <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
+
+        <div class="demographics-section">
+            <div class="section-header">Demographics</div>
+            <div class="demographics-grid">
+                <div class="demographic-field">
+                    <label>Name/ID</label>
+                    <span id="name"></span>
+                </div>
+                <div class="demographic-field">
+                    <label>Age</label>
+                    <span id="age"></span>
+                </div>
+                <div class="demographic-field">
+                    <label>Gender</label>
+                    <span id="gender"></span>
+                </div>
+                <div class="demographic-field">
+                    <label>Education</label>
+                    <span id="education"></span>
+                </div>
+                <div class="demographic-field">
+                    <label>Reading Level</label>
+                    <span id="readingLevel"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header core-scores">Core Scores</div>
+        <div class="core-score-table">
+            <div class="table-header">Test Component</div>
+            <div class="table-header">Raw Score</div>
+            <div class="table-header">Scaled Score/Index</div>
+            <div class="table-subheader">Trial 1-5 Free Recall</div>
+            <div class="table-row-label">Trial 1</div>
+            <div><input type="number" id="trial1" class="table-input" min="0" max="16"></div>
+            <div><input type="number" id="trial1Scaled" class="table-input" min="1" max="19"></div>
+            <div class="table-row-label">Trial 2</div>
+            <div><input type="number" id="trial2" class="table-input" min="0" max="16"></div>
+            <div></div>
+            <div class="table-row-label">Trial 3</div>
+            <div><input type="number" id="trial3" class="table-input" min="0" max="16"></div>
+            <div></div>
+            <div class="table-row-label">Trial 4</div>
+            <div><input type="number" id="trial4" class="table-input" min="0" max="16"></div>
+            <div></div>
+            <div class="table-row-label">Trial 5</div>
+            <div><input type="number" id="trial5" class="table-input" min="0" max="16"></div>
+            <div><input type="number" id="trial5Scaled" class="table-input" min="1" max="19"></div>
+            <div class="table-row-label">Total Recall</div>
+            <div><input type="number" id="totalRecall" class="table-input" min="0" max="80"></div>
+            <div></div>
+            <div class="table-subheader">List B</div>
+            <div class="table-row-label">List B</div>
+            <div><input type="number" id="listB" class="table-input" min="0" max="16"></div>
+            <div></div>
+        </div>
+
+        <div class="section-header process-scores">Process Scores</div>
+        <div class="vertical-grid">
+            <div class="vertical-item">
+                <label>Short-Delay Free Recall</label>
+                <input type="number" id="sdiFree" min="0" max="16">
+            </div>
+            <div class="vertical-item">
+                <label>Short-Delay Cued Recall</label>
+                <input type="number" id="sdiCued" min="0" max="16">
+            </div>
+            <div class="vertical-item">
+                <label>Long-Delay Free Recall</label>
+                <input type="number" id="ldiFree" min="0" max="16">
+            </div>
+            <div class="vertical-item">
+                <label>Long-Delay Cued Recall</label>
+                <input type="number" id="ldiCued" min="0" max="16">
+            </div>
+        </div>
+
+        <div class="section-header error-analysis">Error Analysis</div>
+        <div class="vertical-grid">
+            <div class="vertical-item">
+                <label>Recognition Hits</label>
+                <input type="number" id="recogHits" min="0" max="16">
+            </div>
+            <div class="vertical-item">
+                <label>False Positives</label>
+                <input type="number" id="falsePositives" min="0" max="16">
+            </div>
+            <div class="vertical-item">
+                <label>Recognition Hits (Scaled)</label>
+                <input type="number" id="recogHitsScaled" min="1" max="19">
+            </div>
+        </div>
+
+        <div class="section-header validity">Validity</div>
+        <div class="vertical-grid">
+            <div class="validity-item">
+                <label>Forced Choice</label>
+                <input type="number" id="forcedChoice" min="0" max="16">
+            </div>
+            <div class="validity-item">
+                <label>FC Recalled Missed</label>
+                <input type="number" id="fcRecalledMissed" min="0" max="16">
+            </div>
+            <div class="validity-item">
+                <label>FC Yes/No Missed</label>
+                <input type="number" id="fcYesNoMissed" min="0" max="16">
+            </div>
+        </div>
+
+        <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
+        <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
+    </div>
+
+    <script>
+        console.log('CVLT-3 v9.5 loaded successfully');
+
+        // === ALL FUNCTION DEFINITIONS FIRST ===
+        let currentNarrative = '';
+        let currentScoreTable = [];
+
+        function getIndexInterpretationFromDB(score) {
+            return window.NeuroscriptDB.getDetailedInterpretation(score, 'standard');
+        }
+
+        function getScaledInterpretationFromDB(score) {
+            return window.NeuroscriptDB.getDetailedInterpretation(score, 'wechsler');
+        }
+
+        function generateNarrative(data) {
+            let narrative = '<p>';
+
+            // 1. Learning Trials Performance
+            if (data.trial1 !== null && data.trial1 !== undefined) {
+                narrative += `On learning trials, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.trial1} items on Trial 1`;
+                if (data.trial5 !== null && data.trial5 !== undefined) {
+                    narrative += `, improving to ${data.trial5} items on Trial 5`;
+                }
+                narrative += '. ';
+            }
+
+            // 2. Total Recall Summary
+            if (data.totalRecall !== null && data.totalRecall !== undefined) {
+                narrative += `Total recall across trials was ${data.totalRecall}, `;
+                if (data.totalRecall < 40) {
+                    narrative += 'which is below average. ';
+                } else if (data.totalRecall >= 40 && data.totalRecall < 50) {
+                    narrative += 'which is within the low average range. ';
+                } else if (data.totalRecall >= 50) {
+                    narrative += 'which is within the average to above average range. ';
+                }
+            }
+
+            // 3. List B Interference
+            if (data.listB !== null && data.listB !== undefined) {
+                narrative += `On List B, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.listB} items, `;
+                if (data.listB < 5) {
+                    narrative += 'indicating potential interference effects. ';
+                } else {
+                    narrative += 'suggesting adequate resistance to proactive interference. ';
+                }
+            }
+
+            // 4. Short-Delay Recall
+            if (data.sdiFree !== null && data.sdiFree !== undefined) {
+                narrative += `On short-delay free recall, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.sdiFree} items`;
+                if (data.sdiCued !== null && data.sdiCued !== undefined) {
+                    narrative += `, improving to ${data.sdiCued} items with cued recall. `;
+                } else {
                     narrative += '. ';
                 }
+            }
+
+            // 5. Long-Delay Recall
+            if (data.ldiFree !== null && data.ldiFree !== undefined) {
+                narrative += `On long-delay free recall, ${data.gender === 'Male' ? 'he' : 'she'} recalled ${data.ldiFree} items`;
+                if (data.ldiCued !== null && data.ldiCued !== undefined) {
+                    narrative += `, improving to ${data.ldiCued} items with cued recall. `;
+                } else {
+                    narrative += '. ';
+                }
+            }
+
+            // 6. Recognition Performance
+            if (data.recogHits !== null && data.recogHits !== undefined) {
+                narrative += `On recognition trials, ${data.gender === 'Male' ? 'he' : 'she'} correctly identified ${data.recogHits} items`;
+                if (data.recogHitsScaled) {
+                    narrative += ` (ss=${data.recogHitsScaled}). `;
+                } else {
+                    narrative += '. ';
+                }
+            }
+
+            // 7. False Positive Errors
+            if (data.falsePositives !== null && data.falsePositives !== undefined && data.falsePositives > 0) {
+                const fpScaledScore = data.recogHitsScaled ? ` (ss=${data.recogHitsScaled})` : '';
+                narrative += `${fpScaledScore} and made ${data.falsePositives} false positive error${data.falsePositives === 1 ? '' : 's'}. `;
             }
 
             // 8. Forced Choice Recognition Performance
@@ -217,13 +452,10 @@
             
             // Handle validity concerns with specific language
             if (totalValidityErrors >= 2) {
-                // Highly unusual inconsistencies - strongest language
                 narrative += 'There were highly unusual inconsistencies between recall and recognition performance, indicating that the results of this test are likely invalid, and suggesting symptom exaggeration. ';
             } else if (forcedChoiceErrors) {
-                // Forced choice errors can stand alone
                 narrative += 'There were validity concerns arising from errors on forced choice recognition trials. ';
             } else if (validityConcerns.length > 0) {
-                // Other validity concerns
                 if (validityConcerns.length === 1) {
                     narrative += `There were validity concerns arising from ${validityConcerns[0]}. `;
                 } else {
@@ -270,6 +502,36 @@
                 completedAt: new Date().toISOString()
             };
             
+            // Save to localStorage
+            const data = {
+                name: document.getElementById('name').textContent || '',
+                age: document.getElementById('age').textContent || '',
+                gender: document.getElementById('gender').textContent || '',
+                education: document.getElementById('education').textContent || '',
+                readingLevel: document.getElementById('readingLevel').textContent || '',
+                trial1: document.getElementById('trial1').value || 0,
+                trial2: document.getElementById('trial2').value || 0,
+                trial3: document.getElementById('trial3').value || 0,
+                trial4: document.getElementById('trial4').value || 0,
+                trial5: document.getElementById('trial5').value || 0,
+                totalRecall: document.getElementById('totalRecall').value || 0,
+                trial1Scaled: document.getElementById('trial1Scaled').value || 0,
+                trial5Scaled: document.getElementById('trial5Scaled').value || 0,
+                listB: document.getElementById('listB').value || 0,
+                sdiFree: document.getElementById('sdiFree').value || 0,
+                sdiCued: document.getElementById('sdiCued').value || 0,
+                ldiFree: document.getElementById('ldiFree').value || 0,
+                ldiCued: document.getElementById('ldiCued').value || 0,
+                recogHits: document.getElementById('recogHits').value || 0,
+                falsePositives: document.getElementById('falsePositives').value || 0,
+                recogHitsScaled: document.getElementById('recogHitsScaled').value || 0,
+                forcedChoice: document.getElementById('forcedChoice').value || 0,
+                fcRecalledMissed: document.getElementById('fcRecalledMissed').value || 0,
+                fcYesNoMissed: document.getElementById('fcYesNoMissed').value || 0
+            };
+            localStorage.setItem('cvltData', JSON.stringify(data));
+            console.log('CVLT-3 data saved to localStorage v9.5');
+
             // Send to master dashboard
             window.parent.postMessage({
                 type: 'testComplete',
@@ -277,19 +539,19 @@
                 results: results
             }, '*');
             
-            console.log('CVLT-3 test completed and sent to dashboard v9.4');
+            console.log('CVLT-3 test completed and sent to dashboard v9.5');
         }
 
         function loadTestData() {
             try {
-                console.log('Loading test data v9.4');
+                console.log('Loading test data v9.5');
                 // Plausible dummy data for demonstration
                 const dummyData = JSON.parse(localStorage.getItem('cvltData')) || {
-                    name: 'John Doe',
-                    age: '30',
-                    gender: 'Male',
-                    education: '12',
-                    readingLevel: '10',
+                    name: 'Jane Doe',
+                    age: '28',
+                    gender: 'Female',
+                    education: '14',
+                    readingLevel: '11',
                     trial1: 8,
                     trial2: 9,
                     trial3: 10,
@@ -308,8 +570,7 @@
                     recogHitsScaled: 10,
                     forcedChoice: 16,
                     fcRecalledMissed: 0,
-                    fcYesNoMissed: 0,
-                    // Add more fields as needed for full dummy data
+                    fcYesNoMissed: 0
                 };
 
                 // Populate fields with dummy or saved data
@@ -337,43 +598,69 @@
                 document.getElementById('forcedChoice').value = dummyData.forcedChoice || '';
                 document.getElementById('fcRecalledMissed').value = dummyData.fcRecalledMissed || '';
                 document.getElementById('fcYesNoMissed').value = dummyData.fcYesNoMissed || '';
-                // Add population for other fields as needed
 
-                console.log('CVLT-3 test data loaded successfully v9.4 with dummy data:', dummyData);
+                console.log('CVLT-3 test data loaded successfully v9.5 with dummy data:', dummyData);
             } catch (error) {
-                console.error('Error loading test data v9.4:', error);
+                console.error('Error loading test data v9.5:', error);
             }
         }
 
-        // === EVENT HANDLERS AND INITIALIZATION ===
-        window.addEventListener('message', function(event) {
-            console.log('Message received in CVLT-3 v9.4:', event.data);
-            if (event.data.type === 'clientInfo') {
-                const clientData = event.data.data;
-                document.getElementById('name').textContent = clientData.name || '';
-                document.getElementById('age').textContent = clientData.age || '';
-                document.getElementById('gender').textContent = clientData.gender || '';
-                document.getElementById('education').textContent = clientData.education || '';
-                document.getElementById('readingLevel').textContent = clientData.readingLevel || '';
-            }
-        });
-
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CVLT-3 v9.4 loaded successfully');
+            console.log('CVLT-3 v9.5 loaded successfully');
             
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in CVLT-3 v9.4!');
+                console.error('NeuroscriptDB not loaded in CVLT-3 v9.5!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.4');
+                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.5');
             }
         });
+
+        // Save data to localStorage on save
+        window.addEventListener('saveTestData', function() {
+            const data = {
+                name: document.getElementById('name').textContent || '',
+                age: document.getElementById('age').textContent || '',
+                gender: document.getElementById('gender').textContent || '',
+                education: document.getElementById('education').textContent || '',
+                readingLevel: document.getElementById('readingLevel').textContent || '',
+                trial1: document.getElementById('trial1').value || 0,
+                trial2: document.getElementById('trial2').value || 0,
+                trial3: document.getElementById('trial3').value || 0,
+                trial4: document.getElementById('trial4').value || 0,
+                trial5: document.getElementById('trial5').value || 0,
+                totalRecall: document.getElementById('totalRecall').value || 0,
+                trial1Scaled: document.getElementById('trial1Scaled').value || 0,
+                trial5Scaled: document.getElementById('trial5Scaled').value || 0,
+                listB: document.getElementById('listB').value || 0,
+                sdiFree: document.getElementById('sdiFree').value || 0,
+                sdiCued: document.getElementById('sdiCued').value || 0,
+                ldiFree: document.getElementById('ldiFree').value || 0,
+                ldiCued: document.getElementById('ldiCued').value || 0,
+                recogHits: document.getElementById('recogHits').value || 0,
+                falsePositives: document.getElementById('falsePositives').value || 0,
+                recogHitsScaled: document.getElementById('recogHitsScaled').value || 0,
+                forcedChoice: document.getElementById('forcedChoice').value || 0,
+                fcRecalledMissed: document.getElementById('fcRecalledMissed').value || 0,
+                fcYesNoMissed: document.getElementById('fcYesNoMissed').value || 0
+            };
+            localStorage.setItem('cvltData', JSON.stringify(data));
+            console.log('CVLT-3 data saved to localStorage v9.5');
+        });
+
+        // Trigger save on saveTestData call
+        saveTestData = (function(original) {
+            return function() {
+                original.apply(this, arguments);
+                window.dispatchEvent(new Event('saveTestData'));
+            };
+        })(saveTestData);
     </script>
 </body>
 </html>
