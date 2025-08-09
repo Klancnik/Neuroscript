@@ -90,7 +90,7 @@
 <body>
     <div class="container">
         <h1>Neuroscript</h1>
-        <h2>Neuropsychological Assessment System 1.9</h2>
+        <h2>Neuropsychological Assessment System</h2>
 
         <div class="sidebar">
             <div class="section demographics-section">
@@ -159,17 +159,16 @@
                 education: document.getElementById('education').value,
                 readingLevel: document.getElementById('readingLevel').value
             };
-            hideSidebarAndWelcome();
+            hideSidebar();
             if (window.frames['testFrame']) {
                 window.frames['testFrame'].postMessage({ type: 'clientInfo', data: clientInfo }, '*');
                 console.log(`Test ${testName} started with client info:`, clientInfo);
             }
         }
 
-        function hideSidebarAndWelcome() {
-            console.log('Sidebar and welcome hidden v1.9');
+        function hideSidebar() {
+            console.log('Sidebar hidden v1.9');
             document.querySelector('.sidebar').classList.add('hidden');
-            document.querySelector('.welcome-section').classList.add('hidden');
             document.getElementById('testFrame').style.display = 'block';
         }
 
