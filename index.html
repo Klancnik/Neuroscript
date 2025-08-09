@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Neuroscript v1.4</title>
+    <title>Neuroscript v1.1</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,8 +14,6 @@
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
-            height: 100vh; /* Full viewport height */
-            overflow: hidden; /* Prevent unwanted scrolling */
         }
         .container {
             display: grid;
@@ -25,8 +23,6 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            height: 100%; /* Full height of body */
-            overflow: hidden; /* Ensure no overflow */
         }
         h1 {
             text-align: center;
@@ -44,7 +40,6 @@
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
-            overflow-y: auto; /* Scroll if content overflows */
         }
         h3 {
             color: #007bff;
@@ -125,32 +120,12 @@
             border-radius: 5px;
             text-align: center;
         }
-        iframe {
-            width: 100%;
-            height: 100%; /* Dynamic height to fill container */
-            min-height: 600px; /* Minimum height to ensure content visibility */
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: auto; /* Scroll if content exceeds height */
-        }
-        /* Sidebar column adjustments for full expansion */
-        .container > div:first-child {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .client-info {
-            flex: 1 0 auto;
-        }
-        .test-battery {
-            flex: 1 0 auto;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div>
-            <h1>Neuroscript <span class="version">v1.4</span></h1>
+            <h1>Neuroscript <span class="version">v1.1</span></h1>
             <p>Professional Neuropsychological Assessment</p>
 
             <div class="client-info">
@@ -183,13 +158,13 @@
             <div class="test-battery">
                 <h3>Test Battery</h3>
                 <ul class="test-list">
-                    <li><a href="tests/wais-iv.html" target="testFrame" onclick="hideWelcome()">WAIS-IV</a></li>
-                    <li><a href="tests/cvlt-3.html" target="testFrame" onclick="hideWelcome()">CVLT-3</a></li>
-                    <li><a href="tests/wms-iii.html" target="testFrame" onclick="hideWelcome()">WMS-III</a></li>
-                    <li><a href="tests/consonant-trigrams.html" target="testFrame" onclick="hideWelcome()">Consonant Trigrams</a></li>
-                    <li><a href="tests/trail-making.html" target="testFrame" onclick="hideWelcome()">Trail Making Test</a></li>
-                    <li><a href="tests/cpt-ii.html" target="testFrame" onclick="hideWelcome()">CPT-II</a></li>
-                    <li><a href="tests/wcst.html" target="testFrame" onclick="hideWelcome()">WCST</a></li>
+                    <li><a href="tests/wais-iv.html" target="testFrame">WAIS-IV</a></li>
+                    <li><a href="tests/cvlt-3.html" target="testFrame">CVLT-3</a></li>
+                    <li><a href="tests/wms-iii.html" target="testFrame">WMS-III</a></li>
+                    <li><a href="tests/consonant-trigrams.html" target="testFrame">Consonant Trigrams</a></li>
+                    <li><a href="tests/trail-making.html" target="testFrame">Trail Making Test</a></li>
+                    <li><a href="tests/cpt-ii.html" target="testFrame">CPT-II</a></li>
+                    <li><a href="tests/wcst.html" target="testFrame">WCST</a></li>
                 </ul>
                 <div class="progress">0 of 7 completed <span>0%</span></div>
                 <button class="generate-btn">Generate Integrated Report</button>
@@ -197,7 +172,7 @@
         </div>
 
         <div>
-            <div class="welcome-section" id="welcomeSection">
+            <div class="welcome-section">
                 <h2>Welcome to Neuroscript</h2>
                 <p>Professional neuropsychological assessment reports with comprehensive clinical narratives and score interpretations.</p>
                 <div class="features">
@@ -220,12 +195,12 @@
                 </div>
                 <p>Enter client demographics and select a test from the left panel to begin.</p>
             </div>
-            <iframe name="testFrame" style="width:100%;height:100%;min-height:600px;border:1px solid #ddd;border-radius:5px;overflow:auto;"></iframe>
+            <iframe name="testFrame" style="width:100%;height:600px;border:1px solid #ddd;border-radius:5px;"></iframe>
         </div>
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.4 loaded');
+        console.log('Neuroscript Master Dashboard v1.1 loaded');
 
         // Send client demographics to all test iframes on input change
         function sendClientInfo() {
@@ -246,13 +221,7 @@
                 }, '*');
             });
 
-            console.log('Client info sent from Master Dashboard v1.4:', clientData);
-        }
-
-        // Hide welcome section
-        function hideWelcome() {
-            document.getElementById('welcomeSection').style.display = 'none';
-            console.log('Welcome section hidden v1.4');
+            console.log('Client info sent from Master Dashboard v1.1:', clientData);
         }
 
         // Attach event listeners to demographic inputs
@@ -263,12 +232,12 @@
                 input.addEventListener('input', sendClientInfo); // For real-time updates
             });
 
-            console.log('Neuroscript Master Dashboard v1.4 initialized');
+            console.log('Neuroscript Master Dashboard v1.1 initialized');
         });
 
         // Receive test completion messages
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.4:', event.data);
+            console.log('Message received in Master Dashboard v1.1:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
                 // Update progress tracking (to be implemented)
