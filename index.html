@@ -75,7 +75,7 @@
         }
         .iframe-container {
             width: 100%;
-            height: 800px; /* Fixed height to prevent cutoff */
+            height: 100vh; /* Full viewport height for full page load */
             border: none;
             display: none;
         }
@@ -142,7 +142,7 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.7 loaded');
+        console.log('Neuroscript Master Dashboard v1.8 loaded');
 
         let clientInfo = {};
 
@@ -162,30 +162,30 @@
         }
 
         function hideWelcome() {
-            console.log('Welcome section hidden v1.7');
+            console.log('Welcome section hidden v1.8');
             document.querySelector('.welcome-section').classList.add('hidden');
             document.getElementById('testFrame').style.display = 'block';
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.7:', event.data);
+            console.log('Message received in Master Dashboard v1.8:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.7 loaded');
+            console.log('Neuroscript Master Dashboard v1.8 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.7!');
+                console.error('NeuroscriptDB not loaded in Index v1.8!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.7');
+                console.log('NeuroscriptDB loaded successfully in Index v1.8');
             }
         });
     </script>
