@@ -3,687 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neuroscript - Neuropsychological Assessment System</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Neuroscript v1.4</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .header-content {
+            font-family: Arial, sans-serif;
             max-width: 1200px;
             margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 20px;
+            background-color: #f5f5f5;
+            height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Prevent unwanted scrolling */
         }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #4a5568;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo::before {
-            content: "??";
-            margin-right: 10px;
-            font-size: 32px;
-        }
-
-        .subtitle {
-            color: #718096;
-            font-size: 14px;
-            margin-left: 42px;
-        }
-
-        .main-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
+        .container {
             display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 30px;
-            min-height: calc(100vh - 140px);
-        }
-
-        .sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+            background: white;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            height: fit-content;
-            position: sticky;
-            top: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 100%; /* Full height of body */
+            overflow: hidden; /* Ensure no overflow */
         }
-
-        .client-info {
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
             margin-bottom: 30px;
         }
-
-        .client-info h3 {
-            color: #2d3748;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
+        .version {
+            font-size: 0.6em;
+            color: #6c757d;
+            font-weight: normal;
         }
-
-        .client-info h3::before {
-            content: "??";
-            margin-right: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .test-navigation h3 {
-            color: #2d3748;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .test-navigation h3::before {
-            content: "??";
-            margin-right: 8px;
-        }
-
-        .test-category {
-            margin-bottom: 25px;
-        }
-
-        .test-category h4 {
-            color: #4a5568;
-            font-size: 16px;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .test-button {
-            display: block;
-            width: 100%;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #4a5568;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .test-button:hover {
-            border-color: #667eea;
-            background: #f7fafc;
-            transform: translateY(-1px);
-        }
-
-        .test-button.completed {
-            background: #f0fff4;
-            border-color: #68d391;
-            color: #22543d;
-        }
-
-        .test-button.active {
-            background: #667eea;
-            border-color: #667eea;
-            color: white;
-        }
-
-        .test-button::after {
-            content: "";
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #cbd5e0;
-        }
-
-        .test-button.completed::after {
-            content: "?";
-            background: #68d391;
-            color: white;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .test-button.active::after {
-            background: #fbb6ce;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .content-area {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .welcome-screen {
-            padding: 60px 40px;
-            text-align: center;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .welcome-screen h2 {
-            font-size: 32px;
-            margin-bottom: 16px;
-            font-weight: 300;
-        }
-
-        .welcome-screen p {
-            font-size: 18px;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 30px;
-            line-height: 1.6;
-        }
-
-        .progress-summary {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+        .client-info, .test-battery {
+            background: #f8f9fa;
             padding: 20px;
-            margin-top: 30px;
+            border-radius: 8px;
+            overflow-y: auto; /* Scroll if content overflows */
         }
-
-        .progress-summary h3 {
+        h3 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin: 0 0 15px 0;
+        }
+        .input-group {
             margin-bottom: 15px;
-            font-size: 20px;
         }
-
-
-
-        .test-iframe {
-            width: 100%;
-            height: calc(100vh - 140px);
-            border: none;
-            display: none;
-        }
-
-        .test-iframe.active {
+        label {
             display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #34495e;
         }
-
-        .generate-report-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        input[type="number"]:invalid {
+            border: 2px solid #ff0000;
+            background-color: #ffe6e6;
+        }
+        .test-list {
+            list-style: none;
+            padding: 0;
+        }
+        .test-list li {
+            margin: 10px 0;
+        }
+        .test-list a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .test-list a:hover {
+            color: #0056b3;
+        }
+        .progress {
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .generate-btn {
+            background: #007bff;
             color: white;
+            padding: 12px 30px;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            font-weight: bold;
             margin-top: 20px;
+            display: block;
+            text-align: center;
         }
-
-        .generate-report-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        .generate-btn:hover {
+            background: #0056b3;
         }
-
-        .generate-report-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .welcome-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
         }
-
-        .action-buttons {
-            display: flex;
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-top: 20px;
+            margin: 20px 0;
         }
-
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 20px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
         }
-
-        .btn-secondary:hover {
-            background: #cbd5e0;
+        iframe {
+            width: 100%;
+            height: 100%; /* Dynamic height to fill container */
+            min-height: 600px; /* Minimum height to ensure content visibility */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: auto; /* Scroll if content exceeds height */
         }
-
-        @media (max-width: 768px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .sidebar {
-                position: static;
-            }
+        /* Sidebar column adjustments for full expansion */
+        .container > div:first-child {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .client-info {
+            flex: 1 0 auto;
+        }
+        .test-battery {
+            flex: 1 0 auto;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div>
-                <div class="logo">Neuroscript</div>
-                <div class="subtitle">Neuropsychological Assessment System</div>
-            </div>
-        </div>
-    </header>
+    <div class="container">
+        <div>
+            <h1>Neuroscript <span class="version">v1.4</span></h1>
+            <p>Professional Neuropsychological Assessment</p>
 
-    <div class="main-container">
-        <aside class="sidebar">
             <div class="client-info">
                 <h3>Client Information</h3>
-                
-                <div class="form-group">
-                    <label for="clientName">Client Name/ID</label>
-                    <input type="text" id="clientName" placeholder="Enter client identifier">
+                <div class="input-group">
+                    <label>Name/ID</label>
+                    <input type="text" id="name" placeholder="Enter client name or ID">
                 </div>
-                
-                <div class="form-group">
-                    <label for="clientAge">Age</label>
-                    <input type="number" id="clientAge" min="16" max="100" placeholder="Years">
+                <div class="input-group">
+                    <label>Age</label>
+                    <input type="number" id="age" placeholder="16-90" min="16" max="90">
                 </div>
-                
-                <div class="form-group">
-                    <label for="clientGender">Gender</label>
-                    <select id="clientGender">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                <div class="input-group">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
                     </select>
                 </div>
-                
-                <div class="form-group">
-                    <label for="clientEducation">Education</label>
-                    <input type="number" id="clientEducation" min="6" max="25" placeholder="Years">
+                <div class="input-group">
+                    <label>Education</label>
+                    <input type="number" id="education" placeholder="6-25" min="6" max="25">
                 </div>
-                
-                <div class="form-group">
-                    <label for="readingLevel">Reading Level</label>
-                    <input type="number" id="readingLevel" min="1" max="16" step="0.1" placeholder="Grade level">
+                <div class="input-group">
+                    <label>Reading Level</label>
+                    <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
                 </div>
             </div>
 
-            <nav class="test-navigation">
+            <div class="test-battery">
                 <h3>Test Battery</h3>
-                
-                <div class="test-category">
-                    <h4>Intelligence & Cognitive</h4>
-                    <a href="#" class="test-button" data-test="wais-iv">WAIS-IV</a>
-                </div>
-                
-                <div class="test-category">
-                    <h4>Memory & Learning</h4>
-                    <a href="#" class="test-button" data-test="cvlt-3">CVLT-3</a>
-                    <a href="#" class="test-button" data-test="wms-iii">WMS-III</a>
-                </div>
-                
-                <div class="test-category">
-                    <h4>Attention & Executive</h4>
-                    <a href="#" class="test-button" data-test="consonant-trigrams">Consonant Trigrams</a>
-                    <a href="#" class="test-button" data-test="trails">Trail Making Test</a>
-                    <a href="#" class="test-button" data-test="cpt-ii">CPT-II</a>
-                    <a href="#" class="test-button" data-test="wcst">WCST</a>
-                    <a href="#" class="test-button" data-test="stroop">Stroop Test</a>
-                </div>
-            </nav>
-        </aside>
+                <ul class="test-list">
+                    <li><a href="tests/wais-iv.html" target="testFrame" onclick="hideWelcome()">WAIS-IV</a></li>
+                    <li><a href="tests/cvlt-3.html" target="testFrame" onclick="hideWelcome()">CVLT-3</a></li>
+                    <li><a href="tests/wms-iii.html" target="testFrame" onclick="hideWelcome()">WMS-III</a></li>
+                    <li><a href="tests/consonant-trigrams.html" target="testFrame" onclick="hideWelcome()">Consonant Trigrams</a></li>
+                    <li><a href="tests/trail-making.html" target="testFrame" onclick="hideWelcome()">Trail Making Test</a></li>
+                    <li><a href="tests/cpt-ii.html" target="testFrame" onclick="hideWelcome()">CPT-II</a></li>
+                    <li><a href="tests/wcst.html" target="testFrame" onclick="hideWelcome()">WCST</a></li>
+                </ul>
+                <div class="progress">0 of 7 completed <span>0%</span></div>
+                <button class="generate-btn">Generate Integrated Report</button>
+            </div>
+        </div>
 
-        <main class="content-area">
-            <div id="welcomeScreen" class="welcome-screen">
+        <div>
+            <div class="welcome-section" id="welcomeSection">
                 <h2>Welcome to Neuroscript</h2>
-                <p>Professional neuropsychological assessment reports with comprehensive clinical narratives and score interpretations. Select a test from the menu to begin your assessment battery.</p>
-                
-                <div class="progress-summary">
-                    <h3>Assessment Session</h3>
-                    <p id="progressText">Select tests from the menu to begin assessment</p>
-                    
-                    <div class="action-buttons">
-                        <button class="generate-report-btn" id="generateReportBtn" disabled>
-                            Generate Professional Report
-                        </button>
-                        <button class="btn-secondary" onclick="resetSession()">New Session</button>
+                <p>Professional neuropsychological assessment reports with comprehensive clinical narratives and score interpretations.</p>
+                <div class="features">
+                    <div class="feature">
+                        <h4>📊 Comprehensive Testing</h4>
+                        <p>Complete battery of validated neuropsychological assessments</p>
+                    </div>
+                    <div class="feature">
+                        <h4>🧠 Clinical Narratives</h4>
+                        <p>Professional-quality interpretive reports with clinical language</p>
+                    </div>
+                    <div class="feature">
+                        <h4>📈 Statistical Precision</h4>
+                        <p>Exact normative conversions using validated databases</p>
+                    </div>
+                    <div class="feature">
+                        <h4>⚡ Efficient Workflow</h4>
+                        <p>Streamlined assessment process with integrated reporting</p>
                     </div>
                 </div>
+                <p>Enter client demographics and select a test from the left panel to begin.</p>
             </div>
-
-            <!-- Test iframes will be loaded here -->
-            <iframe id="wais-iv-frame" class="test-iframe" src="tests/wais-iv.html"></iframe>
-            <iframe id="cvlt-3-frame" class="test-iframe" src="tests/cvlt-3.html"></iframe>
-            <iframe id="wms-iii-frame" class="test-iframe" src="tests/wms-iii.html"></iframe>
-            <iframe id="consonant-trigrams-frame" class="test-iframe" src="tests/consonant-trigrams.html"></iframe>
-            <iframe id="trails-frame" class="test-iframe" src="tests/trails.html"></iframe>
-            <iframe id="cpt-ii-frame" class="test-iframe" src="tests/cpt-ii.html"></iframe>
-            <iframe id="wcst-frame" class="test-iframe" src="tests/wcst.html"></iframe>
-            <iframe id="stroop-frame" class="test-iframe" src="tests/stroop.html"></iframe>
-        </main>
+            <iframe name="testFrame" style="width:100%;height:100%;min-height:600px;border:1px solid #ddd;border-radius:5px;overflow:auto;"></iframe>
+        </div>
     </div>
 
     <script>
-        // Data Management System
-        class NeuroscriptDataManager {
-            constructor() {
-                this.clientData = this.loadClientData();
-                this.testResults = this.loadTestResults();
-                this.currentTest = null;
-                this.initializeEventListeners();
-                this.updateUI();
-            }
+        console.log('Neuroscript Master Dashboard v1.4 loaded');
 
-            loadClientData() {
-                const saved = localStorage.getItem('neuroscript_client');
-                return saved ? JSON.parse(saved) : {
-                    clientName: '',
-                    clientAge: '',
-                    clientGender: 'male',
-                    clientEducation: '',
-                    readingLevel: ''
-                };
-            }
+        // Send client demographics to all test iframes on input change
+        function sendClientInfo() {
+            const clientData = {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                education: document.getElementById('education').value,
+                readingLevel: document.getElementById('readingLevel').value
+            };
 
-            loadTestResults() {
-                const saved = localStorage.getItem('neuroscript_results');
-                return saved ? JSON.parse(saved) : {};
-            }
-
-            saveClientData() {
-                localStorage.setItem('neuroscript_client', JSON.stringify(this.clientData));
-            }
-
-            saveTestResults() {
-                localStorage.setItem('neuroscript_results', JSON.stringify(this.testResults));
-            }
-
-            initializeEventListeners() {
-                // Client data form listeners
-                const fields = ['clientName', 'clientAge', 'clientGender', 'clientEducation', 'readingLevel'];
-                fields.forEach(field => {
-                    const element = document.getElementById(field);
-                    if (element) {
-                        element.value = this.clientData[field] || '';
-                        element.addEventListener('change', () => {
-                            this.clientData[field] = element.value;
-                            this.saveClientData();
-                            this.broadcastClientInfo();
-                        });
-                    }
-                });
-
-                // Test navigation
-                document.querySelectorAll('.test-button').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const testName = button.dataset.test;
-                        this.loadTest(testName);
-                    });
-                });
-
-                // Report generation
-                document.getElementById('generateReportBtn').addEventListener('click', () => {
-                    this.generateReport();
-                });
-
-                // Listen for test completion messages
-                window.addEventListener('message', (event) => {
-                    if (event.data.type === 'testComplete') {
-                        this.handleTestCompletion(event.data);
-                    }
-                });
-            }
-
-            loadTest(testName) {
-                // Hide welcome screen
-                document.getElementById('welcomeScreen').style.display = 'none';
-                
-                // Hide all iframes
-                document.querySelectorAll('.test-iframe').forEach(iframe => {
-                    iframe.classList.remove('active');
-                });
-                
-                // Show target iframe
-                const iframe = document.getElementById(`${testName}-frame`);
-                if (iframe) {
-                    iframe.classList.add('active');
-                    this.currentTest = testName;
-                    
-                    // Update navigation
-                    document.querySelectorAll('.test-button').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    document.querySelector(`[data-test="${testName}"]`).classList.add('active');
-                    
-                    // Send client info to test
-                    setTimeout(() => {
-                        this.broadcastClientInfo(iframe.contentWindow);
-                    }, 1000);
-                }
-            }
-
-            broadcastClientInfo(targetWindow = null) {
-                const message = {
+            // Find all iframes (test generators)
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.contentWindow.postMessage({
                     type: 'clientInfo',
-                    data: this.clientData
-                };
+                    data: clientData
+                }, '*');
+            });
 
-                if (targetWindow) {
-                    targetWindow.postMessage(message, '*');
-                } else {
-                    // Send to all test iframes
-                    document.querySelectorAll('.test-iframe').forEach(iframe => {
-                        if (iframe.contentWindow) {
-                            iframe.contentWindow.postMessage(message, '*');
-                        }
-                    });
-                }
-            }
-
-            handleTestCompletion(data) {
-                this.testResults[data.testName] = data.results;
-                this.saveTestResults();
-                
-                // Update UI to show completion
-                const button = document.querySelector(`[data-test="${data.testName}"]`);
-                if (button) {
-                    button.classList.add('completed');
-                    button.classList.remove('active');
-                }
-                
-                this.updateProgress();
-                
-                // Show welcome screen with updated progress
-                document.querySelectorAll('.test-iframe').forEach(iframe => {
-                    iframe.classList.remove('active');
-                });
-                document.getElementById('welcomeScreen').style.display = 'block';
-            }
-
-            updateProgress() {
-                const completedTests = Object.keys(this.testResults).length;
-                
-                // Update progress text
-                if (completedTests === 0) {
-                    document.getElementById('progressText').textContent = 'Select tests from the menu to begin assessment';
-                } else if (completedTests === 1) {
-                    document.getElementById('progressText').textContent = '1 test completed';
-                } else {
-                    document.getElementById('progressText').textContent = `${completedTests} tests completed`;
-                }
-                
-                // Enable report generation if tests are completed
-                const reportBtn = document.getElementById('generateReportBtn');
-                if (completedTests > 0) {
-                    reportBtn.disabled = false;
-                } else {
-                    reportBtn.disabled = true;
-                }
-            }
-
-            updateUI() {
-                // Update completed test indicators
-                Object.keys(this.testResults).forEach(testName => {
-                    const button = document.querySelector(`[data-test="${testName}"]`);
-                    if (button) {
-                        button.classList.add('completed');
-                    }
-                });
-                
-                this.updateProgress();
-            }
-
-            generateReport() {
-                const report = this.compileReport();
-                this.downloadReport(report);
-            }
-
-            compileReport() {
-                const completedTests = Object.keys(this.testResults);
-                
-                let reportHTML = `
-                    <html>
-                    <head>
-                        <title>Neuroscript Assessment Report</title>
-                        <style>
-                            body { font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
-                            .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
-                            .client-info { background: #f9f9f9; padding: 20px; margin: 20px 0; border-radius: 5px; }
-                            .test-section { margin: 30px 0; page-break-inside: avoid; }
-                            .test-section h2 { color: #2c3e50; border-bottom: 1px solid #bdc3c7; padding-bottom: 10px; }
-                            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                            th { background-color: #f5f5f5; font-weight: bold; }
-                            .narrative { margin: 15px 0; text-align: justify; }
-                            @media print { body { padding: 20px; } .no-print { display: none; } }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>Neuropsychological Assessment Report</h1>
-                            <h2>Generated by Neuroscript</h2>
-                            <p>Date: ${new Date().toLocaleDateString()}</p>
-                        </div>
-                        
-                        <div class="client-info">
-                            <h3>Client Information</h3>
-                            <p><strong>Name/ID:</strong> ${this.clientData.clientName || 'Not specified'}</p>
-                            <p><strong>Age:</strong> ${this.clientData.clientAge || 'Not specified'} years</p>
-                            <p><strong>Gender:</strong> ${this.clientData.clientGender || 'Not specified'}</p>
-                            <p><strong>Education:</strong> ${this.clientData.clientEducation || 'Not specified'} years</p>
-                            <p><strong>Reading Level:</strong> ${this.clientData.readingLevel || 'Not assessed'} grade</p>
-                        </div>
-                `;
-
-                // Add test sections
-                completedTests.forEach(testName => {
-                    const result = this.testResults[testName];
-                    reportHTML += `
-                        <div class="test-section">
-                            <h2>${result.testName}</h2>
-                            <div class="narrative">${result.narrative}</div>
-                            ${result.scoreTable || ''}
-                        </div>
-                    `;
-                });
-
-                reportHTML += `
-                        <div class="test-section">
-                            <h2>Summary</h2>
-                            <p>This report was generated using Neuroscript, a professional neuropsychological assessment system. 
-                            ${completedTests.length} test(s) were administered and interpreted using standardized normative data 
-                            and clinical validation protocols.</p>
-                            <p><em>Report generated on ${new Date().toLocaleString()}</em></p>
-                        </div>
-                    </body>
-                    </html>
-                `;
-
-                return reportHTML;
-            }
-
-            downloadReport(reportHTML) {
-                const blob = new Blob([reportHTML], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Neuroscript_Report_${this.clientData.clientName || 'Client'}_${new Date().toISOString().split('T')[0]}.html`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
+            console.log('Client info sent from Master Dashboard v1.4:', clientData);
         }
 
-        // Reset session function
-        function resetSession() {
-            if (confirm('Are you sure you want to start a new session? This will clear all current data.')) {
-                localStorage.removeItem('neuroscript_client');
-                localStorage.removeItem('neuroscript_results');
-                location.reload();
-            }
+        // Hide welcome section
+        function hideWelcome() {
+            document.getElementById('welcomeSection').style.display = 'none';
+            console.log('Welcome section hidden v1.4');
         }
 
-        // Initialize the application
-        const neuroscript = new NeuroscriptDataManager();
+        // Attach event listeners to demographic inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            ['name', 'age', 'gender', 'education', 'readingLevel'].forEach(id => {
+                const input = document.getElementById(id);
+                input.addEventListener('change', sendClientInfo);
+                input.addEventListener('input', sendClientInfo); // For real-time updates
+            });
+
+            console.log('Neuroscript Master Dashboard v1.4 initialized');
+        });
+
+        // Receive test completion messages
+        window.addEventListener('message', function(event) {
+            console.log('Message received in Master Dashboard v1.4:', event.data);
+            if (event.data.type === 'testComplete') {
+                console.log(`Test ${event.data.testName} completed:`, event.data.results);
+                // Update progress tracking (to be implemented)
+            }
+        });
     </script>
 </body>
 </html>
