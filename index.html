@@ -82,6 +82,9 @@
         .hidden {
             display: none;
         }
+        .sidebar {
+            display: block; /* Sidebar visible by default */
+        }
     </style>
 </head>
 <body>
@@ -89,60 +92,62 @@
         <h1>Neuroscript</h1>
         <h2>Neuropsychological Assessment System</h2>
 
-        <div class="section demographics-section">
-            <h3>Client Information</h3>
-            <div class="demographics-grid">
-                <div class="demographic-field">
-                    <label>Client Name/ID</label>
-                    <input type="text" id="clientName" placeholder="Enter client name or ID">
-                </div>
-                <div class="demographic-field">
-                    <label>Age</label>
-                    <input type="number" id="age" placeholder="16-90" min="16" max="90">
-                </div>
-                <div class="demographic-field">
-                    <label>Gender</label>
-                    <select id="gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="demographic-field">
-                    <label>Education</label>
-                    <input type="number" id="education" placeholder="6-25" min="6" max="25">
-                </div>
-                <div class="demographic-field">
-                    <label>Reading Level</label>
-                    <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
+        <div class="sidebar">
+            <div class="section demographics-section">
+                <h3>Client Information</h3>
+                <div class="demographics-grid">
+                    <div class="demographic-field">
+                        <label>Client Name/ID</label>
+                        <input type="text" id="clientName" placeholder="Enter client name or ID">
+                    </div>
+                    <div class="demographic-field">
+                        <label>Age</label>
+                        <input type="number" id="age" placeholder="16-90" min="16" max="90">
+                    </div>
+                    <div class="demographic-field">
+                        <label>Gender</label>
+                        <select id="gender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="demographic-field">
+                        <label>Education</label>
+                        <input type="number" id="education" placeholder="6-25" min="6" max="25">
+                    </div>
+                    <div class="demographic-field">
+                        <label>Reading Level</label>
+                        <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="section test-battery">
-            <h3>Test Battery</h3>
-            <h4>Intelligence & Cognitive</h4>
-            <div class="test-item"><a href="tests/wais-iv.html" target="testFrame" onclick="startTest('wais')">WAIS-IV</a></div>
-            <h4>Memory & Learning</h4>
-            <div class="test-item"><a href="tests/cvlt-3.html" target="testFrame" onclick="startTest('cvlt')">CVLT-3</a></div>
-            <div class="test-item"><a href="tests/wms-iii.html" target="testFrame" onclick="startTest('wms')">WMS-III</a></div>
-            <h4>Attention & Executive</h4>
-            <div class="test-item"><a href="tests/consonant-trigrams.html" target="testFrame" onclick="startTest('consonant')">Consonant Trigrams</a></div>
-            <div class="test-item"><a href="tests/trail-making-test.html" target="testFrame" onclick="startTest('trail')">Trail Making Test</a></div>
-            <div class="test-item"><a href="tests/cpt-ii.html" target="testFrame" onclick="startTest('cpt')">CPT-II</a></div>
-            <div class="test-item"><a href="tests/wcst.html" target="testFrame" onclick="startTest('wcst')">WCST</a></div>
-            <!-- Stroop Test temporarily removed -->
-        </div>
+            <div class="section test-battery">
+                <h3>Test Battery</h3>
+                <h4>Intelligence & Cognitive</h4>
+                <div class="test-item"><a href="tests/wais-iv.html" target="testFrame" onclick="startTest('wais')">WAIS-IV</a></div>
+                <h4>Memory & Learning</h4>
+                <div class="test-item"><a href="tests/cvlt-3.html" target="testFrame" onclick="startTest('cvlt')">CVLT-3</a></div>
+                <div class="test-item"><a href="tests/wms-iii.html" target="testFrame" onclick="startTest('wms')">WMS-III</a></div>
+                <h4>Attention & Executive</h4>
+                <div class="test-item"><a href="tests/consonant-trigrams.html" target="testFrame" onclick="startTest('consonant')">Consonant Trigrams</a></div>
+                <div class="test-item"><a href="tests/trail-making-test.html" target="testFrame" onclick="startTest('trail')">Trail Making Test</a></div>
+                <div class="test-item"><a href="tests/cpt-ii.html" target="testFrame" onclick="startTest('cpt')">CPT-II</a></div>
+                <div class="test-item"><a href="tests/wcst.html" target="testFrame" onclick="startTest('wcst')">WCST</a></div>
+                <!-- Stroop Test temporarily removed -->
+            </div>
 
-        <div class="section welcome-section">
-            <h3>Welcome to Neuroscript</h3>
-            <p>Professional neuropsychological assessment reports with comprehensive clinical narratives and score interpretations. Select a test from the menu to begin your assessment battery.</p>
+            <div class="section welcome-section">
+                <h3>Welcome to Neuroscript</h3>
+                <p>Professional neuropsychological assessment reports with comprehensive clinical narratives and score interpretations. Select a test from the menu to begin your assessment battery.</p>
+            </div>
         </div>
 
         <iframe class="iframe-container" name="testFrame" id="testFrame"></iframe>
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.8 loaded');
+        console.log('Neuroscript Master Dashboard v1.9 loaded');
 
         let clientInfo = {};
 
@@ -154,38 +159,39 @@
                 education: document.getElementById('education').value,
                 readingLevel: document.getElementById('readingLevel').value
             };
-            hideWelcome();
+            hideSidebarAndWelcome();
             if (window.frames['testFrame']) {
                 window.frames['testFrame'].postMessage({ type: 'clientInfo', data: clientInfo }, '*');
                 console.log(`Test ${testName} started with client info:`, clientInfo);
             }
         }
 
-        function hideWelcome() {
-            console.log('Welcome section hidden v1.8');
+        function hideSidebarAndWelcome() {
+            console.log('Sidebar and welcome hidden v1.9');
+            document.querySelector('.sidebar').classList.add('hidden');
             document.querySelector('.welcome-section').classList.add('hidden');
             document.getElementById('testFrame').style.display = 'block';
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.8:', event.data);
+            console.log('Message received in Master Dashboard v1.9:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.8 loaded');
+            console.log('Neuroscript Master Dashboard v1.9 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.8!');
+                console.error('NeuroscriptDB not loaded in Index v1.9!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.8');
+                console.log('NeuroscriptDB loaded successfully in Index v1.9');
             }
         });
     </script>
