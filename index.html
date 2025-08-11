@@ -8,38 +8,42 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            background: #ffffff; /* White background */
+            height: 100vh;
+            overflow: hidden;
         }
         .container {
             display: grid;
-            grid-template-columns: 1fr 3fr;
-            gap: 20px;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            grid-template-columns: 250px 1fr; /* Fixed sidebar width */
+            gap: 10px;
+            padding: 10px;
+            height: 100%;
         }
         h1 {
-            color: #2c3e50;
+            color: #2c3e50; /* Dark blue for title */
             text-align: center;
             margin-bottom: 10px;
+            font-size: 24px;
+        }
+        .sidebar {
+            background: #f8f9fa; /* Light gray background */
+            padding: 10px;
+            border: 1px solid #dee2e6; /* Light gray border */
+            border-radius: 5px;
+            overflow-y: auto;
         }
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .demographics-section, .test-battery, .welcome-section {
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            background: #f8f9fa;
+            margin-bottom: 15px;
         }
         .demographics-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 10px;
         }
         .demographic-field {
             display: flex;
@@ -48,51 +52,66 @@
         .demographic-field label {
             font-weight: bold;
             margin-bottom: 5px;
-            color: #495057;
+            color: #333333; /* Darker text */
         }
         .demographic-field input, .demographic-field select {
             padding: 8px;
-            border: 1px solid #ddd;
+            border: 1px solid #cccccc; /* Lighter border */
             border-radius: 4px;
             font-size: 14px;
+            background: #ffffff;
         }
         .test-item {
             margin: 10px 0;
         }
         .test-item a {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
+            background: #007bff; /* Blue buttons */
+            color: #ffffff; /* White text */
+            padding: 8px 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             text-decoration: none;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
+            display: block;
+            text-align: center;
         }
         .test-item a:hover {
-            background: #0056b3;
+            background: #0056b3; /* Darker blue on hover */
         }
         .welcome-section {
             text-align: center;
         }
         .iframe-container {
             width: 100%;
-            height: 800px; /* Adjusted height to fit content */
+            height: 100%;
+            border: 1px solid #dee2e6; /* Light gray border */
+            border-radius: 5px;
+            overflow: auto;
+        }
+        .session-option button {
+            background: #007bff; /* Blue buttons */
+            color: #ffffff; /* White text */
+            padding: 8px 15px;
             border: none;
-            display: block; /* Always visible beside sidebar */
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px;
         }
-        .hidden {
-            display: none;
-        }
-        .sidebar {
-            display: block; /* Sidebar visible by default */
+        .session-option button:hover {
+            background: #0056b3; /* Darker blue on hover */
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="sidebar">
+            <h1>Neuroscript</h1>
+            <h2>Neuropsychological Assessment System v1.15</h2>
+
             <div class="section demographics-section">
                 <h3>Client Information</h3>
                 <div class="demographics-grid">
@@ -140,6 +159,10 @@
             <div class="section welcome-section">
                 <h3>Welcome to Neuroscript</h3>
                 <p>Professional neuropsychological assessment reports with comprehensive clinical narratives and score interpretations. Select a test from the menu to begin your assessment battery.</p>
+                <div class="session-option">
+                    <button onclick="generateReport()">Generate Professional Report</button>
+                    <button onclick="newSession()">New Session</button>
+                </div>
             </div>
         </div>
 
@@ -147,7 +170,7 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.12 loaded');
+        console.log('Neuroscript Master Dashboard v1.15 loaded');
 
         let clientInfo = {};
 
@@ -159,38 +182,50 @@
                 education: document.getElementById('education').value,
                 readingLevel: document.getElementById('readingLevel').value
             };
-            hideWelcome();
             if (window.frames['testFrame']) {
                 window.frames['testFrame'].postMessage({ type: 'clientInfo', data: clientInfo }, '*');
                 console.log(`Test ${testName} started with client info:`, clientInfo);
             }
         }
 
-        function hideWelcome() {
-            console.log('Welcome section hidden v1.12');
-            document.querySelector('.welcome-section').classList.add('hidden');
-            document.getElementById('testFrame').style.display = 'block';
+        function generateReport() {
+            console.log('Generate Professional Report clicked v1.15');
+            // Placeholder for report generation logic
+            alert('Report generation functionality to be implemented.');
+        }
+
+        function newSession() {
+            console.log('New Session clicked v1.15');
+            // Placeholder for new session logic
+            document.getElementById('clientName').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('gender').value = 'Male';
+            document.getElementById('education').value = '';
+            document.getElementById('readingLevel').value = '';
+            if (window.frames['testFrame']) {
+                window.frames['testFrame'].location.reload();
+            }
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.12:', event.data);
+            console.log('Message received in Master Dashboard v1.15:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.12 loaded');
+            console.log('Neuroscript Master Dashboard v1.15 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.12!');
+                console.error('NeuroscriptDB not loaded in Index v1.15!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.12');
+                console.log('NeuroscriptDB loaded successfully in Index v1.15');
             }
         });
     </script>
