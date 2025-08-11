@@ -90,7 +90,7 @@
 <body>
     <div class="container">
         <h1>Neuroscript</h1>
-        <h2>Neuropsychological Assessment System v1.1</h2>
+        <h2>Neuropsychological Assessment System v1.10</h2>
 
         <div class="sidebar">
             <div class="section demographics-section">
@@ -125,15 +125,15 @@
             <div class="section test-battery">
                 <h3>Test Battery</h3>
                 <h4>Intelligence & Cognitive</h4>
-                <div class="test-item"><a href="tests/wais-iv.html" target="testFrame" onclick="startTest()">WAIS-IV</a></div>
+                <div class="test-item"><a href="tests/wais-iv.html" target="testFrame" onclick="startTest('wais')">WAIS-IV</a></div>
                 <h4>Memory & Learning</h4>
-                <div class="test-item"><a href="tests/cvlt-3.html" target="testFrame" onclick="startTest()">CVLT-3</a></div>
-                <div class="test-item"><a href="tests/wms-iii.html" target="testFrame" onclick="startTest()">WMS-III</a></div>
+                <div class="test-item"><a href="tests/cvlt-3.html" target="testFrame" onclick="startTest('cvlt')">CVLT-3</a></div>
+                <div class="test-item"><a href="tests/wms-iii.html" target="testFrame" onclick="startTest('wms')">WMS-III</a></div>
                 <h4>Attention & Executive</h4>
-                <div class="test-item"><a href="tests/consonant-trigrams.html" target="testFrame" onclick="startTest()">Consonant Trigrams</a></div>
-                <div class="test-item"><a href="tests/trail-making-test.html" target="testFrame" onclick="startTest()">Trail Making Test</a></div>
-                <div class="test-item"><a href="tests/cpt-ii.html" target="testFrame" onclick="startTest()">CPT-II</a></div>
-                <div class="test-item"><a href="tests/wcst.html" target="testFrame" onclick="startTest()">WCST</a></div>
+                <div class="test-item"><a href="tests/consonant-trigrams.html" target="testFrame" onclick="startTest('consonant')">Consonant Trigrams</a></div>
+                <div class="test-item"><a href="tests/trail-making-test.html" target="testFrame" onclick="startTest('trail')">Trail Making Test</a></div>
+                <div class="test-item"><a href="tests/cpt-ii.html" target="testFrame" onclick="startTest('cpt')">CPT-II</a></div>
+                <div class="test-item"><a href="tests/wcst.html" target="testFrame" onclick="startTest('wcst')">WCST</a></div>
                 <!-- Stroop Test temporarily removed -->
             </div>
 
@@ -147,11 +147,11 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.1 loaded');
+        console.log('Neuroscript Master Dashboard v1.10 loaded');
 
         let clientInfo = {};
 
-        function startTest() {
+        function startTest(testName) {
             clientInfo = {
                 name: document.getElementById('clientName').value,
                 age: document.getElementById('age').value,
@@ -162,35 +162,35 @@
             hideSidebar();
             if (window.frames['testFrame']) {
                 window.frames['testFrame'].postMessage({ type: 'clientInfo', data: clientInfo }, '*');
-                console.log('Test started with client info:', clientInfo);
+                console.log(`Test ${testName} started with client info:`, clientInfo);
             }
         }
 
         function hideSidebar() {
-            console.log('Sidebar hidden v1.1');
+            console.log('Sidebar hidden v1.10');
             document.querySelector('.sidebar').classList.add('hidden');
             document.getElementById('testFrame').style.display = 'block';
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.1:', event.data);
+            console.log('Message received in Master Dashboard v1.10:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.1 loaded');
+            console.log('Neuroscript Master Dashboard v1.10 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.1!');
+                console.error('NeuroscriptDB not loaded in Index v1.10!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.1');
+                console.log('NeuroscriptDB loaded successfully in Index v1.10');
             }
         });
     </script>
