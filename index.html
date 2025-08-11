@@ -8,16 +8,19 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
             background: #f8f9fa;
+            height: 100vh;
+            overflow: hidden;
         }
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
         }
         h1 {
             color: #2c3e50;
@@ -75,8 +78,12 @@
         }
         .iframe-container {
             width: 100%;
-            height: 100vh; /* Full viewport height for full page load */
+            height: 100vh; /* Full viewport height */
             border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
             display: none;
         }
         .hidden {
@@ -84,13 +91,14 @@
         }
         .sidebar {
             display: block; /* Sidebar visible by default */
+            z-index: 1;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Neuroscript</h1>
-        <h2>Neuropsychological Assessment System v1.10</h2>
+        <h2>Neuropsychological Assessment System v1.11</h2>
 
         <div class="sidebar">
             <div class="section demographics-section">
@@ -147,7 +155,7 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.10 loaded');
+        console.log('Neuroscript Master Dashboard v1.11 loaded');
 
         let clientInfo = {};
 
@@ -161,36 +169,36 @@
             };
             hideSidebar();
             if (window.frames['testFrame']) {
-                window.frames['testFrame'].postMessage({ type: 'clientInfo', data: clientInfo }, '*');
+                window.frames['testFrame'].postMessage({ type: 'clientInfo', data: clientInfo }, 'https://klancnik.github.io');
                 console.log(`Test ${testName} started with client info:`, clientInfo);
             }
         }
 
         function hideSidebar() {
-            console.log('Sidebar hidden v1.10');
+            console.log('Sidebar hidden v1.11');
             document.querySelector('.sidebar').classList.add('hidden');
             document.getElementById('testFrame').style.display = 'block';
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.10:', event.data);
+            console.log('Message received in Master Dashboard v1.11:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.10 loaded');
+            console.log('Neuroscript Master Dashboard v1.11 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.10!');
+                console.error('NeuroscriptDB not loaded in Index v1.11!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.10');
+                console.log('NeuroscriptDB loaded successfully in Index v1.11');
             }
         });
     </script>
