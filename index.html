@@ -64,10 +64,16 @@
             background: #ffffff;
         }
         .demographic-field input[type="text"] {
-            width: 150px; /* Wider for Client Name/ID */
+            width: 120px; /* Reduced from 150px to fit within sidebar */
         }
         .demographic-field input[type="number"], .demographic-field select {
-            width: 50px; /* Two-digit width for Age, Education, Reading Level */
+            width: 50px; /* Two-digit width for Age, Education */
+        }
+        .demographic-field #gender {
+            width: 70px; /* Enlarged for "Male" or "Female" visibility */
+        }
+        .demographic-field #readingLevel {
+            width: 50px; /* Two-digit width */
         }
         .test-item {
             margin: 10px 0;
@@ -118,7 +124,7 @@
     <div class="container">
         <div class="sidebar">
             <h1>Neuroscript</h1>
-            <h2>Neuropsychological Assessment System v1.17</h2>
+            <h2>Neuropsychological Assessment System v1.18</h2>
 
             <div class="section demographics-section">
                 <h3>Client Information</h3>
@@ -144,7 +150,7 @@
                     </div>
                     <div class="demographic-field">
                         <label>Reading Level</label>
-                        <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
+                        <input type="number" id="readingLevel" placeholder="0-18" min="0" max="18" step="0.1">
                     </div>
                 </div>
             </div>
@@ -178,7 +184,7 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.17 loaded');
+        console.log('Neuroscript Master Dashboard v1.18 loaded');
 
         let clientInfo = {};
 
@@ -197,13 +203,13 @@
         }
 
         function generateReport() {
-            console.log('Generate Professional Report clicked v1.17');
+            console.log('Generate Professional Report clicked v1.18');
             // Placeholder for report generation logic
             alert('Report generation functionality to be implemented.');
         }
 
         function newSession() {
-            console.log('New Session clicked v1.17');
+            console.log('New Session clicked v1.18');
             // Placeholder for new session logic
             document.getElementById('clientName').value = '';
             document.getElementById('age').value = '';
@@ -216,24 +222,24 @@
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.17:', event.data);
+            console.log('Message received in Master Dashboard v1.18:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.17 loaded');
+            console.log('Neuroscript Master Dashboard v1.18 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.17!');
+                console.error('NeuroscriptDB not loaded in Index v1.18!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.17');
+                console.log('NeuroscriptDB loaded successfully in Index v1.18');
             }
         });
     </script>
