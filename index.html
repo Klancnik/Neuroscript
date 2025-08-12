@@ -18,7 +18,7 @@
             display: grid;
             grid-template-columns: 250px 1fr; /* Fixed sidebar width */
             gap: 10px;
-            padding: 10px;
+            padding: 10px; /* Minimal padding */
             height: 100%;
         }
         h1 {
@@ -31,7 +31,7 @@
             background: #f8f9fa; /* Light gray background */
             padding: 10px;
             border: 1px solid #dee2e6; /* Light gray border */
-            border-radius: 5px;
+            border-radius: 5px; /* Slight rounding */
             overflow-y: auto;
         }
         .section {
@@ -110,7 +110,7 @@
     <div class="container">
         <div class="sidebar">
             <h1>Neuroscript</h1>
-            <h2>Neuropsychological Assessment System v1.15</h2>
+            <h2>Neuropsychological Assessment System v1.16</h2>
 
             <div class="section demographics-section">
                 <h3>Client Information</h3>
@@ -170,7 +170,7 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.15 loaded');
+        console.log('Neuroscript Master Dashboard v1.16 loaded');
 
         let clientInfo = {};
 
@@ -189,13 +189,13 @@
         }
 
         function generateReport() {
-            console.log('Generate Professional Report clicked v1.15');
+            console.log('Generate Professional Report clicked v1.16');
             // Placeholder for report generation logic
             alert('Report generation functionality to be implemented.');
         }
 
         function newSession() {
-            console.log('New Session clicked v1.15');
+            console.log('New Session clicked v1.16');
             // Placeholder for new session logic
             document.getElementById('clientName').value = '';
             document.getElementById('age').value = '';
@@ -208,24 +208,24 @@
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.15:', event.data);
+            console.log('Message received in Master Dashboard v1.16:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.15 loaded');
+            console.log('Neuroscript Master Dashboard v1.16 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.15!');
+                console.error('NeuroscriptDB not loaded in Index v1.16!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.15');
+                console.log('NeuroscriptDB loaded successfully in Index v1.16');
             }
         });
     </script>
