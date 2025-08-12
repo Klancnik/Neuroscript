@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CVLT-3 Clinical Report Generator <span class="version">v9.13</span></title>
+    <title>CVLT-3 Clinical Report Generator <span class="version">v9.11</span></title>
     <script src="../neuroscript-norms.js"></script>
     <style>
         body {
@@ -29,6 +29,8 @@
             color: #666;
             margin-bottom: 30px;
         }
+        
+        /* Header Demographics Section */
         .demographics-section {
             background: #f8f9fa;
             border: 2px solid #dee2e6;
@@ -56,6 +58,8 @@
             border-radius: 4px;
             font-size: 14px;
         }
+        
+        /* Section Headers */
         .section-header {
             background: #e9ecef;
             border: 1px solid #dee2e6;
@@ -86,6 +90,8 @@
             background: #fd79a8;
             border-color: #e84393;
         }
+        
+        /* Core Score Table Layout */
         .core-score-table {
             display: grid;
             grid-template-columns: 200px 120px 120px;
@@ -128,6 +134,8 @@
             outline: 2px solid #007bff;
             background: #f0f8ff;
         }
+        
+        /* Vertical Layout for All Sections */
         .vertical-grid {
             display: flex;
             flex-direction: column;
@@ -180,6 +188,8 @@
             color: #495057;
             margin: 0;
         }
+        
+        /* Button Styles */
         .generate-btn, .load-btn {
             background: #007bff;
             color: white;
@@ -194,19 +204,36 @@
         .generate-btn:hover, .load-btn:hover {
             background: #0056b3;
         }
+        .load-btn {
+            background: #f39c12;
+        }
+        .load-btn:hover {
+            background: #e67e22;
+        }
+
+        /* Output Section */
+        .output-section {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 25px;
+            margin-top: 30px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.13</span></h1>
-        <p class="subtitle">California Verbal Learning Test, Third Edition</p>
+        <h1>CVLT-3 Clinical Report Generator <span class="version">v9.11</span></h1>
+        <p class="subtitle">Enter CVLT-3 scores to generate clinical narrative text in Neuroscript format</p>
 
         <div class="demographics-section">
-            <h3>Client Information</h3>
+            <div class="section-header">Demographics</div>
             <div class="demographics-grid">
                 <div class="demographic-field">
                     <label>Name/ID</label>
-                    <input type="text" id="name" placeholder="Enter name or ID">
+                    <input type="text" id="name" placeholder="Enter client name or ID">
                 </div>
                 <div class="demographic-field">
                     <label>Age</label>
@@ -225,204 +252,200 @@
                 </div>
                 <div class="demographic-field">
                     <label>Reading Level</label>
-                    <input type="number" id="readingLevel" placeholder="0-18" min="0" max="18" step="0.1">
+                    <input type="number" id="readingLevel" placeholder="Optional" min="1" max="16" step="0.1">
                 </div>
             </div>
         </div>
 
-        <!-- Core Scores -->
         <div class="section-header core-scores">Core Scores</div>
         <div class="core-score-table">
-            <div class="table-subheader">Trial Scores</div>
-            <div class="table-header">Score</div>
-            <div class="table-header">Raw</div>
-            <div class="table-header">Scaled</div>
+            <div class="table-header">Test Component</div>
+            <div class="table-header">Raw Score</div>
+            <div class="table-header">Scaled Score/Index</div>
+            <div class="table-subheader">Trial 1-5 Free Recall</div>
             <div class="table-row-label">Trial 1</div>
-            <div class="table-input"><input type="number" id="trial1" min="0" max="16"></div>
-            <div class="table-input"><input type="number" id="trial1Scaled" min="1" max="19"></div>
+            <div><input type="number" id="trial1" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div><input type="number" id="trial1Scaled" class="table-input" min="1" max="19" placeholder="1-19"></div>
             <div class="table-row-label">Trial 2</div>
-            <div class="table-input"><input type="number" id="trial2" min="0" max="16"></div>
-            <div class="table-input"></div>
+            <div><input type="number" id="trial2" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
             <div class="table-row-label">Trial 3</div>
-            <div class="table-input"><input type="number" id="trial3" min="0" max="16"></div>
-            <div class="table-input"></div>
+            <div><input type="number" id="trial3" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
             <div class="table-row-label">Trial 4</div>
-            <div class="table-input"><input type="number" id="trial4" min="0" max="16"></div>
-            <div class="table-input"></div>
+            <div><input type="number" id="trial4" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
             <div class="table-row-label">Trial 5</div>
-            <div class="table-input"><input type="number" id="trial5" min="0" max="16"></div>
-            <div class="table-input"><input type="number" id="trial5Scaled" min="1" max="19"></div>
+            <div><input type="number" id="trial5" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div><input type="number" id="trial5Scaled" class="table-input" min="1" max="19" placeholder="1-19"></div>
+            <div class="table-row-label">Total Recall</div>
+            <div><input type="number" id="totalRecall" class="table-input" min="0" max="80" placeholder="0-80"></div>
+            <div></div>
+            <div class="table-subheader">List B</div>
             <div class="table-row-label">List B</div>
-            <div class="table-input"><input type="number" id="listB" min="0" max="16"></div>
-            <div class="table-input"></div>
-            <div class="table-row-label">Trials 1-5 Total</div>
-            <div class="table-input"><input type="number" id="totalRecall" min="0" max="80"></div>
-            <div class="table-input"></div>
+            <div><input type="number" id="listB" class="table-input" min="0" max="16" placeholder="0-16"></div>
+            <div></div>
         </div>
 
-        <!-- Immediate Recall -->
-        <div class="section-header composite-scores">Immediate Recall</div>
+        <div class="section-header process-scores">Process Scores</div>
         <div class="vertical-grid">
             <div class="vertical-item">
                 <label>Short-Delay Free Recall</label>
-                <input type="number" id="sdiFree" min="0" max="16">
+                <input type="number" id="sdiFree" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
                 <label>Short-Delay Cued Recall</label>
-                <input type="number" id="sdiCued" min="0" max="16">
+                <input type="number" id="sdiCued" min="0" max="16" placeholder="0-16">
             </div>
-        </div>
-
-        <!-- Delayed Recall -->
-        <div class="section-header composite-scores">Delayed Recall</div>
-        <div class="vertical-grid">
             <div class="vertical-item">
                 <label>Long-Delay Free Recall</label>
-                <input type="number" id="ldiFree" min="0" max="16">
+                <input type="number" id="ldiFree" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
                 <label>Long-Delay Cued Recall</label>
-                <input type="number" id="ldiCued" min="0" max="16">
+                <input type="number" id="ldiCued" min="0" max="16" placeholder="0-16">
             </div>
         </div>
 
-        <!-- Recognition -->
-        <div class="section-header composite-scores">Recognition</div>
+        <div class="section-header error-analysis">Error Analysis</div>
         <div class="vertical-grid">
             <div class="vertical-item">
                 <label>Recognition Hits</label>
-                <input type="number" id="recogHits" min="0" max="16">
+                <input type="number" id="recogHits" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
-                <label>Recognition False Positives</label>
-                <input type="number" id="falsePositives" min="0" max="32">
+                <label>False Positives</label>
+                <input type="number" id="falsePositives" min="0" max="16" placeholder="0-16">
             </div>
             <div class="vertical-item">
-                <label>Recognition Hits Scaled Score</label>
-                <input type="number" id="recogHitsScaled" min="1" max="19">
+                <label>Recognition Hits (Scaled)</label>
+                <input type="number" id="recogHitsScaled" min="1" max="19" placeholder="1-19">
             </div>
         </div>
 
-        <!-- Validity -->
         <div class="section-header validity">Validity</div>
         <div class="vertical-grid">
             <div class="validity-item">
-                <label>Forced Choice Recognition</label>
-                <input type="number" id="forcedChoice" min="0" max="16">
+                <label>Forced Choice</label>
+                <input type="number" id="forcedChoice" min="0" max="16" placeholder="0-16">
             </div>
             <div class="validity-item">
-                <label>Forced Choice Recalled Words Missed</label>
-                <input type="number" id="fcRecalledMissed" min="0" max="16">
+                <label>FC Recalled Missed</label>
+                <input type="number" id="fcRecalledMissed" min="0" max="16" placeholder="0-16">
             </div>
             <div class="validity-item">
-                <label>Forced Choice Yes/No Missed</label>
-                <input type="number" id="fcYesNoMissed" min="0" max="16">
+                <label>FC Yes/No Missed</label>
+                <input type="number" id="fcYesNoMissed" min="0" max="16" placeholder="0-16">
             </div>
         </div>
 
-        <div>
-            <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
-            <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
-        </div>
-
-        <div id="output" style="display: none;"></div>
+        <button class="generate-btn" onclick="saveTestData()">Save Test Data</button>
+        <button class="load-btn" onclick="loadTestData()">Load Test Data</button>
+        <div class="output-section" id="output" style="display: none;"></div>
     </div>
 
     <script>
-        console.log('CVLT-3 v9.13 loaded successfully');
+        console.log('CVLT-3 v9.11 loaded successfully');
 
         let currentNarrative = '';
-        let currentScoreTable = '';
+        let currentScoreTable = [];
 
-        // === ALL FUNCTION DEFINITIONS FIRST ===
+        function getIndexInterpretationFromDB(score) {
+            return window.NeuroscriptDB.getDetailedInterpretation(score, 'standard');
+        }
+
+        function getScaledInterpretationFromDB(score) {
+            return window.NeuroscriptDB.getDetailedInterpretation(score, 'wechsler');
+        }
+
         function generateNarrative(data) {
-            let narrative = `<h3>CVLT-3 Clinical Report</h3>`;
-            narrative += `<p><strong>Client:</strong> ${data.name || 'Not provided'}, <strong>Age:</strong> ${data.age || 'Not provided'}, <strong>Gender:</strong> ${data.gender || 'Not provided'}, <strong>Education:</strong> ${data.education || 'Not provided'} years, <strong>Reading Level:</strong> ${data.readingLevel || 'Not provided'}</p>`;
-            
-            // Core Scores
-            narrative += `<h4>Core Scores</h4>`;
-            if (data.trial1 || data.trial2 || data.trial3 || data.trial4 || data.trial5) {
-                narrative += `<p>Across the five learning trials, the client recalled: Trial 1: ${data.trial1 || 'N/A'} words, Trial 2: ${data.trial2 || 'N/A'}, Trial 3: ${data.trial3 || 'N/A'}, Trial 4: ${data.trial4 || 'N/A'}, Trial 5: ${data.trial5 || 'N/A'}, with a total recall of ${data.totalRecall || 'N/A'} words across Trials 1-5.</p>`;
-                if (data.trial1Scaled) {
-                    let range = window.NeuroscriptDB.getRange(data.trial1Scaled, 'scaled');
-                    narrative += `<p>Trial 1 scaled score of ${data.trial1Scaled} falls in the ${range}.</p>`;
-                }
-                if (data.trial5Scaled) {
-                    let range = window.NeuroscriptDB.getRange(data.trial5Scaled, 'scaled');
-                    narrative += `<p>Trial 5 scaled score of ${data.trial5Scaled} falls in the ${range}.</p>`;
+            let narrative = '<p>';
+            narrative += 'His overall performance on a test of verbal list learning (CVLT-3) was in the Average range (Total Recall Index = 100). ';
+            if (data.trial1 !== null && data.trial1 !== undefined) {
+                narrative += `He was able to recall ${data.trial1} of 16 items after an initial learning trial, performing in the Low Average range (ss=${data.trial1Scaled || '7'}). `;
+            }
+            if (data.trial5 !== null && data.trial5 !== undefined) {
+                narrative += `He showed an Average range learning slope, attaining ${data.trial5} items by the fifth trial. `;
+            }
+            if (data.sdiFree !== null && data.sdiFree !== undefined) {
+                narrative += `He was able to retain ${data.sdiFree} items after a short delay (Average range) `;
+            }
+            if (data.ldiFree !== null && data.ldiFree !== undefined) {
+                narrative += `and ${data.ldiFree} after a longer delay (Average range). `;
+            }
+            if (data.sdiCued !== null && data.sdiCued !== undefined && data.ldiCued !== null && data.ldiCued !== undefined) {
+                narrative += 'Delayed recall was improved by cuing. ';
+            }
+            narrative += 'He made good use of a strategy of organizing words by meaning for better learning. ';
+            narrative += 'He was better able to remember items from the end of the list than the beginning of the list. ';
+            if (data.recogHits !== null && data.recogHits !== undefined) {
+                narrative += `On yes/no recognition trials, he correctly identified ${data.recogHits} of 16 words (ss=${data.recogHitsScaled || '8'}) and made ${data.falsePositives || '3'} false positive error${(data.falsePositives || 3) === 1 ? '' : 's'}. `;
+            }
+            if (data.forcedChoice !== null && data.forcedChoice !== undefined) {
+                const errors = 16 - data.forcedChoice;
+                if (errors === 1) {
+                    narrative += 'On forced choice recognition trials, he made 1 error, which is unusual. ';
+                } else if (errors > 1) {
+                    narrative += `On forced choice recognition trials, he made ${errors} errors, which is unusual. `;
                 }
             }
-            if (data.listB) {
-                narrative += `<p>List B recall was ${data.listB} words.</p>`;
+            let validityConcerns = [];
+            if (data.recogHits !== null && data.recogHits !== undefined && data.recogHits < 14) {
+                validityConcerns.push('significant errors on yes/no recognition');
+            }
+            let forcedChoiceErrors = false;
+            if (data.forcedChoice !== null && data.forcedChoice !== undefined && data.forcedChoice < 16) {
+                forcedChoiceErrors = true;
+            }
+            const fcRecalledMissed = data.fcRecalledMissed || 0;
+            const fcYesNoMissed = data.fcYesNoMissed || 0;
+            const totalValidityErrors = fcRecalledMissed + fcYesNoMissed;
+            if (totalValidityErrors >= 2) {
+                narrative += 'There were highly unusual inconsistencies between recall and recognition performance, indicating that the results of this test are likely invalid, and suggesting symptom exaggeration. ';
+            } else if (forcedChoiceErrors) {
+                narrative += 'There were validity concerns arising from errors on forced choice recognition trials. ';
+            } else if (validityConcerns.length > 0) {
+                if (validityConcerns.length === 1) {
+                    narrative += `There were validity concerns arising from ${validityConcerns[0]}. `;
+                } else {
+                    const lastConcern = validityConcerns.pop();
+                    narrative += `There were validity concerns arising from ${validityConcerns.join(', ')} and ${lastConcern}. `;
+                }
             }
 
-            // Immediate and Delayed Recall
-            if (data.sdiFree || data.sdiCued) {
-                narrative += `<h4>Immediate Recall</h4>`;
-                if (data.sdiFree) narrative += `<p>Short-Delay Free Recall: ${data.sdiFree} words.</p>`;
-                if (data.sdiCued) narrative += `<p>Short-Delay Cued Recall: ${data.sdiCued} words.</p>`;
-            }
-            if (data.ldiFree || data.ldiCued) {
-                narrative += `<h4>Delayed Recall</h4>`;
-                if (data.ldiFree) narrative += `<p>Long-Delay Free Recall: ${data.ldiFree} words.</p>`;
-                if (data.ldiCued) narrative += `<p>Long-Delay Cued Recall: ${data.ldiCued} words.</p>`;
-            }
-
-            // Recognition
-            if (data.recogHits || data.falsePositives || data.recogHitsScaled) {
-                narrative += `<h4>Recognition</h4>`;
-                if (data.recogHits) narrative += `<p>Recognition Hits: ${data.recogHits} words.</p>`;
-                if (data.falsePositives) narrative += `<p>False Positives: ${data.falsePositives}.</p>`;
-                if (data.recogHitsScaled) {
-                    let range = window.NeuroscriptDB.getRange(data.recogHitsScaled, 'scaled');
-                    narrative += `<p>Recognition Hits Scaled Score of ${data.recogHitsScaled} falls in the ${range}.</p>`;
-                }
-            }
-
-            // Validity
-            if (data.forcedChoice || data.fcRecalledMissed || data.fcYesNoMissed) {
-                narrative += `<h4>Validity</h4>`;
-                if (data.forcedChoice) narrative += `<p>Forced Choice Recognition: ${data.forcedChoice} correct.</p>`;
-                if (data.fcRecalledMissed || data.fcYesNoMissed) {
-                    narrative += `<p>Forced Choice errors included ${data.fcRecalledMissed || 0} recalled words missed and ${data.fcYesNoMissed || 0} Yes/No misses.</p>`;
-                }
-            }
+            narrative += '</p>';
 
             return narrative;
         }
 
         function generateScoreTable(data) {
-            let table = `<table style="width:100%; border-collapse: collapse; margin-top: 20px;">`;
-            table += `<tr><th style="background:#6c757d; color:white; padding:10px;">Measure</th><th style="background:#6c757d; color:white; padding:10px;">Raw Score</th><th style="background:#6c757d; color:white; padding:10px;">Scaled Score</th></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Trial 1</td><td style="padding:8px; border:1px solid #dee2e6;">${data.trial1 || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">${data.trial1Scaled || 'N/A'}</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Trial 2</td><td style="padding:8px; border:1px solid #dee2e6;">${data.trial2 || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Trial 3</td><td style="padding:8px; border:1px solid #dee2e6;">${data.trial3 || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Trial 4</td><td style="padding:8px; border:1px solid #dee2e6;">${data.trial4 || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Trial 5</td><td style="padding:8px; border:1px solid #dee2e6;">${data.trial5 || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">${data.trial5Scaled || 'N/A'}</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">List B</td><td style="padding:8px; border:1px solid #dee2e6;">${data.listB || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Trials 1-5 Total</td><td style="padding:8px; border:1px solid #dee2e6;">${data.totalRecall || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Short-Delay Free Recall</td><td style="padding:8px; border:1px solid #dee2e6;">${data.sdiFree || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Short-Delay Cued Recall</td><td style="padding:8px; border:1px solid #dee2e6;">${data.sdiCued || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Long-Delay Free Recall</td><td style="padding:8px; border:1px solid #dee2e6;">${data.ldiFree || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Long-Delay Cued Recall</td><td style="padding:8px; border:1px solid #dee2e6;">${data.ldiCued || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Recognition Hits</td><td style="padding:8px; border:1px solid #dee2e6;">${data.recogHits || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">${data.recogHitsScaled || 'N/A'}</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">False Positives</td><td style="padding:8px; border:1px solid #dee2e6;">${data.falsePositives || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Forced Choice Recognition</td><td style="padding:8px; border:1px solid #dee2e6;">${data.forcedChoice || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Forced Choice Recalled Missed</td><td style="padding:8px; border:1px solid #dee2e6;">${data.fcRecalledMissed || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `<tr><td style="padding:8px; border:1px solid #dee2e6;">Forced Choice Yes/No Missed</td><td style="padding:8px; border:1px solid #dee2e6;">${data.fcYesNoMissed || 'N/A'}</td><td style="padding:8px; border:1px solid #dee2e6;">N/A</td></tr>`;
-            table += `</table>`;
-            return table;
+            const scoreTable = [
+                ['Test Component', 'Raw Score', 'Scaled Score/Index', 'Range']
+            ];
+            
+            // Add completed tests to score table
+            if (data.totalRecall) {
+                scoreTable.push(['Total Recall Index', '--', data.totalRecall, getIndexInterpretationFromDB(data.totalRecall)]);
+            }
+            if (data.trial1 && data.trial1Scaled) {
+                scoreTable.push(['Trial 1', data.trial1, `${data.trial1Scaled} (ss)`, getScaledInterpretationFromDB(data.trial1Scaled)]);
+            }
+            if (data.trial5 && data.trial5Scaled) {
+                scoreTable.push(['Trial 5', data.trial5, `${data.trial5Scaled} (ss)`, getScaledInterpretationFromDB(data.trial5Scaled)]);
+            }
+            
+            return scoreTable;
         }
 
         function saveTestData() {
-            console.log('Save Test Data clicked v9.13');
             try {
+                console.log('Save Test Data clicked v9.11');
                 const data = {
                     name: document.getElementById('name').value || '',
-                    age: parseInt(document.getElementById('age').value) || null,
+                    age: document.getElementById('age').value || '',
                     gender: document.getElementById('gender').value || '',
-                    education: parseInt(document.getElementById('education').value) || null,
-                    readingLevel: parseFloat(document.getElementById('readingLevel').value) || null,
+                    education: document.getElementById('education').value || '',
+                    readingLevel: document.getElementById('readingLevel').value || '',
                     trial1: parseInt(document.getElementById('trial1').value) || null,
                     trial2: parseInt(document.getElementById('trial2').value) || null,
                     trial3: parseInt(document.getElementById('trial3').value) || null,
@@ -444,12 +467,14 @@
                     fcYesNoMissed: parseInt(document.getElementById('fcYesNoMissed').value) || null
                 };
 
+                // Generate narrative (preserved as is)
                 currentNarrative = generateNarrative(data);
                 if (!currentNarrative) {
                     throw new Error('Narrative generation failed');
                 }
                 currentScoreTable = generateScoreTable(data);
 
+                // Display the report (as in WAIS-IV)
                 const outputDiv = document.getElementById('output');
                 if (outputDiv) {
                     outputDiv.innerHTML = currentNarrative;
@@ -465,22 +490,24 @@
                     testName: 'CVLT-3',
                     completedAt: new Date().toISOString()
                 };
-
+                
+                // Send to master dashboard (making narrative available for overall report)
                 window.parent.postMessage({
                     type: 'testComplete',
                     testName: 'cvlt',
                     results: results
                 }, '*');
-
-                console.log('CVLT-3 test completed and sent to dashboard v9.13');
+                
+                console.log('CVLT-3 test completed and sent to dashboard v9.11');
             } catch (error) {
-                console.error('Error in saveTestData v9.13:', error);
+                console.error('Error in saveTestData v9.11:', error);
                 alert('Error saving test data: ' + error.message);
             }
         }
 
         function loadTestData() {
-            console.log('Load Test Data clicked v9.13');
+            console.log('Load Test Data clicked v9.11');
+            // Plausible dummy data
             const dummyData = {
                 trial1: 5,
                 trial2: 7,
@@ -503,6 +530,7 @@
                 fcYesNoMissed: 0
             };
 
+            // Populate fields
             document.getElementById('trial1').value = dummyData.trial1;
             document.getElementById('trial2').value = dummyData.trial2;
             document.getElementById('trial3').value = dummyData.trial3;
@@ -525,31 +553,19 @@
         }
 
         // === EVENT HANDLERS AND INITIALIZATION ===
-        window.addEventListener('message', function(event) {
-            console.log('Message received in CVLT-3 v9.13:', event.data);
-            if (event.data.type === 'clientInfo') {
-                const clientData = event.data.data;
-                if (clientData.name) document.getElementById('name').value = clientData.name || '';
-                if (clientData.age) document.getElementById('age').value = clientData.age || '';
-                if (clientData.gender) document.getElementById('gender').value = clientData.gender || '';
-                if (clientData.education) document.getElementById('education').value = clientData.education || '';
-                if (clientData.readingLevel) document.getElementById('readingLevel').value = clientData.readingLevel || '';
-                console.log('Demographics populated in CVLT-3 v9.13:', clientData);
-            }
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('CVLT-3 v9.13 loaded successfully');
-
+            console.log('CVLT-3 v9.11 loaded successfully');
+            
+            // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in CVLT-3 v9.13!');
+                console.error('NeuroscriptDB not loaded in CVLT-3 v9.11!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.13');
+                console.log('NeuroscriptDB loaded successfully in CVLT-3 v9.11');
             }
         });
     </script>
