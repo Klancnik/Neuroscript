@@ -124,14 +124,14 @@
     <div class="container">
         <div class="sidebar">
             <h1>Neuroscript</h1>
-            <h2>Neuropsychological Assessment System v1.18</h2>
+            <h2>Neuropsychological Assessment System v1.19</h2>
 
             <div class="section demographics-section">
                 <h3>Client Information</h3>
                 <div class="demographics-grid">
                     <div class="demographic-field">
                         <label>Client Name/ID</label>
-                        <input type="text" id="clientName" placeholder="Enter client name or ID">
+                        <input type="text" id="name" placeholder="Enter client name or ID">
                     </div>
                     <div class="demographic-field">
                         <label>Age</label>
@@ -184,13 +184,13 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.18 loaded');
+        console.log('Neuroscript Master Dashboard v1.19 loaded');
 
         let clientInfo = {};
 
         function startTest(testName) {
             clientInfo = {
-                name: document.getElementById('clientName').value,
+                name: document.getElementById('name').value,
                 age: document.getElementById('age').value,
                 gender: document.getElementById('gender').value,
                 education: document.getElementById('education').value,
@@ -203,15 +203,15 @@
         }
 
         function generateReport() {
-            console.log('Generate Professional Report clicked v1.18');
+            console.log('Generate Professional Report clicked v1.19');
             // Placeholder for report generation logic
             alert('Report generation functionality to be implemented.');
         }
 
         function newSession() {
-            console.log('New Session clicked v1.18');
+            console.log('New Session clicked v1.19');
             // Placeholder for new session logic
-            document.getElementById('clientName').value = '';
+            document.getElementById('name').value = '';
             document.getElementById('age').value = '';
             document.getElementById('gender').value = 'Male';
             document.getElementById('education').value = '';
@@ -222,24 +222,24 @@
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.18:', event.data);
+            console.log('Message received in Master Dashboard v1.19:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.18 loaded');
+            console.log('Neuroscript Master Dashboard v1.19 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.18!');
+                console.error('NeuroscriptDB not loaded in Index v1.19!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.18');
+                console.log('NeuroscriptDB loaded successfully in Index v1.19');
             }
         });
     </script>
