@@ -124,7 +124,7 @@
     <div class="container">
         <div class="sidebar">
             <h1>Neuroscript</h1>
-            <h2>Neuropsychological Assessment System v1.19</h2>
+            <h2>Neuropsychological Assessment System v1.20</h2>
 
             <div class="section demographics-section">
                 <h3>Client Information</h3>
@@ -184,7 +184,7 @@
     </div>
 
     <script>
-        console.log('Neuroscript Master Dashboard v1.19 loaded');
+        console.log('Neuroscript Master Dashboard v1.20 loaded');
 
         let clientInfo = {};
 
@@ -196,20 +196,23 @@
                 education: document.getElementById('education').value,
                 readingLevel: document.getElementById('readingLevel').value
             };
-            if (window.frames['testFrame']) {
+            if (window.frames['testFrame'] && window.frames['testFrame'].document.readyState === 'complete') {
                 window.frames['testFrame'].postMessage({ type: 'clientInfo', data: clientInfo }, '*');
                 console.log(`Test ${testName} started with client info:`, clientInfo);
+            } else {
+                console.warn('Iframe not ready, delaying postMessage');
+                setTimeout(() => startTest(testName), 100); // Retry after 100ms
             }
         }
 
         function generateReport() {
-            console.log('Generate Professional Report clicked v1.19');
+            console.log('Generate Professional Report clicked v1.20');
             // Placeholder for report generation logic
             alert('Report generation functionality to be implemented.');
         }
 
         function newSession() {
-            console.log('New Session clicked v1.19');
+            console.log('New Session clicked v1.20');
             // Placeholder for new session logic
             document.getElementById('name').value = '';
             document.getElementById('age').value = '';
@@ -222,24 +225,24 @@
         }
 
         window.addEventListener('message', function(event) {
-            console.log('Message received in Master Dashboard v1.19:', event.data);
+            console.log('Message received in Master Dashboard v1.20:', event.data);
             if (event.data.type === 'testComplete') {
                 console.log(`Test ${event.data.testName} completed:`, event.data.results);
             }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Neuroscript Master Dashboard v1.19 loaded');
+            console.log('Neuroscript Master Dashboard v1.20 loaded');
             // Database loading check
             if (typeof window.NeuroscriptDB === 'undefined') {
-                console.error('NeuroscriptDB not loaded in Index v1.19!');
+                console.error('NeuroscriptDB not loaded in Index v1.20!');
                 setTimeout(() => {
                     if (typeof window.NeuroscriptDB === 'undefined') {
                         alert('Database loading error. Please refresh the page.');
                     }
                 }, 2000);
             } else {
-                console.log('NeuroscriptDB loaded successfully in Index v1.19');
+                console.log('NeuroscriptDB loaded successfully in Index v1.20');
             }
         });
     </script>
